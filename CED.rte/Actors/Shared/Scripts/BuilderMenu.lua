@@ -47,9 +47,10 @@ function BuilderBasic(self)
 		button.Think = function(entity, screen)
 			button:SetOutlineColor(button.IsHovered and 117 or 144)
 			local world_pos = button.Parent.Pos + button:GetPos() + CameraMan:GetOffset(screen)
+			local parent_world_pos = button.Parent.Pos + CameraMan:GetOffset(screen)
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), button.Buildable.IconPath, 0)
-	
-			if button.Buildable.Selected then
+
+			if not cursor_inside(parent_world_pos, button.Parent.Size) and button.Buildable.Selected then
 				PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, button.Buildable.IconPath, 0)
 				if self.SelectDelayTime:IsPastSimMS(200) then
 					if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
@@ -100,4 +101,17 @@ function Update(self)
 	    end
 	    self.Menu:DrawCursor(self.Menu:GetScreen())
 	end
+end
+
+function cursor_inside(el_pos, size)
+	local el_x = el_pos.X
+	local el_y = el_pos.Y
+
+	local el_width = size.X
+	local el_height = size.Y
+
+	local mouse_x = igui.Cursor.X
+	local mouse_y = igui.Cursor.Y
+
+	return (mouse_x > el_x) and (mouse_x < el_x + el_width) and (mouse_y > el_y) and (mouse_y < el_y + el_height)
 end
