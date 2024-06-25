@@ -1,6 +1,9 @@
 function Create(self)
-	self.CEDBuildRange = 1000;
+	self.CEDBuildRange = 200;
 	self.CEDBuildRate = 10;
+	self.CEDBuildDelay = 1000;
+	
+	self.CEDBuildTimer = Timer();
 
 	self.CEDAvailableBuildables = {};
 	local i = 1;
