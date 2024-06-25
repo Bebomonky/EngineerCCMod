@@ -15,6 +15,9 @@ function OnMessage(self, message, object)
 end
 
 function Create(self)
+	local createFunc = "Create" .. self:GetStringValue("BuiltEntityClassName");
+	self.buildEntity = _G[createFunc](self:GetStringValue("BuiltEntityPresetName"), self:GetStringValue("BuiltEntityTechName"));
+
 	self.buildPointRequirement = self:NumberValueExists("BuildPointRequirement") and self:GetNumberValue("BuildPointRequirement") or 100;
 
 	if self:NumberValueExists("buildPoints") then
@@ -24,7 +27,7 @@ function Create(self)
 		self.buildPoints = 0;
 	end
 
-	self.Team = self:NumberValueExists("CED_BuildableTeam") and self:GetNumberValue("CED_BuildableTeam") or -1;
+	self.Team = self:NumberValueExists("CED_BuildableTeam") and self:GetNumberValue("CED_BuildableTeam") or self.Team;
 	
 	self.Activity = ToGameActivity(ActivityMan:GetActivity());
 	self.Scene = SceneMan.Scene;
@@ -49,11 +52,18 @@ function ThreadedUpdate(self)
 		self:RequestSyncedUpdate();
 	end
 	
-	PrimitiveMan:DrawTextPrimitive(self.Pos + Vector(0, -100), self.buildPoints, true, 1);
-	PrimitiveMan:DrawTextPrimitive(self.Pos + Vector(0, -80), self.buildPointRequirement, true, 1);
+	PrimitiveMan:DrawTextPrimitive(self.Pos + Vector(0, -100), tostring(self.buildPoints), true, 1);
+	PrimitiveMan:DrawTextPrimitive(self.Pos + Vector(0, -80), tostring(self.buildPointRequirement), true, 1);
 end
 
 function SyncedUpdate(self)
+
+	self.buildEntity.Pos = self.Pos;
+	self.buildEntity.Team = self.Team;
+	self.buildEntity.HFlipped = self.HFlipped
+	MovableMan:AddMO(self.buildEntity);	
+
+	self.ToDelete = true;
 
 end
 

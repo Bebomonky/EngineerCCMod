@@ -45,8 +45,6 @@ function BuilderBasic(self)
 		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), self.Icons.Drone, 0)
 
 		if self.SelectedObject then
-			self.Mouse = Vector(self.Mouse.X + UInputMan:GetMouseMovement(entity.Team).X, SceneMan.SceneHeight * -1)
-			entity.ViewPoint = SceneMan:MovePointToGround(self.Mouse, 50, 25)
 
 			PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, self.Icons.Drone, 0)
 			if self.SelectDelayTime:IsPastSimMS(200) then
@@ -65,7 +63,6 @@ function BuilderBasic(self)
 	button.OnPress = function(key)
 		if key == Controller.PRIMARY_ACTION then
 			self.SelectDelayTime:Reset()
-			self.Mouse = self.ViewPoint
 			self.SelectedObject = true
 		end
 	end
