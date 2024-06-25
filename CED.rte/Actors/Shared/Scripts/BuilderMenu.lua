@@ -12,6 +12,9 @@ function Create(self)
 	self.ConfirmSound = CreateSoundContainer("Base.rte/Confirm")
 	self.PieMenu:AddPieSlice(CreatePieSlice("CED.rte/BuilderMenu"), self)
 
+	self.SelectedObject = false
+	self.SelectDelayTime = Timer()
+
 	self.Icons = {
 		Drone = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png"
 	}
@@ -40,11 +43,30 @@ function BuilderBasic(self)
 		button:SetOutlineColor(button.IsHovered and 117 or 144)
 		local world_pos = button.Parent.Pos + button:GetPos() + CameraMan:GetOffset(screen)
 		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), self.Icons.Drone, 0)
+
+		if self.SelectedObject then
+			self.Mouse = Vector(self.Mouse.X + UInputMan:GetMouseMovement(entity.Team).X, SceneMan.SceneHeight * -1)
+			entity.ViewPoint = SceneMan:MovePointToGround(self.Mouse, 50, 25)
+
+			PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, self.Icons.Drone, 0)
+			if self.SelectDelayTime:IsPastSimMS(200) then
+				if self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
+					local buildable = CreateMOSRotating("CED.rte/CED Generic Buildable")
+					buildable.Team = entity.Team
+					buildable.Pos = self.Menu.Cursor
+					MovableMan:AddParticle(buildable)
+					self.SelectDelayTime:Reset()
+					self.SelectedObject = false
+				end
+			end
+		end
 	end
 
 	button.OnPress = function(key)
 		if key == Controller.PRIMARY_ACTION then
-			print("aaaaa")
+			self.SelectDelayTime:Reset()
+			self.Mouse = self.ViewPoint
+			self.SelectedObject = true
 		end
 	end
 
