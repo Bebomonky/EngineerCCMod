@@ -27,19 +27,19 @@ function BuilderBasic(self)
 
 	local rows = 4
 	for i = 1, #self.CEDAvailableBuildables do
-		local buildable = self.CEDAvailableBuildables[i]
-		buildable.Selected = false
 
 		local x = -5 + self.Main.Box:GetPos().X + ((i - 1) % rows + 1 - 1) * 60
 		local y = 7 + (math.floor((i - 1) / rows ) + 1 - 1) * 35
 
 		local button = igui.Button()
 		button:SetName("Buildable " .. i)
+		button.Buildable = self.CEDAvailableBuildables[i]
+		button.Buildable.Selected = false
 		button:SetParent(self.Main.Box)
 		button:SetPos(Vector(x, y))
 		button:SetSize(Vector(49, 26))
 		button:SetColor(146)
-		button:SetText(buildable.DisplayName)
+		button:SetText(button.Buildable.DisplayName)
 		button:SetTextPos(Vector(0, 10))
 		button:SetOutlineThickness(2)
 		button:SetOutlineColor(144)
@@ -47,18 +47,20 @@ function BuilderBasic(self)
 		button.Think = function(entity, screen)
 			button:SetOutlineColor(button.IsHovered and 117 or 144)
 			local world_pos = button.Parent.Pos + button:GetPos() + CameraMan:GetOffset(screen)
-			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), buildable.IconPath, 0)
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), button.Buildable.IconPath, 0)
 	
-			if buildable.Selected then
-				PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, buildable.IconPath, 0)
+			if button.Buildable.Selected then
+				PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, button.Buildable.IconPath, 0)
 				if self.SelectDelayTime:IsPastSimMS(200) then
 					if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
-						local buildable = CreateMOSRotating("CED.rte/CED Generic Buildable")
-						buildable.Team = entity.Team
-						buildable.Pos = self.Menu.Cursor
-						MovableMan:AddParticle(buildable)
+						local createFunc = "Create" .. button.Buildable.BuildableClassName
+						local buildablePreset = _G[createFunc](button.Buildable.BuildablePresetName, button.Buildable.BuildableTechName);
+						buildablePreset.Team = entity.Team
+						buildablePreset.Pos = self.Menu.Cursor
+						MovableMan:AddParticle(buildablePreset)
 						self.SelectDelayTime:Reset()
-						buildable.Selected = false
+						button.Buildable.Selected = false
+						print("Just placed the following: " .. button.Buildable.DisplayName);
 					end
 				end
 			end
@@ -67,7 +69,7 @@ function BuilderBasic(self)
 		button.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
 				self.SelectDelayTime:Reset()
-				buildable.Selected = true
+				button.Buildable.Selected = true
 			end
 		end
 	end
