@@ -6,6 +6,8 @@ function Create(self)
 	end
 	self.goldDelay = 1000;
 	self.goldAmount = 10;
+	self.PlayerControllable = false;
+	self.HUDVisible = false; -- apparently not always respected in .ini?
 end
 
 function ThreadedUpdate(self)
