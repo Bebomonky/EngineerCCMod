@@ -6,8 +6,16 @@ function Create(self)
 	self.CEDBuildTimer = Timer();
 
 	self.CEDAvailableBuildables = {};
+	self.CEDAvailableBuildables.Fortifications = {};
+	self.CEDAvailableBuildables.Turrets = {};
+	self.CEDAvailableBuildables.Buildings = {};
+	self.CEDAvailableBuildables.Utility = {};
+	-------  FORTIFICATIONS  -------
+	
+	
+	-------  TURRETS  -------
 	local i = 1;
-	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret",
+	self.CEDAvailableBuildables.Turrets[i] = {["DisplayName"] = "Plink Turret",
 									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 									  ["IconPos"] = Vector(0, -5),
 									  ["RenderPath"] = "CED.rte/Buildables/GenericBuildable/GenericBuildable.png",
@@ -18,7 +26,11 @@ function Create(self)
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = true};
 	i = i + 1;
-	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Atmo-coagulator",
+	
+	
+	-------  BUILDINGS  -------
+	local i = 1;
+	self.CEDAvailableBuildables.Buildings[i] = {["DisplayName"] = "Atmo-coagulator",
 									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 									  ["IconPos"] = Vector(0, -5),
 									  ["RenderPath"] = "CED.rte/Buildings/Coagulator/Coagulator.png",
@@ -27,6 +39,8 @@ function Create(self)
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
 									  ["Cost"] = 100,
-									  ["SnapToGround"] = true};
+									  ["SnapToGround"] = true};	
 	i = i + 1;
+	
+	-------  UTILITY  -------
 end
