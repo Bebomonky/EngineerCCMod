@@ -29,6 +29,8 @@ function BuilderBasic(self)
 
 	--changes mouse bitmap,
 	local isRemoving = false
+	local renderPos = Vector()
+	local box = Box()
 
 	--Bitmap will be modifed so we need to make sure it's always default
 	self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
@@ -59,17 +61,24 @@ function BuilderBasic(self)
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
 
 			if not cursor_inside(parent_world_pos, button.Parent.Size) and button.Buildable.Selected then
+				renderPos = self.Menu.Cursor
 				if button.Buildable.SnapToGround then
-					self.Menu.Cursor = SceneMan:MovePointToGround(self.Menu.Cursor, 25, 25)
+					renderPos = SceneMan:MovePointToGround(renderPos, 2, 1)
+					renderPos.Y = renderPos.Y - (box.Height / 2)
 				end
-				PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, button.Buildable.IconPath, 0)
+
+				--PrimitiveMan:DrawBitmapPrimitive(screen, renderPos, button.Buildable.RenderPath, 0)
+				PrimitiveMan:DrawPrimitives(50, {
+					BoxFillPrimitive(screen, renderPos + box.Corner, renderPos + (Vector(box.Width, box.Height) / 2), 5),
+					BitmapPrimitive(screen, renderPos, button.Buildable.RenderPath, 0, false, false)
+				});
 
 				if self.SelectDelayTime:IsPastSimMS(200) then
 					if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
 						local createFunc = "Create" .. button.Buildable.BuildableClassName
 						local buildablePreset = _G[createFunc](button.Buildable.BuildablePresetName, button.Buildable.BuildableTechName);
 						buildablePreset.Team = entity.Team
-						buildablePreset.Pos = self.Menu.Cursor
+						buildablePreset.Pos = renderPos
 						MovableMan:AddParticle(buildablePreset)
 						self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(entity.Team) - button.Buildable.Cost, entity.Team)
 						self.ConfirmSound:Play(-1)
@@ -87,6 +96,7 @@ function BuilderBasic(self)
 		button.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
 				self.SelectDelayTime:Reset()
+				box = button.Buildable.RenderSize
 				isRemoving = false
 				self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
 				button.Buildable.Selected = true
@@ -117,7 +127,7 @@ function BuilderBasic(self)
 	end
 end
 
-function Update(self)
+function ThreadedUpdate(self)
 	if self:IsPlayerControlled() then
 		if self:NumberValueExists("BuilderMenu") then
 			self.Main = {}
