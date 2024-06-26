@@ -9,22 +9,25 @@ function Create(self)
 	local i = 1;
 	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret",
 									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+									  ["IconPos"] = Vector(0, -5),
 									  ["BuildablePresetName"] = "CED Plink Turret Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = true};
 	i = i + 1;
-	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret 2 Test",
+	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret 2\nTest",
 									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+									  ["IconPos"] = Vector(0, -5),
 									  ["BuildablePresetName"] = "CED Plink Turret Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = true};
 	i = i + 1;
-	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret 3 Test",
+	self.CEDAvailableBuildables[i] = {["DisplayName"] = "Plink Turret 3\nTest",
 									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+									  ["IconPos"] = Vector(0, -5),
 									  ["BuildablePresetName"] = "CED Plink Turret Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",

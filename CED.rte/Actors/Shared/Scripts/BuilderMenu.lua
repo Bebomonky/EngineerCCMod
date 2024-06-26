@@ -13,6 +13,8 @@ function Create(self)
 	self.PieMenu:AddPieSlice(CreatePieSlice("CED.rte/BuilderMenu"), self)
 
 	self.SelectDelayTime = Timer()
+
+	self.Activity = ActivityMan:GetActivity()
 end
 
 function BuilderBasic(self)
@@ -25,11 +27,17 @@ function BuilderBasic(self)
 	self.Main.Box:SetOutlineColor(71)
 	self.Main.Box:SetOutlineThickness(2)
 
+	--changes mouse bitmap,
+	local isRemoving = false
+
+	--Bitmap will be modifed so we need to make sure it's always default
+	self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
+
 	local rows = 4
 	for i = 1, #self.CEDAvailableBuildables do
 
 		local x = -5 + self.Main.Box:GetPos().X + ((i - 1) % rows + 1 - 1) * 60
-		local y = 7 + (math.floor((i - 1) / rows ) + 1 - 1) * 35
+		local y = 10 + (math.floor((i - 1) / rows ) + 1 - 1) * 35
 
 		local button = igui.Button()
 		button:SetName("Buildable " .. i)
@@ -37,7 +45,7 @@ function BuilderBasic(self)
 		button.Buildable.Selected = false
 		button:SetParent(self.Main.Box)
 		button:SetPos(Vector(x, y))
-		button:SetSize(Vector(49, 26))
+		button:SetSize(Vector(49, 49))
 		button:SetColor(146)
 		button:SetText(button.Buildable.DisplayName)
 		button:SetTextPos(Vector(0, 10))
@@ -48,10 +56,14 @@ function BuilderBasic(self)
 			button:SetOutlineColor(button.IsHovered and 117 or 144)
 			local world_pos = button.Parent.Pos + button:GetPos() + CameraMan:GetOffset(screen)
 			local parent_world_pos = button.Parent.Pos + CameraMan:GetOffset(screen)
-			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(15, 13), button.Buildable.IconPath, 0)
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
 
 			if not cursor_inside(parent_world_pos, button.Parent.Size) and button.Buildable.Selected then
+				if button.Buildable.SnapToGround then
+					self.Menu.Cursor = SceneMan:MovePointToGround(self.Menu.Cursor, 25, 25)
+				end
 				PrimitiveMan:DrawBitmapPrimitive(screen, self.Menu.Cursor, button.Buildable.IconPath, 0)
+
 				if self.SelectDelayTime:IsPastSimMS(200) then
 					if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
 						local createFunc = "Create" .. button.Buildable.BuildableClassName
@@ -59,31 +71,50 @@ function BuilderBasic(self)
 						buildablePreset.Team = entity.Team
 						buildablePreset.Pos = self.Menu.Cursor
 						MovableMan:AddParticle(buildablePreset)
+						self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(entity.Team) - button.Buildable.Cost, entity.Team)
+						self.ConfirmSound:Play(-1)
 						self.SelectDelayTime:Reset()
 						button.Buildable.Selected = false
 						print("Just placed the following: " .. button.Buildable.DisplayName);
 					end
 				end
 			end
+			if isRemoving then
+				button.Buildable.Selected = false
+			end
 		end
 	
 		button.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
 				self.SelectDelayTime:Reset()
+				isRemoving = false
+				self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
 				button.Buildable.Selected = true
 			end
 		end
 	end
 
-	local pbar = igui.ProgressBar()
-	pbar:SetName("MyFirstProgressBar")
-	pbar:SetParent(self.Main.Box)
-	pbar:SetPos(Vector(13, 70))
-	pbar:SetSize(Vector(100, 10))
-	pbar:SetBGColor(146)
-	pbar:SetFGColor(117)
-	pbar:SetOutlineColor(144)
-	pbar:SetDrawAfterParent(true)
+	local cancelButton = igui.Button()
+	cancelButton:SetName("Delete_Buildable")
+	cancelButton:SetParent(self.Main.Box)
+	cancelButton:SetPos(Vector(5, self.Main.Box.Size.Y - 20))
+	cancelButton:SetSize(Vector(26, 16))
+	cancelButton:SetColor(146)
+	cancelButton:SetText("Remove\nBuild")
+	cancelButton:SetTextPos(Vector(1, -4))
+	cancelButton:SetOutlineThickness(2)
+	cancelButton:SetOutlineColor(144)
+
+	cancelButton.Think = function(entity, screen)
+		cancelButton:SetOutlineColor(cancelButton.IsHovered and 117 or 144)
+	end
+
+	cancelButton.OnPress = function(key)
+		if key == Controller.PRIMARY_ACTION then
+			self.Menu.Cursor_Bitmap = "Mods/CED.rte/Actors/Shared/Sprites/Menus/CancelCursor.png"
+			isRemoving = true
+		end
+	end
 end
 
 function Update(self)
