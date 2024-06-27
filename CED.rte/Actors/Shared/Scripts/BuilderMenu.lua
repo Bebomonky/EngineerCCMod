@@ -51,6 +51,8 @@ function BuilderBasic(self)
 	local isHovering = false
 	--used for Distance between buttons, height
 	local posMultiplier = 85
+	local maxAltitude = 25
+	local maxRadius = 20
 
 	local function drawMenu()
 		for i = 1, #category do
@@ -149,8 +151,8 @@ function BuilderBasic(self)
 								local endPos = renderPos + size
 								local totalPixels = (endPos.X - startPos.X + 1) * (endPos.Y - startPos.Y + 1)
 								local nonAirPixels = 0
-
 								validPlacement = true
+
 								for x = startPos.X, endPos.X do
 									for y = startPos.Y, endPos.Y do
 										local terraCheck = SceneMan:GetTerrMatter(x, y)
@@ -163,8 +165,29 @@ function BuilderBasic(self)
 								local nonAirRatio = nonAirPixels / totalPixels
 								if nonAirRatio > tolerance then
 									validPlacement = false
-								else
-									validPlacement = true
+								end
+
+								local radius = math.abs(box.Corner.X)
+								local foundMO = nil
+								local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
+								for mo in MOs do
+									if mo then
+										if mo:IsInGroup("CED Buildables") then
+											foundMO = mo
+										end
+										if IsActor(mo) then
+											foundMO = mo
+										end
+									end
+								end
+
+								if foundMO then
+									validPlacement = false
+								end
+
+								--If we are floating it's invalid
+								if SceneMan:FindAltitude(renderPos, 0, 10) > maxAltitude then
+									validPlacement = false
 								end
 
 								PrimitiveMan:DrawPrimitives(50, {
