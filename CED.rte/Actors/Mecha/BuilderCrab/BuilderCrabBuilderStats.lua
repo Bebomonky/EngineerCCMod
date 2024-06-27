@@ -11,7 +11,18 @@ function Create(self)
 	self.CEDAvailableBuildables.Buildings = {};
 	self.CEDAvailableBuildables.Utility = {};
 	-------  FORTIFICATIONS  -------
-	
+	local i = 1;
+	self.CEDAvailableBuildables.Fortifications[i] = {["DisplayName"] = "CED Logo",
+									  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+									  ["IconPos"] = Vector(0, -5),
+									  ["RenderPath"] = "CED.rte/Buildables/GenericTerrainBuildable/GenericTerrainBuildable.png",
+									  ["RenderSize"] = Box(Vector(-40, -20), Vector(40, 20)),
+									  ["BuildablePresetName"] = "CED Generic Terrain Buildable",
+									  ["BuildableClassName"] = "MOSRotating",
+									  ["BuildableTechName"] = "CED",
+									  ["Cost"] = 50,
+									  ["SnapToGround"] = false};
+	i = i + 1;	
 	
 	-------  TURRETS  -------
 	local i = 1;
