@@ -38,7 +38,7 @@ function BuilderBasic(self)
 
 	local isRemoving = false
 	local renderPos = Vector()
-	local box = Box()
+	local box = nil
 	local validPlacement = false
 	local tolerance = 0.1
 
@@ -196,7 +196,7 @@ function BuilderBasic(self)
 								});
 
 								if self.SelectDelayTime:IsPastSimMS(200) then
-									if self.Menu.Controller then 
+									if self.Menu.Controller then
 										if self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
 											if validPlacement then
 												local createFunc = "Create" .. button.Buildable.BuildableClassName
@@ -288,11 +288,55 @@ function BuilderBasic(self)
 
 		self.cancel_button.Think = function(entity, screen)
 			self.cancel_button:SetOutlineColor(self.cancel_button.IsHovered and 117 or 144)
+
+			if isRemoving then
+				local MOs = MovableMan:GetMOsInRadius(self.Menu.Cursor, 15, -1, false)
+				for mo in MOs do
+					if mo then
+						if mo:IsInGroup("CED Buildables") then
+							local buildable = nil
+							for group in pairs(self.CEDAvailableBuildables) do
+								local category = self.CEDAvailableBuildables[group]
+								for _, item in pairs(category) do
+									if item.BuildablePresetName == mo.PresetName then
+										buildable = item
+										break
+									end
+								end
+							end
+							if buildable then
+								--Temp cursor snap
+								self.Menu.Cursor = mo.Pos
+
+								--I think it's a good idea to set it once instead of constantly
+								if box == nil then
+									box = buildable.RenderSize
+								end
+								local size = (Vector(box.Width, box.Height) / 2)
+								renderPos = mo.Pos
+								PrimitiveMan:DrawPrimitives(50, {
+									BoxFillPrimitive(screen, renderPos + box.Corner, renderPos + size, 13),
+								});
+
+								if self.Menu.Controller then 
+									if self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
+										self.ErrorSound:Play(-1)
+										self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
+										isRemoving = false
+										mo:SendMessage("CED_CancelBuildable")
+									end
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 
 		self.cancel_button.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
 				self.Menu.Cursor_Bitmap = "Mods/CED.rte/Actors/Shared/Sprites/Menus/CancelCursor.png"
+				box = nil
 				isRemoving = true
 			end
 		end
