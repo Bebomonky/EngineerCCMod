@@ -186,7 +186,7 @@ function BuilderBasic(self)
 								end
 
 								--If we are floating it's invalid
-								if SceneMan:FindAltitude(renderPos, 0, 10) > maxAltitude then
+								if SceneMan:FindAltitude(renderPos + size, 0, 10) > maxAltitude then
 									validPlacement = false
 								end
 
