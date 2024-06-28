@@ -51,7 +51,6 @@ function BuilderBasic(self)
 	local isHovering = false
 	--used for Distance between buttons, height
 	local posMultiplier = 85
-	local maxAltitude = 25
 	local maxRadius = 20
 
 	local function drawMenu()
@@ -186,7 +185,7 @@ function BuilderBasic(self)
 								end
 
 								--If we are floating it's invalid
-								if SceneMan:FindAltitude(renderPos + size, 0, 10) > maxAltitude then
+								if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
 									validPlacement = false
 								end
 

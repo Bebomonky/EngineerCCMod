@@ -20,6 +20,7 @@ function Create(self)
 									  ["BuildablePresetName"] = "CED Generic Terrain Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
+									  ["MaxAltitude"] = 25,
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = false};
 	i = i + 1;	
@@ -34,6 +35,7 @@ function Create(self)
 									  ["BuildablePresetName"] = "CED Plink Turret Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
+									  ["MaxAltitude"] = 25,
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = true};
 	i = i + 1;
@@ -49,6 +51,7 @@ function Create(self)
 									  ["BuildablePresetName"] = "CED Atmospheric Coagulator Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
+									  ["MaxAltitude"] = 57,
 									  ["Cost"] = 100,
 									  ["SnapToGround"] = true};	
 	i = i + 1;

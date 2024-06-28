@@ -23,6 +23,7 @@ function Create(self)
 									  ["BuildablePresetName"] = "CED Plink Turret Buildable",
 									  ["BuildableClassName"] = "MOSRotating",
 									  ["BuildableTechName"] = "CED",
+									  ["MaxAltitude"] = 25,
 									  ["Cost"] = 50,
 									  ["SnapToGround"] = true};
 	i = i + 1;
