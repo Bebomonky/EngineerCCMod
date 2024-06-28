@@ -150,7 +150,7 @@ function ThreadedUpdate(self)
 			end
 		end
 				
-		self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or self.HEATReloadPhaseOnInterrupt;
+		self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or nil;
 		
 		if self.HEATEnterPhaseCallbackDone ~= true then
 			self.HEATEnterPhaseCallbackDone = true;
