@@ -99,7 +99,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Test Shotgun", "CED.rte");
 	reloadPhase.afterDelay = 200;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
-	reloadPhase.reloadSupportOffsetSpeed = 10;
+	reloadPhase.reloadSupportOffsetSpeed = 7;
 	reloadPhase.reloadSupportOffsetTarget = Vector(2, 2)
 	reloadPhase.rotationTarget = 20;
 	reloadPhase.angVel = 0;
@@ -303,8 +303,8 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Test Shotgun", "CED.rte");
 	reloadPhase.afterDelay = 350;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
-	reloadPhase.reloadSupportOffsetSpeed = 10;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-2, 0)
+	reloadPhase.reloadSupportOffsetSpeed = 7;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-2, 2)
 	reloadPhase.rotationTarget = -5;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
