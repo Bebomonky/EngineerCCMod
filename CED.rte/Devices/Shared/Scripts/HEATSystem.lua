@@ -26,7 +26,30 @@ function Create(self)
 	self.HEATReloadTimer = Timer();
 	self.HEATCurrentReloadPhase = 1;
 	
-	self.BaseReloadTime = 19999;
+	self.HEATTotalFullReloadTime = self.HEATTotalFullReloadTimeOverride or nil;
+	self.HEATTotalEmptyReloadTime = self.HEATTotalEmptyReloadTimeOverride or nil;
+	
+	-- Autocalculate best guesses
+	-- Probably a neater way to do this without 2 loops...
+	if not self.HEATTotalFullReloadTime then
+		local totalFullTime = 0;
+		for i = 1, #self.HEATReloadPhases do
+			totalFullTime = totalFullTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
+			if self.HEATReloadPhases[i].endIfNotEmptyReload then
+				break;
+			end
+		end
+		self.HEATTotalFullReloadTime = totalFullTime + 1;
+	end
+	if not self.HEATTotalEmptyReloadTime then
+		local totalEmptyTime = 0;
+		for i = 1, #self.HEATReloadPhases do
+			totalEmptyTime = totalEmptyTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
+		end	
+		self.HEATTotalEmptyReloadTime = totalEmptyTime + 1;
+	end
+	
+	self.BaseReloadTime = self.HEATTotalFullReloadTime;
 	
 	self.HEATFireDelayTimer = Timer();
 	self.HEATDelayedFire = false
@@ -36,7 +59,7 @@ function Create(self)
 	self.HEATFiringAnimationTimer = Timer();
 end
 
-function Update(self)
+function ThreadedUpdate(self)
 	self.Frame = 0;
 	self.HEATRotationTarget = 0
 	
@@ -107,7 +130,27 @@ function Update(self)
 			end	
 		end
 		
-		self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or self.HEATCurrentReloadPhase;
+		if self.HEATWasInterrupted then
+			self.HEATWasInterrupted = false;
+			-- Autocalculate best guesses again so we can keep it accurate
+			local totalTime = 0;
+			if self.HEATEmptyReload then
+				for i = self.HEATCurrentReloadPhase, #self.HEATReloadPhases do
+					totalTime = totalTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
+				end	
+				self.BaseReloadTime = totalTime + 1;
+			else
+				for i = self.HEATCurrentReloadPhase, #self.HEATReloadPhases do
+					totalTime = totalTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
+					if self.HEATReloadPhases[i].endIfNotEmptyReload then
+						break;
+					end
+				end
+				self.BaseReloadTime = totalTime + 1;
+			end
+		end
+				
+		self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or self.HEATReloadPhaseOnInterrupt;
 		
 		if self.HEATEnterPhaseCallbackDone ~= true then
 			self.HEATEnterPhaseCallbackDone = true;
@@ -143,7 +186,7 @@ function Update(self)
 			
 			if self.HEATAfterSoundPlayed ~= true then
 			
-				if self.HEATCurrentReloadPhaseData.removesMag then
+				if self.HEATCurrentReloadPhaseData.removesMag and not self:NumberValueExists("HEAT_FakeMagRemoved") then
 					self:SetNumberValue("HEAT_FakeMagRemoved", 1);
 					local fakeMag
 					fakeMag = self.HEATFakeMagazineMOSRotating:Clone();
@@ -164,6 +207,16 @@ function Update(self)
 				self.HEATAfterSoundPlayed = true;
 				if self.HEATCurrentReloadPhaseData.afterSound then
 					self.HEATCurrentReloadPhaseData.afterSound:Play(self.Pos);
+					
+					if not self.HEATReloadPhaseOnInterrupt then
+						if self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted and not ((not self.HEATEmptyReload) and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload) then
+							if type(self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted) == "number" then
+								self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted;
+							else
+								self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhase + 1;
+							end
+						end
+					end			
 				end
 				
 				self.HEATCurrentReloadPhaseData.finishCallback(self);
@@ -175,31 +228,27 @@ function Update(self)
 				self.HEATPrepareSoundPlayed = false;
 				self.HEATAfterSoundPlayed = false;
 				
-				self.HEATReloadPhaseOnInterrupt = nil;
+				self.HEATEnterPhaseCallbackDone = false;
+				self.HEATExitPhaseCallbackDone = false;
 				
-				if not self.HEATEmptyReload and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload then
+				if self.HEATReloadPhaseOverride then
+					self.HEATCurrentReloadPhase = self.HEATReloadPhaseOverride;
+					self.HEATReloadPhaseOverride = nil;
+				elseif not self.HEATEmptyReload and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload then
 					self.HEATCurrentReloadPhase = 1;
 					self.HEATReloadStanceOffsetTarget = Vector(0, 0);
 					self.HEATReloadSupportOffsetTarget = Vector(0, 0);
 					
-					self.HEATReloadPhaseOverride = nil;
-					
-					self.HEATEnterPhaseCallbackDone = true;
-					self.HEATExitPhaseCallbackDone = true;
+					self.HEATReloadPhaseOnInterrupt = nil;
 					
 					self.BaseReloadTime = 0;
-				elseif self.HEATReloadPhaseOverride then
-					self.HEATCurrentReloadPhase = self.HEATReloadPhaseOverride;
-					self.HEATReloadPhaseOverride = nil;
+					
 				elseif self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
 					self.HEATCurrentReloadPhase = 1;
 					self.HEATReloadStanceOffsetTarget = Vector(0, 0);
 					self.HEATReloadSupportOffsetTarget = Vector(0, 0);
 					
-					self.HEATReloadPhaseOverride = nil;
-					
-					self.HEATEnterPhaseCallbackDone = true;
-					self.HEATExitPhaseCallbackDone = true;
+					self.HEATReloadPhaseOnInterrupt = nil;
 					
 					self.BaseReloadTime = 0;
 				else
@@ -207,18 +256,29 @@ function Update(self)
 				end
 				
 				self.HEATCurrentReloadPhaseData.exitPhaseCallback(self);
-				self.HEATCurrentReloadPhaseData = nil;
-				
+				self.HEATCurrentReloadPhaseData = nil;			
 			end
 		end
 	else
-		self.BaseReloadTime = 19999;
+		if self.BaseReloadTime == 0 then
+			self.BaseReloadTime = self.HEATTotalFullReloadTime;
+		end
+	
+		self.HEATCurrentReloadPhaseData = nil;
+		self.HEATPrepareSoundPlayed = false;
+		self.HEATAfterSoundPlayed = false;
 		
 		self.HEATReloadTimer:Reset();
 		if self.HEATReloadPhaseOnInterrupt then
 			self.HEATCurrentReloadPhase = self.HEATReloadPhaseOnInterrupt;
 			self.HEATReloadPhaseOnInterrupt = nil;
+			self.HEATWasInterrupted = true;
 		end
+	
+		self.HEATCurrentReloadPhaseData = nil;
+		self.HEATPrepareSoundPlayed = false;
+		self.HEATAfterSoundPlayed = false;	
+		
 	end
 	
 	if self:DoneReloading() == true then
@@ -272,6 +332,7 @@ function Update(self)
 		if self.RoundInMagCount > 0 then
 		else
 			self.HEATEmptyReload = true;
+			self.BaseReloadTime = self.HEATTotalEmptyReloadTime;
 		end
 		
 		for i = 1, 3 do

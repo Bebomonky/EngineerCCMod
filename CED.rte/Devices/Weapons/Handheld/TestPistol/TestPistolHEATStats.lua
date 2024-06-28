@@ -16,6 +16,9 @@ function Create(self)
 	self.HEATPlusOneChamberedRound = true;
 	self.HEATFullMagazineRoundCount = 10; -- This is needed to avoid painful things like having to save the magazine roundcount in case of save/loading mid-reload etc.
 	
+	self.HEATTotalFullReloadTime = 1131;
+	self.HEATTotalEmptyReloadTime = 1906;
+	
 	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Test Pistol", "CED.rte");
 	-- Ignore FlipFactor here, it is handled automatically
 	self.HEATFakeMagazineOffset = Vector(-4, 2);
@@ -34,6 +37,7 @@ function Create(self)
 	reloadPhase.Name = "MagOut";
 	reloadPhase.removesMag = true;
 	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = true;
 	reloadPhase.prepareSound = CreateSoundContainer("Mag Out Prepare CED Test Pistol", "CED.rte");
 	reloadPhase.prepareDelay = 100;
 	reloadPhase.prepareSoundLength = 140;
@@ -71,6 +75,7 @@ function Create(self)
 	reloadPhase.Name = "MagIn";
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = true;
+	reloadPhase.autoProgressIfFinishedButInterrupted = true;
 	reloadPhase.prepareSound = CreateSoundContainer("Mag In Prepare CED Test Pistol", "CED.rte");
 	reloadPhase.prepareDelay = 630;
 	reloadPhase.prepareSoundLength = 550;
@@ -108,6 +113,7 @@ function Create(self)
 	reloadPhase.Name = "BoltBack";
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = CreateSoundContainer("Bolt Back Prepare CED Test Pistol", "CED.rte");
 	reloadPhase.prepareDelay = 250;
 	reloadPhase.prepareSoundLength = 220;
@@ -145,6 +151,7 @@ function Create(self)
 	reloadPhase.Name = "BoltForward";
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = nil;
 	reloadPhase.prepareDelay = 175;
 	reloadPhase.prepareSoundLength = 0;
