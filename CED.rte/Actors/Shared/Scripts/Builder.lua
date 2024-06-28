@@ -15,7 +15,7 @@ function ThreadedUpdate(self)
 	
 	local foundAnyMO = false;
 	for mo in MovableMan:GetMOsInRadius(self.Pos, self.CEDBuildRange, self.Team) do
-		if mo:IsInGroup("CED Buildables") then
+		if mo:IsInGroup("CED - Buildables") then
 			foundAnyMO = true;
 			if self.closestMO and MovableMan:ValidMO(self.closestMO) then
 				if self.closestMO.UniqueID ~= mo.UniqueID and SceneMan:ShortestDistance(self.Pos, mo.Pos, SceneMan.SceneWrapsX).Magnitude	< self.closestDistance.Magnitude then

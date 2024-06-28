@@ -167,25 +167,24 @@ function BuilderBasic(self)
 								end
 
 								local radius = math.abs(box.Corner.X)
-								local foundMO = nil
+								local foundActors = 0;
 								local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
 								for mo in MOs do
 									if mo then
-										if mo:IsInGroup("CED Buildables") then
-											foundMO = mo
+										if mo:IsInGroup("CED - Buildables") or mo:IsInGroup("CED - Buildings") then
+											validPlacement = false;
 										end
 										if IsActor(mo) then
-											foundMO = mo
+											foundActors = foundActors + 1;
+											if foundActors == 3 then
+												validPlacement = false;
+											end
 										end
 									end
 								end
 
-								if foundMO then
-									validPlacement = false
-								end
-
-								--If we are floating it's invalid
-								if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
+								--If we are floating and meant to snap to ground, it's invalid
+								if button.Buildable.SnapToGround and SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
 									validPlacement = false
 								end
 
@@ -292,7 +291,7 @@ function BuilderBasic(self)
 				local MOs = MovableMan:GetMOsInRadius(self.Menu.Cursor, 15, -1, false)
 				for mo in MOs do
 					if mo then
-						if mo:IsInGroup("CED Buildables") then
+						if mo:IsInGroup("CED - Buildables") then
 							local buildable = nil
 							for group in pairs(self.CEDAvailableBuildables) do
 								local category = self.CEDAvailableBuildables[group]
