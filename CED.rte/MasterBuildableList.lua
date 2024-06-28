@@ -44,5 +44,17 @@ CEDMasterBuildableList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagu
 								  ["MaxAltitude"] = 57,
 								  ["Cost"] = 100,
 								  ["SnapToGround"] = true};	
+								  
+CEDMasterBuildableList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
+								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["RenderPath"] = "CED.rte/Buildings/Supercomputer/Supercomputer.png",
+								  ["RenderSize"] = Box(Vector(-50, -50), Vector(50, 50)),
+								  ["BuildablePresetName"] = "CED Supercomputer Buildable",
+								  ["BuildableClassName"] = "MOSRotating",
+								  ["BuildableTechName"] = "CED",
+								  ["MaxAltitude"] = 57,
+								  ["Cost"] = 500,
+								  ["SnapToGround"] = true};	
 
 -------  UTILITY  -------
