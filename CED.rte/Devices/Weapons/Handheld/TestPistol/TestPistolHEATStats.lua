@@ -9,28 +9,37 @@ function Create(self)
 	
 	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Test Pistol", "CED.rte");
 	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Test Pistol", "CED.rte");
+	
+	self.HEATFireCallback = function (self)
+		
+	end
 
 	-- Reload system
 	self.useHEATReload = true;
 	
 	self.HEATPlusOneChamberedRound = true;
-	self.HEATFullMagazineRoundCount = 10; -- This is needed to avoid painful things like having to save the magazine roundcount in case of save/loading mid-reload etc.
+	self.HEATFullMagazineRoundCount = 10;
 	
-	self.HEATTotalFullReloadTime = 1131;
-	self.HEATTotalEmptyReloadTime = 1906;
+	self.HEATStageAfterEveryShot = false;
+	
+	self.HEATTotalFullReloadTimeOverride = 1131;
+	self.HEATTotalEmptyReloadTimeOverride = 1906;
+	
+	-- Ignore FlipFactor here, it is handled automatically
+	self.HEATCasing = nil;
+	self.HEATCasingOffset = Vector(0, 0);
+	self.HEATCasingVelocity = Vector(0, 0);
 	
 	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Test Pistol", "CED.rte");
-	-- Ignore FlipFactor here, it is handled automatically
 	self.HEATFakeMagazineOffset = Vector(-4, 2);
 	self.HEATFakeMagazineVelocity = Vector(0.5, 2);
 	self.HEATFakeMagazineAngularVel = -1;
 	
 	-- During callbacks, you have access to self.
-	-- Notable variables:
-	-- HEATAmmoCounter
-	-- 
 	
 	self.HEATReloadPhases = {};
+	
+	------------------------------------------------------------------------------		
 	
 	local i = 1;
 	local reloadPhase = {};
@@ -55,6 +64,8 @@ function Create(self)
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		
 	end
@@ -69,6 +80,8 @@ function Create(self)
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
 	
 	i = i + 1;
 	reloadPhase = {};
@@ -93,6 +106,8 @@ function Create(self)
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = true;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		
 	end
@@ -107,6 +122,8 @@ function Create(self)
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
 	
 	i = i + 1;
 	reloadPhase = {};
@@ -131,6 +148,8 @@ function Create(self)
 	reloadPhase.endFrame = 2;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		
 	end
@@ -145,6 +164,8 @@ function Create(self)
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
 	
 	i = i + 1;
 	reloadPhase = {};
@@ -169,6 +190,8 @@ function Create(self)
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = 3;
 	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		
 	end
@@ -184,6 +207,7 @@ function Create(self)
 	
 	self.HEATReloadPhases[i] = reloadPhase;
 
+	------------------------------------------------------------------------------	
 	
 	-- Recoil system
 	self.useHEATRecoil = true;
