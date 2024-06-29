@@ -67,7 +67,6 @@ function Create(self)
 	self.HEATFullMagazineRoundCount = 5;
 	
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
-	-- This starts at phase 1 always, unless overriden in the FireCallback.
 	self.HEATStageAfterEveryShot = true;
 	-- Phase to go to if the above is true, and triggered during regular gunfire where the gun isn't emptied.
 	-- Useful to skip your reloading first phase to go to, for example, a pumping second and third phase.
