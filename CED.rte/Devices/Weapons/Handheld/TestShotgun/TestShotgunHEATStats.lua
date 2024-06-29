@@ -4,8 +4,11 @@ function Create(self)
 	self.useHEATFiringAnimation = false;
 	
 	self.HEATFiringAnimationEndFrame = 0;
+	self.HEATLockBackOnEmpty = false;
 	
 	-- CompliSound atmo firing sound system
+	
+	self.useHEATCompliSound = true;
 	
 	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Test Shotgun", "CED.rte");
 	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Test Shotgun", "CED.rte");
@@ -59,7 +62,7 @@ function Create(self)
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
-	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -99,7 +102,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Test Shotgun", "CED.rte");
 	reloadPhase.afterDelay = 200;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
-	reloadPhase.reloadSupportOffsetSpeed = 7;
+	reloadPhase.reloadSupportOffsetSpeed = 6;
 	reloadPhase.reloadSupportOffsetTarget = Vector(2, 2)
 	reloadPhase.rotationTarget = 20;
 	reloadPhase.angVel = 0;
@@ -121,12 +124,7 @@ function Create(self)
 		else
 			self.HEATRotationTarget = (5 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
 		end
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			local progressFactor = (self.HEATReloadTimer.ElapsedSimTimeMS - self.HEATCurrentReloadPhaseData.prepareDelay) / (self.HEATCurrentReloadPhaseData.afterDelay)
-			if progressFactor > 1 then
-				progressFactor = 1;
-			end			
-		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + 150) then
 			self.HEATReloadSupportOffsetTarget.X = -2
 		end		
 	end

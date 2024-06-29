@@ -4,8 +4,11 @@ function Create(self)
 	self.useHEATFiringAnimation = true;
 	
 	self.HEATFiringAnimationEndFrame = 2;
+	self.HEATLockBackOnEmpty = false;
 	
 	-- CompliSound atmo firing sound system
+	
+	self.useHEATCompliSound = true;
 	
 	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Test Pistol", "CED.rte");
 	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Test Pistol", "CED.rte");
@@ -59,7 +62,7 @@ function Create(self)
 	reloadPhase.angVel = 2;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 1;
-	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -101,7 +104,7 @@ function Create(self)
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = -1;
-	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
 	reloadPhase.phaseOnInterrupt = nil;
