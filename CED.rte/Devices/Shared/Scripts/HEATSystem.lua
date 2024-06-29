@@ -169,6 +169,8 @@ function Create(self)
 	self.HEATRecoilAcc = 0
 	-- Mathemagical recoil variable. Shouldn't be messed with.
 	self.HEATRecoilStr = 0
+	
+	
 end
 
 function ThreadedUpdate(self)
@@ -216,7 +218,22 @@ function ThreadedUpdate(self)
 			self.HEATDelayedFire = false
 		end
 		self.HEATFireDelayTimer:Reset()
+		
+		self.HEATCurrentReloadPhaseData = nil;
+		self.HEATPrepareSoundPlayed = false;
+		self.HEATPhaseFinishDone = false;
+		
 		self.HEATReloadTimer:Reset();
+		if self.HEATReloadPhaseOnInterrupt then
+			self.HEATCurrentReloadPhase = self.HEATReloadPhaseOnInterrupt;
+			self.HEATReloadPhaseOnInterrupt = nil;
+			self.HEATWasInterrupted = true;
+		end
+	
+		self.HEATCurrentReloadPhaseData = nil;
+		self.HEATPrepareSoundPlayed = false;
+		self.HEATPhaseFinishDone = false;
+			
 	end
 	self.HEATLastAge = self.Age + 0
 	
@@ -271,7 +288,9 @@ function ThreadedUpdate(self)
 				end
 			end
 					
-			self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or nil;
+			if not self.HEATReloadPhaseOnInterrupt then
+				self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.phaseOnInterrupt or nil;
+			end
 			
 			if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay - self.HEATCurrentReloadPhaseData.prepareSoundLength) and self.HEATPrepareSoundPlayed ~= true then
 				self.HEATPrepareSoundPlayed = true;
@@ -299,6 +318,7 @@ function ThreadedUpdate(self)
 				-- Frame animation
 				if self.HEATCurrentReloadPhaseData.autoAnimateFrames then
 					local progressFactor = (self.HEATReloadTimer.ElapsedSimTimeMS - self.HEATCurrentReloadPhaseData.prepareDelay) / self.HEATCurrentReloadPhaseData.afterDelay
+					progressFactor = self.HEATCurrentReloadPhaseData.easingFunction(progressFactor);
 					if progressFactor > 1 then
 						progressFactor = 1;
 					end			
@@ -357,7 +377,7 @@ function ThreadedUpdate(self)
 								self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhase + 1;
 							end
 						end
-					end		
+					end
 				
 					self.HEATPhaseFinishDone = true;
 					if self.HEATCurrentReloadPhaseData.afterSound then
@@ -394,6 +414,7 @@ function ThreadedUpdate(self)
 						self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
 					end
 					
+					self.HEATReloadPhaseOnInterrupt = nil;
 					self.HEATReloadPhaseOverride = nil;
 					self.HEATForceEndReload = false;
 					self.HEATManualInterruptionAttempted = false;
@@ -419,7 +440,7 @@ function ThreadedUpdate(self)
 		
 			self.HEATCurrentReloadPhaseData = nil;
 			self.HEATPrepareSoundPlayed = false;
-			self.HEATPhaseFinishDone = false;	
+			self.HEATPhaseFinishDone = false;
 			
 		end
 	
@@ -485,6 +506,7 @@ function ThreadedUpdate(self)
 		
 		if self.HEATStageAfterEveryShot then
 			self.HEATNonReloadStaging = true;
+			self.HEATCurrentReloadPhase = self.HEATPhaseAfterFiringIfNotReloading or 1;
 		end
 		
 		if self.RoundInMagCount > 0 then

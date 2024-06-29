@@ -17,6 +17,14 @@ function Create(self)
 	----------------- General
 	-----------------
 	
+	-- Easing functions. They have to be here so they're defined by the time you use them in reload phases.
+	self.HEATEaseLinear = function (x)
+		return x;
+	end
+	self.HEATEaseOutCubic = function (x)
+		return 1 - math.pow(1 - x, 3);
+	end
+	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
 		
@@ -63,15 +71,18 @@ function Create(self)
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
 	-- This starts at phase 1 always, unless overriden in the FireCallback.
 	self.HEATStageAfterEveryShot = false;
+	-- Phase to go to if the above is true, and triggered during regular gunfire where the gun isn't emptied.
+	-- Useful to skip your reloading first phase to go to, for example, a pumping second and third phase.
+	self.HEATPhaseAfterFiringIfNotReloading = nil;
 	
 	-- Override for the ReloadTime when reloading with rounds still in the magazine.
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
 	-- Make sure not to set these two variables lower than the actual time that will be taken or it will end the reload prematurely
 	-- and break things.
-	self.HEATTotalFullReloadTimeOverride = 1131;
+	self.HEATTotalFullReloadTimeOverride = nil;
 	-- Override for the ReloadTime when reloading from empty.
 	-- Autocalculated using all phases if nil here. Relevant only for the progress bar.
-	self.HEATTotalEmptyReloadTimeOverride = 1906;
+	self.HEATTotalEmptyReloadTimeOverride = nil;
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = nil;
@@ -129,12 +140,14 @@ function Create(self)
 	reloadPhase.horizontalAnim = 0;
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
 	reloadPhase.verticalAnim = 1;
-	-- Whether to linearly animate between the frames specified below, between this phase finishing and exiting.
+	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
 	reloadPhase.startFrame = 0;
 	-- End frame of the auto animation.
 	reloadPhase.endFrame = 0;
+	-- Easing function to use. You could define your own here if you really wanted.
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
 	reloadPhase.phaseOnInterrupt = nil;
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
@@ -186,6 +199,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = true;
 	reloadPhase.shotgunReloadLoop = false;
@@ -228,6 +242,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 2;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -270,6 +285,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 2;
 	reloadPhase.endFrame = 0;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = 3;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;

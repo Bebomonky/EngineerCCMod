@@ -17,9 +17,16 @@ function Create(self)
 	----------------- General
 	-----------------
 	
+	-- Easing functions. They have to be here so they're defined by the time you use them in reload phases.
+	self.HEATEaseLinear = function (x)
+		return x;
+	end
+	self.HEATEaseOutCubic = function (x)
+		return 1 - math.pow(1 - x, 3);
+	end
+	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
-		self.HEATCurrentReloadPhase = 2;
 	end
 
 	-----------------
@@ -62,6 +69,9 @@ function Create(self)
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
 	-- This starts at phase 1 always, unless overriden in the FireCallback.
 	self.HEATStageAfterEveryShot = true;
+	-- Phase to go to if the above is true, and triggered during regular gunfire where the gun isn't emptied.
+	-- Useful to skip your reloading first phase to go to, for example, a pumping second and third phase.
+	self.HEATPhaseAfterFiringIfNotReloading = 2;
 	
 	-- Override for the ReloadTime when reloading with rounds still in the magazine.
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
@@ -128,12 +138,14 @@ function Create(self)
 	reloadPhase.horizontalAnim = 0;
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
 	reloadPhase.verticalAnim = 0;
-	-- Whether to linearly animate between the frames specified below, between this phase finishing and exiting.
+	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
 	reloadPhase.startFrame = 0;
 	-- End frame of the auto animation.
 	reloadPhase.endFrame = 0;
+	-- Easing function to use. You could define your own here if you really wanted.
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
 	reloadPhase.phaseOnInterrupt = nil;
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
@@ -189,6 +201,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 3;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = true;
 	reloadPhase.shotgunReloadLoop = false;
@@ -246,6 +259,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 3;
 	reloadPhase.endFrame = 5;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -288,6 +302,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 5;
 	reloadPhase.endFrame = 0;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -296,15 +311,20 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
+		self.Frame = 5;
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
 			local progressFactor = (self.HEATReloadTimer.ElapsedSimTimeMS - self.HEATCurrentReloadPhaseData.prepareDelay) / (self.HEATCurrentReloadPhaseData.afterDelay)
+			progressFactor = self.HEATEaseOutCubic(progressFactor)
 			if progressFactor > 1 then
 				progressFactor = 1;
-			end			
-		
-			self.Frame = math.floor(5 + math.floor(3 * progressFactor, 0.55))
-			if self.Frame == 8 then
+			end
+			
+			-- Done this way because self.Frame actually -1's itself if it's above FrameCount
+			local frame = math.floor(5 + math.floor(4 * progressFactor))
+			if frame == 8 then
 				self.Frame = 0;
+			else
+				self.Frame = math.floor(5 + math.floor(4 * progressFactor))
 			end
 			self.HEATReloadSupportOffsetTarget.X = 4;
 		end
@@ -335,7 +355,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Round In CED Test Shotgun", "CED.rte");
 	reloadPhase.afterDelay = 380;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
-	reloadPhase.reloadSupportOffsetSpeed = 10;
+	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 5)
 	reloadPhase.rotationTarget = 15;
 	reloadPhase.angVel = 0;
@@ -344,6 +364,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = true;
@@ -354,7 +375,7 @@ function Create(self)
 	reloadPhase.constantCallback = function (self)
 		self.HEATRotationTarget = 15 + (5 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATReloadSupportOffsetTarget.Y = -1;
+			self.HEATReloadSupportOffsetTarget.Y = 0;
 		end		
 	end
 	reloadPhase.finishCallback = function (self)
@@ -388,6 +409,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 3;
 	reloadPhase.endFrame = 0;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
