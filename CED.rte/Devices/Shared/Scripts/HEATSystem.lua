@@ -1,42 +1,113 @@
 function Create(self)
+
+	-----------------
+	----------------- HEAT system
+	-----------------
+	
+	-- Please refer to the HEATStats for usage information.
+	-- These variables are all commented so you can meddle with them in callbacks,
+	-- but simple usage doesn't require you to know anything in here.
+	
+	-----------------
+	----------------- Utility
+	-----------------
+
+	-- Actor holding us.
 	self.HEATParent = nil;
+	-- Whether we set the actor holding us or not.
 	self.HEATParentSet = false;
-	
+	-- Last saved Age of us. Used to check if we were hidden away in an inventory or otherwise disabled from the simulation for a while.
 	self.HEATLastAge = self.Age
-	
-	self.HEATOriginalSharpLength = self.SharpLength
-	self.HEATOriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y)
-	self.HEATOriginalSharpStanceOffset = Vector(self.SharpStanceOffset.X, self.SharpStanceOffset.Y)
-	self.HEATOriginalSupportOffset = Vector(self.SupportOffset.X, self.SupportOffset.Y)
-	
-	self.HEATRotation = 0
-	self.HEATRotationTarget = 0
-	self.HEATRotationSpeed = 9
-	self.HEATHorizontalAnim = 0
-	self.HEATVerticalAnim = 0
-	self.HEATAngVel = 0
-	self.HEATLastRotAngle = self.RotAngle
+	-- Our HFLipped last frame. Used to prevent rotational animation from flipping out.
 	self.HEATLastHFlipped = self.HFlipped
 	
+	-----------------
+	----------------- Original values
+	-----------------
+	
+	-- Original SharpLength.
+	self.HEATOriginalSharpLength = self.SharpLength
+	-- Original StanceOffset.
+	self.HEATOriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y)
+	-- Original SharpStanceOffset.
+	self.HEATOriginalSharpStanceOffset = Vector(self.SharpStanceOffset.X, self.SharpStanceOffset.Y)
+	-- Original SupportOffset.
+	self.HEATOriginalSupportOffset = Vector(self.SupportOffset.X, self.SupportOffset.Y)
+	
+	-----------------
+	----------------- Animation
+	-----------------
+	
+	-- Our current rotation.
+	self.HEATRotation = 0
+	-- The rotation we want to get to.
+	self.HEATRotationTarget = 0
+	-- The speed at which we rotate towards our RotationTarget.
+	self.HEATRotationSpeed = 9
+	-- Horizontal offset to SupportOffset, used for transient "kick" effects.
+	self.HEATHorizontalAnim = 0
+	-- Vertical offset to SupportOffset, used for transient "kick" effects.
+	self.HEATVerticalAnim = 0
+	-- Rotational "velocity" with which to affect our Rotation, used for transient "kick" effects.
+	self.HEATAngVel = 0
+	-- Our RotAngle last frame.
+	self.HEATLastRotAngle = self.RotAngle
+	-- Persistent frame to set, overriding fire animation, but not overriding reload animation.
+	-- Used in the case of locking back, but could be used manually too.
+	self.HEATPersistentFrame = nil;
+	-- StanceOffset used during reloading.
 	self.HEATReloadStanceOffset = Vector(0, 0);
+	-- Target we want to get to for our ReloadStanceOffset.
 	self.HEATReloadStanceOffsetTarget = Vector(0, 0)
+	-- Speed at which we get to our ReloadSupportOffset target.
 	self.HEATReloadSupportOffsetSpeed = 16
+	-- Target we want to get to for our ReloadSupportOffset.
 	self.HEATReloadSupportOffsetTarget = Vector(0, 0);
 	
-	self.HEATReloadTimer = Timer();
-	self.HEATCurrentReloadPhase = 1;
+	-----------------
+	----------------- Reload
+	-----------------	
 	
+	-- Timer for the reload system.
+	self.HEATReloadTimer = Timer();
+	-- Whether we expended all rounds before reloading. Reset upon reload end.
+	self.HEATEmptyReload = false;
+	-- Whether to engage the staged reload system without actually reloading. Used for pump-actions, bolt-actions, etc.
+	self.HEATNonReloadStaging = false;
+	-- Whether we've done the enterPhaseCallback this phase or not. Shouldn't be messed with.
+	self.HEATEnterPhaseCallbackDone = false;
+	-- Whether we've played the prepareSound this phase or not. Shouldn't be messed with.
+	self.HEATPrepareSoundPlayed = false;
+	-- Whether the phase finishing logic was done this phase or not. Shouldn't be messed with.
+	self.HEATPhaseFinishDone = false;
+	-- Whether the fire button was pressed this reload phase. Doesn't do anything automatically except in the case of shotgun reload loops.
+	self.HEATManualInterruptionAttempted = false;
+	-- The reload phase we're currently at.
+	self.HEATCurrentReloadPhase = 1;
+	-- Active data for our current phase.
+	self.HEATCurrentReloadPhaseData = nil;
+	-- Phase to set to return to later if our current reload is interrupted.
+	self.HEATReloadPhaseOnInterrupt = nil;
+	-- Whether we've had our reload interrupted previously, and have had to set a PhaseOnInterrupt.
+	self.HEATWasInterrupted = false;
+	-- Override for the next phase to progress to. Ignores all other logic except ForceEndReload.
+	self.HEATReloadPhaseOverride = nil;
+	-- Forces the reload to end upon current phase exit no matter what.
+	self.HEATForceEndReload = false;
+	-- Internal ammo counter used in the case of shotgun-style reloads.
+	-- Grabs it from our magazine if we have one and it's different from the FullMagazineRoundCount, but the saved value overrides it if it exists.
 	self.HEATAmmoCounter = (self.Magazine and self.Magazine.RoundCount ~= self.HEATFullMagazineRoundCount) and self.Magazine.RoundCount or self.HEATFullMagazineRoundCount;
 	if self:NumberValueExists("heatAmmoCounter") then
 		self.HEATAmmoCounter = self:GetNumberValue("heatAmmoCounter");
 		self:RemoveNumberValue("heatAmmoCounter");
 	end
-	
+	-- The time it should take us to do a reload with rounds still in the magazine.
+	-- Relevant only to the progress bar.
 	self.HEATTotalFullReloadTime = self.HEATTotalFullReloadTimeOverride or nil;
+	-- The time it should take us to do a reload without any rounds in the magazine.
+	-- Relevant only to the progress bar.
 	self.HEATTotalEmptyReloadTime = self.HEATTotalEmptyReloadTimeOverride or nil;
-	
-	-- Autocalculate best guesses
-	-- Probably a neater way to do this without 2 loops...
+	-- If there weren't any Overrides set in the Stats, then autocalculate best guesses.
 	if not self.HEATTotalFullReloadTime then
 		local totalFullTime = 0;
 		for i = 1, #self.HEATReloadPhases do
@@ -54,12 +125,11 @@ function Create(self)
 		end	
 		self.HEATTotalEmptyReloadTime = totalEmptyTime + 1;
 	end
-	
 	self.BaseReloadTime = self.HEATTotalFullReloadTime;
-	
+	-- Function to end an ongoing reload and reset values. Here to avoid dupe code.
 	self.HEATEndReload = function (self)
 		self.HEATCurrentReloadPhase = 1;
-		self.HEATStageWithoutReloading = false;
+		self.HEATNonReloadStaging = false;
 		self.HEATReloadStanceOffsetTarget = Vector(0, 0);
 		self.HEATReloadSupportOffsetTarget = Vector(0, 0);
 		
@@ -69,12 +139,36 @@ function Create(self)
 		self.BaseReloadTime = 0;	
 	end
 		
+	-----------------
+	----------------- Delayed fire
+	-----------------		
+		
+	-- Timer used for an extra rate-of-fire-dependent delay to trying to activate DelayedFire.
 	self.HEATFireDelayTimer = Timer();
+	-- Whether we are activated and about to try to fire.
 	self.HEATDelayedFire = false
+	-- Timer for the DelayedFire system.
 	self.HEATDelayedFireTimer = Timer();
+	-- Some sort of logical variable for the DelayedFire system. I honestly don't remember, but it has to exist.
 	self.HEATDelayedFireActivated = false
+	-- Used to disable delaying further firing after our first shot, in the case of full-auto weapons.
+	self.HEATDelayedFirstShot = true;
 	
+	-----------------
+	----------------- Firing animation
+	-----------------
+	
+	-- Timer for the firing animation.
 	self.HEATFiringAnimationTimer = Timer();
+	
+	-----------------
+	----------------- Recoil
+	-----------------	
+	
+	-- Mathemagical recoil variable. Shouldn't be messed with.
+	self.HEATRecoilAcc = 0
+	-- Mathemagical recoil variable. Shouldn't be messed with.
+	self.HEATRecoilStr = 0
 end
 
 function ThreadedUpdate(self)
@@ -117,8 +211,6 @@ function ThreadedUpdate(self)
             self.HEATAngVel = 0
         end
     end
-	
-	-- Check if switched weapons/hide in the inventory, etc.
 	if self.Age > (self.HEATLastAge + TimerMan.DeltaTimeSecs * 2000) then
 		if self.HEATDelayedFire then
 			self.HEATDelayedFire = false
@@ -129,8 +221,6 @@ function ThreadedUpdate(self)
 	self.HEATLastAge = self.Age + 0
 	
 	if self.useHEATFiringAnimation then
-		-- SLIDE animation when firing
-		-- don't ask, math magic
 		local f = math.max(1 - math.min((self.HEATFiringAnimationTimer.ElapsedSimTimeMS) / 200, 1), 0)
 		self.Frame = math.floor(f * 3 + 0.55);
 		if self.HEATEmptyReload and self.HEATLockBackOnEmpty and self.Frame == self.HEATFiringAnimationEndFrame then
@@ -143,7 +233,7 @@ function ThreadedUpdate(self)
 	-- Reload system
 	
 	if self.useHEATReload then
-		if self:IsReloading() or self.HEATStageWithoutReloading then	
+		if self:IsReloading() or self.HEATNonReloadStaging then	
 			self:Deactivate();
 			
 			local ctrl = self.HEATParent:GetController();
@@ -218,13 +308,13 @@ function ThreadedUpdate(self)
 				end
 				
 				if self.HEATParent:GetController():IsState(Controller.WEAPON_FIRE) then
-					self.HEATReloadManuallyInterrupted = true;
+					self.HEATManualInterruptionAttempted = true;
 					if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then
 						PrimitiveMan:DrawTextPrimitive(screen, self.HEATParent.AboveHUDPos + Vector(0, 30), "Interrupting...", true, 1);
 					end
 				end		
 				
-				if self.HEATAfterSoundPlayed ~= true then
+				if self.HEATPhaseFinishDone ~= true then
 				
 					if self.HEATCurrentReloadPhaseData.spawnCasing then
 						local casing
@@ -269,7 +359,7 @@ function ThreadedUpdate(self)
 						end
 					end		
 				
-					self.HEATAfterSoundPlayed = true;
+					self.HEATPhaseFinishDone = true;
 					if self.HEATCurrentReloadPhaseData.afterSound then
 						self.HEATCurrentReloadPhaseData.afterSound:Play(self.Pos);	
 					end
@@ -280,7 +370,7 @@ function ThreadedUpdate(self)
 					self.HEATCurrentReloadPhaseData.finishCallback(self);
 					self.HEATReloadTimer:Reset();
 					self.HEATPrepareSoundPlayed = false;
-					self.HEATAfterSoundPlayed = false;
+					self.HEATPhaseFinishDone = false;
 					
 					self.HEATEnterPhaseCallbackDone = false;
 					
@@ -289,7 +379,7 @@ function ThreadedUpdate(self)
 					elseif self.HEATReloadPhaseOverride then
 						self.HEATCurrentReloadPhase = self.HEATReloadPhaseOverride;
 					elseif self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount then
-						if self.HEATReloadManuallyInterrupted then
+						if self.HEATManualInterruptionAttempted then
 							self.HEATEndReload(self);	
 						else
 							-- repeat
@@ -306,7 +396,7 @@ function ThreadedUpdate(self)
 					
 					self.HEATReloadPhaseOverride = nil;
 					self.HEATForceEndReload = false;
-					self.HEATReloadManuallyInterrupted = false;
+					self.HEATManualInterruptionAttempted = false;
 					self.HEATCurrentReloadPhaseData.exitPhaseCallback(self);
 					self.HEATCurrentReloadPhaseData = nil;			
 				end
@@ -318,7 +408,7 @@ function ThreadedUpdate(self)
 		
 			self.HEATCurrentReloadPhaseData = nil;
 			self.HEATPrepareSoundPlayed = false;
-			self.HEATAfterSoundPlayed = false;
+			self.HEATPhaseFinishDone = false;
 			
 			self.HEATReloadTimer:Reset();
 			if self.HEATReloadPhaseOnInterrupt then
@@ -329,7 +419,7 @@ function ThreadedUpdate(self)
 		
 			self.HEATCurrentReloadPhaseData = nil;
 			self.HEATPrepareSoundPlayed = false;
-			self.HEATAfterSoundPlayed = false;	
+			self.HEATPhaseFinishDone = false;	
 			
 		end
 	
@@ -340,10 +430,10 @@ function ThreadedUpdate(self)
 			else
 				self.Magazine.RoundCount = self.HEATFullMagazineRoundCount;
 				if self.HEATEmptyReload and self.HEATPlusOneChamberedRound then
-					self.HEATEmptyReload = false;
 					self.Magazine.RoundCount = math.max(1, self.Magazine.RoundCount - 1);
 				end
 			end
+			self.HEATEmptyReload = false;
 		end	
 	end
 
@@ -362,7 +452,7 @@ function ThreadedUpdate(self)
 				if not self.Magazine or self.Magazine.RoundCount < 1 then
 					--self:Reload()
 					self:Activate()
-				elseif not self.activated and not self.HEATDelayedFire and self.HEATFireDelayTimer:IsPastSimMS(1 / (self.RateOfFire / 60) * 1000) then
+				elseif not self.HEATDelayedFireActivated and not self.HEATDelayedFire and self.HEATFireDelayTimer:IsPastSimMS(1 / (self.RateOfFire / 60) * 1000) then
 					self.HEATDelayedFireActivated = true
 					
 					if self.HEATPreSound then
@@ -394,7 +484,7 @@ function ThreadedUpdate(self)
 		self.HEATAngVel = self.HEATAngVel - RangeRand(1 - self.HEATRecoilAngVariation / 2, 1 + self.HEATRecoilAngVariation / 2) * self.HEATRecoilAngAnim
 		
 		if self.HEATStageAfterEveryShot then
-			self.HEATStageWithoutReloading = true;
+			self.HEATNonReloadStaging = true;
 		end
 		
 		if self.RoundInMagCount > 0 then
@@ -515,7 +605,7 @@ function ThreadedUpdate(self)
 		end
 		
 		self.HEATRotation = (self.HEATRotation + self.HEATRotationTarget * TimerMan.DeltaTimeSecs * self.HEATRotationSpeed) / (1 + TimerMan.DeltaTimeSecs * self.HEATRotationSpeed)
-		if self:IsReloading() or self.HEATStageWithoutReloading then
+		if self:IsReloading() or self.HEATNonReloadStaging then
 			self.SupportOffset = self.SupportOffset + ((self.HEATReloadSupportOffsetTarget - self.SupportOffset) * TimerMan.DeltaTimeSecs * self.HEATReloadSupportOffsetSpeed)
 		else
 			self.SupportOffset = self.HEATOriginalSupportOffset;
