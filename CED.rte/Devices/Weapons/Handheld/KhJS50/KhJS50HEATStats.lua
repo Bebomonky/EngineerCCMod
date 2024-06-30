@@ -191,7 +191,7 @@ function Create(self)
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 4) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-12, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
 			self.HEATCurrentReloadPhaseData.rotationTarget = 10;
 		end		
 	end
@@ -265,7 +265,7 @@ function Create(self)
 	reloadPhase.afterDelay = 110;
 	reloadPhase.reloadStanceOffsetTarget = Vector(4, -2);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -3)
+	reloadPhase.reloadSupportOffsetTarget = Vector(2, -1)
 	reloadPhase.rotationTarget = 15;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
@@ -274,7 +274,7 @@ function Create(self)
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 3;
 	reloadPhase.setEndFrameAsPersistent = false;
-	reloadPhase.easingFunction = self.HEATEaseOutCubic;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -309,7 +309,7 @@ function Create(self)
 	reloadPhase.afterDelay = 350;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-7, -2)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -1)
 	reloadPhase.rotationTarget = 5;
 	reloadPhase.angVel = 15;
 	reloadPhase.horizontalAnim = 0;
@@ -364,7 +364,7 @@ function Create(self)
 	self.HEATRecoilDamping = 0.8
 	
 	-- Maximum rotation in degrees the recoil can cause.
-	self.HEATRecoilMax = 6
+	self.HEATRecoilMax = 1;
 	
 	
 	-----------------
