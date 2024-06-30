@@ -6,15 +6,20 @@ require("/CEDSettings");
 function Create(self)
 	-- Activity.
 	self.Activity = ActivityMan:GetActivity();
+	self.KhMOSKACasingEjectAddSound = CreateSoundContainer("Casing Eject Add CED Khrabarovsk MOSKA", "CED.rte");
+	self.KhMOSKARBulletAddSound = CreateSoundContainer("R Bullet Add CED Khrabarovsk MOSKA", "CED.rte");
+	
+	-- Whether there's an R Bullet in the chamber or not.
+	self.KhMOSKARBulletLoaded = false;
 	-- Whether we intend to use R Bullets or not.
 	self.KhMOSKAToLoadRBullet = false;
 	-- Whether we fired the loaded R Bullet or not, needed to autoswitch away from it in case of manual reload.
 	self.KhMOSKARBulletFired = true;
-	-- Timer to not insta-reload after firing R bullet.
+	-- Timer to not insta-reload after firing R Bullet.
 	self.KhMOSKAReloadDelayTimer = Timer();
 	-- Delay for above timer.
 	self.KhMOSKAReloadDelay = 400;
-	-- Cost to fire an R-Bullet.
+	-- Cost to fire an R Bullet.
 	self.KhMOSKARBulletCost = 5;
 end
 
@@ -97,6 +102,8 @@ function Update(self)
 			end
 		end
 	end
+	
+	ActivityMan:GetActivity():SetTeamFunds(15, 0)
 	
 	local ctrl;
 	local screen;

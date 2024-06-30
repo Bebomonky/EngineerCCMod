@@ -139,7 +139,6 @@ function Create(self)
 		self.HEATPersistentFrame = nil;
 		
 		self.HEATManualInterruptionAttempted = false;
-		self.HEATEmptyReload = false;
 		
 		self.HEATToSpawnCasing = false;
 		
