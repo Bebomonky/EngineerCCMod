@@ -4,7 +4,6 @@ local igui = require("Mods.Extensions.imenu.igui")
 function Create(self)
 	self.Menu = require("Mods.Extensions.imenu.core")
 	self.Menu:Initialize()
-	self.Menu:SetLockActorOnAnyMenUOpen(true);
 
 	self.MenuFunc = {}
 	self.MenuFunc[1] = BuilderBasic

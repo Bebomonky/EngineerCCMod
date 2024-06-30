@@ -1,6 +1,6 @@
 require("Mods.Extensions.ExtensionMan")
-local igui = require("Mods.Extensions.imenu.igui")
 
+local igui = require("Mods.Extensions.imenu.igui")
 function Create(self)
 	self.Menu = require("Mods.Extensions.imenu.core")
 	self.Menu:Initialize()
