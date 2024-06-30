@@ -53,7 +53,7 @@ function Create(self)
 	-- Our RotAngle last frame.
 	self.HEATLastRotAngle = self.RotAngle
 	-- Persistent frame to set, overriding fire animation, but not overriding reload animation.
-	-- Used in the case of locking back, but could be used manually too.
+	-- Used in the case of locking back, dropping guns mid-reload, etc.
 	self.HEATPersistentFrame = nil;
 	-- StanceOffset used during reloading.
 	self.HEATReloadStanceOffset = Vector(0, 0);
@@ -94,6 +94,8 @@ function Create(self)
 	self.HEATReloadPhaseOverride = nil;
 	-- Forces the reload to end upon current phase exit no matter what.
 	self.HEATForceEndReload = false;
+	-- Whether to spawn a casing on the next phase with spawnCasing or not. Set to true every time the gun fires, set to false when a casing is spawned.
+	self.HEATToSpawnCasing = false;
 	-- Internal ammo counter used in the case of shotgun-style reloads.
 	-- Grabs it from our magazine if we have one and it's different from the FullMagazineRoundCount, but the saved value overrides it if it exists.
 	self.HEATAmmoCounter = (self.Magazine and self.Magazine.RoundCount ~= self.HEATFullMagazineRoundCount) and self.Magazine.RoundCount or self.HEATFullMagazineRoundCount;
@@ -135,6 +137,11 @@ function Create(self)
 		
 		self.HEATReloadPhaseOnInterrupt = nil;
 		self.HEATPersistentFrame = nil;
+		
+		self.HEATManualInterruptionAttempted = false;
+		self.HEATEmptyReload = false;
+		
+		self.HEATToSpawnCasing = false;
 		
 		self.BaseReloadTime = 0;	
 	end
@@ -250,11 +257,15 @@ function ThreadedUpdate(self)
 	-- Reload system
 	
 	if self.useHEATReload then
-		if self:IsReloading() or self.HEATNonReloadStaging then	
+		if self:IsReloading() or (self.HEATParent and self.HEATNonReloadStaging) and not self:DoneReloading() then	
 			self:Deactivate();
 			
-			local ctrl = self.HEATParent:GetController();
-			local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player);
+			local ctrl;
+			local screen;
+			if self.HEATParent then
+				ctrl = self.HEATParent:GetController();
+				screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player);
+			end
 
 			self.HEATFireDelayTimer:Reset()
 			self.HEATDelayedFireActivated = false;
@@ -265,7 +276,14 @@ function ThreadedUpdate(self)
 				-- To support things in callbacks overriding values without overriding originals, we need a table copy:
 				for k, v in pairs(self.HEATReloadPhases[self.HEATCurrentReloadPhase]) do
 					self.HEATCurrentReloadPhaseData[k] = v;
-				end	
+				end
+				if self.HEATVerboseLogging then
+					print("HEATSystem: Gun " .. self.PresetName .. " entered reload phase " .. self.HEATCurrentReloadPhase .. " named " .. self.HEATCurrentReloadPhaseData.Name);
+				end
+				-- Clear interruption status if we've just began a loop, to avoid it leaking from any previous phases
+				if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then
+					self.HEATManualInterruptionAttempted = false;
+				end				
 			end
 			
 			if self.HEATWasInterrupted then
@@ -327,16 +345,18 @@ function ThreadedUpdate(self)
 					self.Frame = math.floor(self.HEATCurrentReloadPhaseData.startFrame + math.floor(frameChange * progressFactor, 0.55))
 				end
 				
-				if self.HEATParent:GetController():IsState(Controller.WEAPON_FIRE) then
-					self.HEATManualInterruptionAttempted = true;
-					if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then
-						PrimitiveMan:DrawTextPrimitive(screen, self.HEATParent.AboveHUDPos + Vector(0, 30), "Interrupting...", true, 1);
+				if self.HEATParent then
+					if ctrl:IsState(Controller.WEAPON_FIRE) then
+						self.HEATManualInterruptionAttempted = true;
+						if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then
+							PrimitiveMan:DrawTextPrimitive(screen, self.HEATParent.AboveHUDPos + Vector(0, 30), "Interrupting...", true, 1);
+						end
 					end
-				end		
+				end
 				
 				if self.HEATPhaseFinishDone ~= true then
 				
-					if self.HEATCurrentReloadPhaseData.spawnCasing then
+					if self.HEATToSpawnCasing and self.HEATCurrentReloadPhaseData.spawnCasing then
 						local casing
 						casing = self.HEATCasing:Clone();
 						casing.Pos = self.Pos + Vector(self.HEATCasingOffset.X * self.FlipFactor, self.HEATCasingOffset.Y):RadRotate(self.RotAngle);
@@ -344,6 +364,10 @@ function ThreadedUpdate(self)
 						casing.RotAngle = self.RotAngle;
 						casing.HFlipped = self.HFlipped;
 						MovableMan:AddParticle(casing);
+						if self.HEATVerboseLogging then
+							print("HEATSystem: Gun " .. self.PresetName .. " spawned casing " .. casing.PresetName);
+						end
+						self.HEATToSpawnCasing = false;
 					end
 				
 					if self.HEATCurrentReloadPhaseData.removesMag and not self:NumberValueExists("HEAT_FakeMagRemoved") then
@@ -371,6 +395,9 @@ function ThreadedUpdate(self)
 					
 					if not self.HEATReloadPhaseOnInterrupt then
 						if self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted and not ((not self.HEATEmptyReload) and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload) then
+						if self.HEATVerboseLogging then
+							print("HEATSystem: Gun " .. self.PresetName .. " autoprogressed from phase " .. self.HEATCurrentReloadPhase);
+						end
 							if type(self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted) == "number" then
 								self.HEATReloadPhaseOnInterrupt = self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted;
 							else
@@ -378,16 +405,22 @@ function ThreadedUpdate(self)
 							end
 						end
 					end
-				
-					self.HEATPhaseFinishDone = true;
-					if self.HEATCurrentReloadPhaseData.afterSound then
-						self.HEATCurrentReloadPhaseData.afterSound:Play(self.Pos);	
+					
+					-- If this is an autoprogress-if-finished phase the user probably wants the persistent frame set early here instead of at exit
+					if self.HEATCurrentReloadPhaseData.autoProgressIfFinishedButInterrupted then
+						self.HEATPersistentFrame = self.HEATCurrentReloadPhaseData.setEndFrameAsPersistent and self.HEATCurrentReloadPhaseData.endFrame or self.HEATPersistentFrame;
 					end
+
+					if self.HEATCurrentReloadPhaseData.afterSound then
+						self.HEATCurrentReloadPhaseData.afterSound:Play(self.Pos);
+						self.HEATCurrentReloadPhaseData.finishCallback(self);
+					end
+					
+					self.HEATPhaseFinishDone = true;
 					
 				end
 				
 				if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay) then
-					self.HEATCurrentReloadPhaseData.finishCallback(self);
 					self.HEATReloadTimer:Reset();
 					self.HEATPrepareSoundPlayed = false;
 					self.HEATPhaseFinishDone = false;
@@ -400,25 +433,37 @@ function ThreadedUpdate(self)
 						self.HEATCurrentReloadPhase = self.HEATReloadPhaseOverride;
 					elseif self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount then
 						if self.HEATManualInterruptionAttempted then
+							-- If we're in a loop and there appears to be no next phase, then just end the reload
+							if self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
+								self.HEATEndReload(self);	
+							else
+								self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
+							end	
+						else
+							-- Repeat
+						end
+					elseif (not self.HEATEmptyReload) and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload then
+						self.HEATEndReload(self);
+					elseif (self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter == self.HEATFullMagazineRoundCount) then
+						-- If we're in a loop and there appears to be no next phase, then just end the reload
+						if self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
 							self.HEATEndReload(self);	
 						else
-							-- repeat
+							self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
 						end
-					elseif (not self.HEATEmptyReload and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload)
-					or self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter == self.HEATFullMagazineRoundCount then
-						self.HEATEndReload(self);	
-						
 					elseif self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
-						self.HEATEndReload(self);	
+						self.HEATEndReload(self);
 					else
 						self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
 					end
+
+					-- Set a persistent frame if applicable
+					self.HEATPersistentFrame = self.HEATCurrentReloadPhaseData.setEndFrameAsPersistent and self.HEATCurrentReloadPhaseData.endFrame or self.HEATPersistentFrame;
 					
+					self.HEATCurrentReloadPhaseData.exitPhaseCallback(self);
 					self.HEATReloadPhaseOnInterrupt = nil;
 					self.HEATReloadPhaseOverride = nil;
 					self.HEATForceEndReload = false;
-					self.HEATManualInterruptionAttempted = false;
-					self.HEATCurrentReloadPhaseData.exitPhaseCallback(self);
 					self.HEATCurrentReloadPhaseData = nil;			
 				end
 			end
@@ -498,6 +543,7 @@ function ThreadedUpdate(self)
 	if self.FiredFrame then
 	
 		self.HEATAmmoCounter = self.HEATAmmoCounter - 1;
+		self.HEATToSpawnCasing = true;
 	
 		self.HEATHorizontalAnim = self.HEATRecoilHorizontalAnim;
 		self.HEATFiringAnimationTimer:Reset();
@@ -513,22 +559,6 @@ function ThreadedUpdate(self)
 		else
 			self.HEATEmptyReload = true;
 			self.BaseReloadTime = self.HEATTotalEmptyReloadTime;
-		end
-		
-		for i = 1, 3 do
-			local Effect = CreateMOSParticle("Tiny Smoke Ball 1", "Base.rte")
-			if Effect then
-				Effect.Pos = self.MuzzlePos;
-				Effect.Vel = (self.Vel + Vector(RangeRand(-20,20), RangeRand(-20,20)) + Vector(150*self.FlipFactor,0):RadRotate(self.RotAngle)) / 30
-				MovableMan:AddParticle(Effect)
-			end
-		end
-		
-		local Effect = CreateMOSParticle("Side Thruster Blast Ball 1", "Base.rte")
-		if Effect then
-			Effect.Pos = self.MuzzlePos;
-			Effect.Vel = (self.Vel + Vector(150*self.FlipFactor,0):RadRotate(self.RotAngle)) / 10
-			MovableMan:AddParticle(Effect)
 		end
 		
 		if self.useHEATCompliSound then

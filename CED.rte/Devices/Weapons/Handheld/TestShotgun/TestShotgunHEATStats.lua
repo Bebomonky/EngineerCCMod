@@ -17,6 +17,9 @@ function Create(self)
 	----------------- General
 	-----------------
 	
+	-- Whether to enable verbose console logging or not.
+	self.HEATVerboseLogging = true;
+	
 	-- Easing functions. They have to be here so they're defined by the time you use them in reload phases.
 	self.HEATEaseLinear = function (x)
 		return x;
@@ -27,6 +30,7 @@ function Create(self)
 	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
+	
 	end
 
 	-----------------
@@ -143,6 +147,8 @@ function Create(self)
 	reloadPhase.startFrame = 0;
 	-- End frame of the auto animation.
 	reloadPhase.endFrame = 0;
+	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
+	reloadPhase.setEndFrameAsPersistent = false;
 	-- Easing function to use. You could define your own here if you really wanted.
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
@@ -200,6 +206,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 3;
+	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = true;
@@ -258,6 +265,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 3;
 	reloadPhase.endFrame = 5;
+	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
@@ -301,6 +309,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 5;
 	reloadPhase.endFrame = 0;
+	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
@@ -330,7 +339,8 @@ function Create(self)
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATAmmoCounter = self.HEATAmmoCounter + 1;
-		if self.HEATReloadManuallyInterrupted then
+		self.HEATEmptyReload = false;
+		if self.HEATManualInterruptionAttempted then
 			self.HEATForceEndReload = true;
 		end
 	end
@@ -363,6 +373,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
+	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
@@ -373,11 +384,9 @@ function Create(self)
 	end
 	reloadPhase.constantCallback = function (self)
 		self.HEATRotationTarget = 15 + (5 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATReloadSupportOffsetTarget.Y = 0;
-		end		
 	end
 	reloadPhase.finishCallback = function (self)
+		self.HEATReloadSupportOffsetTarget.Y = -1;
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -408,6 +417,7 @@ function Create(self)
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 3;
 	reloadPhase.endFrame = 0;
+	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
