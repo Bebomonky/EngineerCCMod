@@ -1,0 +1,3 @@
+Bolt: BF1 MosinNagant
+RoundIn: BF1 Remington Model 8
+CasingEjectAdd: CODMW 7.62x54mm eject

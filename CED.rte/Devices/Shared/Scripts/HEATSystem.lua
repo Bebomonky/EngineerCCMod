@@ -257,7 +257,7 @@ function ThreadedUpdate(self)
 	-- Reload system
 	
 	if self.useHEATReload then
-		if self:IsReloading() or (self.HEATParent and self.HEATNonReloadStaging) and not self:DoneReloading() then	
+		if self:IsReloading() or (self.HEATParent and (self.HEATNonReloadStaging and self.Reloadable)) and not self:DoneReloading() then	
 			self:Deactivate();
 			
 			local ctrl;
@@ -356,20 +356,6 @@ function ThreadedUpdate(self)
 				
 				if self.HEATPhaseFinishDone ~= true then
 				
-					if self.HEATToSpawnCasing and self.HEATCurrentReloadPhaseData.spawnCasing then
-						local casing
-						casing = self.HEATCasing:Clone();
-						casing.Pos = self.Pos + Vector(self.HEATCasingOffset.X * self.FlipFactor, self.HEATCasingOffset.Y):RadRotate(self.RotAngle);
-						casing.Vel = self.Vel + Vector(self.HEATCasingVelocity.X * self.FlipFactor, self.HEATCasingVelocity.Y):RadRotate(self.RotAngle);
-						casing.RotAngle = self.RotAngle;
-						casing.HFlipped = self.HFlipped;
-						MovableMan:AddParticle(casing);
-						if self.HEATVerboseLogging then
-							print("HEATSystem: Gun " .. self.PresetName .. " spawned casing " .. casing.PresetName);
-						end
-						self.HEATToSpawnCasing = false;
-					end
-				
 					if self.HEATCurrentReloadPhaseData.removesMag and not self:NumberValueExists("HEAT_FakeMagRemoved") then
 						self:SetNumberValue("HEAT_FakeMagRemoved", 1);
 						local fakeMag
@@ -414,6 +400,20 @@ function ThreadedUpdate(self)
 					if self.HEATCurrentReloadPhaseData.afterSound then
 						self.HEATCurrentReloadPhaseData.afterSound:Play(self.Pos);
 						self.HEATCurrentReloadPhaseData.finishCallback(self);
+					end
+					
+					if self.HEATToSpawnCasing and self.HEATCurrentReloadPhaseData.spawnCasing then
+						local casing
+						casing = self.HEATCasing:Clone();
+						casing.Pos = self.Pos + Vector(self.HEATCasingOffset.X * self.FlipFactor, self.HEATCasingOffset.Y):RadRotate(self.RotAngle);
+						casing.Vel = self.Vel + Vector(self.HEATCasingVelocity.X * self.FlipFactor, self.HEATCasingVelocity.Y):RadRotate(self.RotAngle);
+						casing.RotAngle = self.RotAngle;
+						casing.HFlipped = self.HFlipped;
+						MovableMan:AddParticle(casing);
+						if self.HEATVerboseLogging then
+							print("HEATSystem: Gun " .. self.PresetName .. " spawned casing " .. casing.PresetName);
+						end
+						self.HEATToSpawnCasing = false;
 					end
 					
 					self.HEATPhaseFinishDone = true;
@@ -500,6 +500,9 @@ function ThreadedUpdate(self)
 				end
 			end
 			self.HEATEmptyReload = false;
+			
+			self.HEATDoneReloadingCallback(self);
+			
 		end	
 	end
 

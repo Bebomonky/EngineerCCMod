@@ -5,6 +5,9 @@ function Create(self)
 	-----------------
 	
 	self.KhMOSKACasingEjectAddSound = CreateSoundContainer("Casing Eject Add CED Khrabarovsk MOSKA", "CED.rte");
+	self.KhMOSKARBulletAddSound = CreateSoundContainer("R Bullet Add CED Khrabarovsk MOSKA", "CED.rte");
+	
+	self.KhMOSKARBulletLoaded = false;
 
 	-----------------
 	----------------- HEAT system stats file
@@ -36,7 +39,14 @@ function Create(self)
 	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
+		self.KhMOSKARBulletLoaded = false;
+	end
 	
+	-- Callback when a CC reload is finished, after variables are set.
+	self.HEATDoneReloadingCallback = function (self)
+		if self.KhMOSKARBulletLoaded then
+			self.Magazine.RoundCount = 1;
+		end
 	end
 
 	-----------------
@@ -168,7 +178,17 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
-		
+		-- I would have liked this at OnReload but the execution order was wonky, so it goes here.
+		-- This switches away from an R Bullet upon a manual reload before firing the bullet.
+		if not self.KhMOSKARBulletFired then
+			self.KhMOSKAToLoadRBullet = false;
+			self.HEATToSpawnCasing = true;
+			self.HEATRecoilStrength = 39
+			self.HEATRecoilPowStrength = 0.2
+			self.HEATRecoilRandomUpper = 1.1
+			self.HEATRecoilDamping = 0.7
+			self.HEATRecoilMax = 4
+		end
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
@@ -221,10 +241,19 @@ function Create(self)
 	
 	end
 	reloadPhase.finishCallback = function (self)
+		if (self.KhMOSKAToLoadRBullet and self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount and not self.KhMOSKARBulletLoaded)
+		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
+			self.HEATAmmoCounter = self.HEATAmmoCounter - 1;
+			self.HEATToSpawnCasing = true;
+			self.KhMOSKARBulletLoaded = false;
+			self.KhMOSKARBulletFired = true;
+		end
 		if self.HEATToSpawnCasing then
 			self.KhMOSKACasingEjectAddSound:Play(self.Pos);
 		end
-		if not self:IsReloading() then
+		if (not self:IsReloading())
+		or (self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount and not self.KhMOSKAToLoadRBullet)
+		or (self.KhMOSKARBulletLoaded and self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletFired) then
 			self.HEATReloadPhaseOverride = 4;
 		end
 		self.HEATReloadSupportOffsetTarget.X = -6;
@@ -272,7 +301,11 @@ function Create(self)
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATReloadSupportOffsetTarget = Vector(6, 0);
-		if self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount then
+		self.KhMOSKARBulletLoaded = self.KhMOSKAToLoadRBullet;
+		if self.KhMOSKARBulletLoaded then
+			self.KhMOSKARBulletFired = false;
+		end
+		if self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount or self.KhMOSKAToLoadRBullet then
 			self.HEATCurrentReloadPhaseData.afterDelay = 300;
 			self.HEATReloadPhaseOverride = 4;
 		end
@@ -316,7 +349,9 @@ function Create(self)
 	
 	end
 	reloadPhase.constantCallback = function (self)
-		if self:IsReloading() and self.HEATAmmoCounter ~= self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted then
+		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
+		or (self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletLoaded)
+		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
 			self.HEATReloadPhaseOverride = 2;
 		end
 	end
@@ -362,9 +397,12 @@ function Create(self)
 	
 	end
 	reloadPhase.constantCallback = function (self)
-		if self:IsReloading() and self.HEATAmmoCounter ~= self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted then
+		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
+		or (self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletLoaded)
+		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
 			self.HEATReloadPhaseOverride = 1;
-		end		
+		end
+			
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATReloadSupportOffsetTarget.Y = 0;

@@ -32,6 +32,11 @@ function Create(self)
 	self.HEATFireCallback = function (self)
 		
 	end
+	
+	-- Callback when a CC reload is finished, after variables are set.
+	self.HEATDoneReloadingCallback = function (self)
+		
+	end
 
 	-----------------
 	----------------- Firing animation system

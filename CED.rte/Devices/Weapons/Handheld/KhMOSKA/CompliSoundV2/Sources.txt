@@ -1,0 +1,5 @@
+Shot: Warframe Dex Sybaris
+Bass: CODMW Alpha50 Swtn
+Pre: CODMW Alpha50
+Reflections: CP2077 Unity
+RBulletAdd: BF4 Corebass AT Close
