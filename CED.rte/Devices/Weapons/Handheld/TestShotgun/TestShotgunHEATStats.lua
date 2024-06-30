@@ -277,7 +277,8 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-		
+		-- It's easy to trigger this when firing the last shot, so reset it right about now
+		self.HEATManualInterruptionAttempted = false;
 	end
 	reloadPhase.constantCallback = function (self)
 		
@@ -389,6 +390,9 @@ function Create(self)
 	end
 	reloadPhase.constantCallback = function (self)
 		self.HEATRotationTarget = 15 + (5 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
+		if self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount or self.HEATManualInterruptionAttempted then
+			self.HEATForceEndReload = true;
+		end
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATReloadSupportOffsetTarget.Y = -1;
@@ -434,14 +438,13 @@ function Create(self)
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then		
 			self.HEATReloadSupportOffsetTarget.X = 2;
-		end				
+		end
+		if self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted then
+			self.HEATReloadPhaseOverride = 5;
+		end
 	end
 	reloadPhase.finishCallback = function (self)
-		if self:IsReloading() then
-			if self.HEATAmmoCounter < self.HEATFullMagazineRoundCount then
-				self.HEATReloadPhaseOverride = 5;
-			end
-		end
+	
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 	

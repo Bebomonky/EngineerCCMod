@@ -103,8 +103,6 @@ function Update(self)
 		end
 	end
 	
-	ActivityMan:GetActivity():SetTeamFunds(15, 0)
-	
 	local ctrl;
 	local screen;
 	if self.HEATParent then
