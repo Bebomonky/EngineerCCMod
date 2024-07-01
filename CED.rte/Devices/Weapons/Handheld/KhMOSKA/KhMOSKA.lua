@@ -68,9 +68,6 @@ function OnFire(self)
 end
 
 function Update(self)
-	if self.KhMOSKAReloadDelayTimer:IsPastSimMS(self.KhMOSKAReloadDelay) then
-		self.Reloadable = true;
-	end
 	
 	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
 		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
@@ -83,9 +80,19 @@ function Update(self)
 				self.HEATRecoilRandomUpper = 1.1
 				self.HEATRecoilDamping = 0.7
 				self.HEATRecoilMax = 4
-				if not self:IsReloading() then
-					self.HEATDelayedFireTimeMS = 100;
+				-- Note that AmmoCounter 1 and an unfired R Bullet means we're about to eject the one round and get to 0
+				if not self:IsReloading() and self.HEATAmmoCounter == 0 or (self.HEATAmmoCounter == 1 and not self.KhMOSKARBulletFired) then
 					self:Reload();
+				else
+					self.HEATNonReloadStaging = true;
+					if self.Magazine then
+						if self.KhMOSKARBulletFired then
+							-- The HEATSystem has already decremented one
+							self.Magazine.RoundCount = self.HEATAmmoCounter;
+						else
+							self.Magazine.RoundCount = math.max(1, self.HEATAmmoCounter - 1);
+						end
+					end
 				end
 			else
 				self.KhMOSKAToLoadRBullet = true;
@@ -134,4 +141,9 @@ function Update(self)
 			end
 		end
 	end
+
+	if self.KhMOSKAReloadDelayTimer:IsPastSimMS(self.KhMOSKAReloadDelay) then
+		self.Reloadable = true;
+	end	
+	
 end

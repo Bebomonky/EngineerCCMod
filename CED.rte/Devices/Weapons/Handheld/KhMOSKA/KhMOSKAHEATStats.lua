@@ -226,7 +226,11 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = true;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		if self.KhMOSKARBulletLoaded and self.KhMOSKAToLoadRBullet then
+			self.HEATToSpawnCasing = false;
+		elseif self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount then
+			self.HEATToSpawnCasing = true;
+		end
 	end
 	reloadPhase.constantCallback = function (self)
 	
@@ -235,7 +239,6 @@ function Create(self)
 		if (self.KhMOSKAToLoadRBullet and self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount and not self.KhMOSKARBulletLoaded)
 		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
 			self.HEATAmmoCounter = self.HEATAmmoCounter - 1;
-			self.HEATToSpawnCasing = true;
 			self.KhMOSKARBulletLoaded = false;
 			self.KhMOSKARBulletFired = true;
 		end
