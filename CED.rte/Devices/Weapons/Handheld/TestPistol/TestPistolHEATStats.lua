@@ -27,6 +27,12 @@ function Create(self)
 	self.HEATEaseOutCubic = function (x)
 		return 1 - math.pow(1 - x, 3);
 	end
+	self.HEATEaseInOutCubic = function (x)
+		return x < 0.5 and 4 * x * x * x or 1 - math.pow(-2 * x + 2, 3) / 2;
+	end
+	self.HEATEaseInCirc = function (x)
+		return 1 - math.sqrt(1 - math.pow(x, 2));
+	end
 	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
@@ -75,6 +81,10 @@ function Create(self)
 	self.HEATPlusOneChamberedRound = true;
 	-- Your full magazine size, including the one in the chamber. This should be equal to the Magazine's RoundCount.
 	self.HEATFullMagazineRoundCount = 10;
+	
+	-- Whether this becomes dual-reloadable when not emptied. Won't have an effect if you don't expect this to ever be dual-wielded.
+	-- If you don't want the HEATSystem to meddle with this at all, leave it false.
+	self.HEATDualReloadableIfNotEmpty = true;	
 	
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
 	self.HEATStageAfterEveryShot = false;

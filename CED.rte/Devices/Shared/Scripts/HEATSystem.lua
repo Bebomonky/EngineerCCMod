@@ -256,8 +256,21 @@ function ThreadedUpdate(self)
 	-- Reload system
 	
 	if self.useHEATReload then
-		if self:IsReloading() or (self.HEATParent and (self.HEATNonReloadStaging and self.Reloadable)) and not self:DoneReloading() then	
-			self:Deactivate();
+		if self.HEATDualReloadableIfNotEmpty then
+			if not self.HEATEmptyReload then
+				self.DualReloadable = true;
+			else
+				self.DualReloadable = false;
+			end
+		end
+		if self:IsReloading() or (self.HEATParent and (self.HEATNonReloadStaging and self.Reloadable)) and not self:DoneReloading() then
+			if self.HEATNonReloadStaging then
+				-- Only deactivate here, because we still want vanilla EmptyClicks to be able to play
+				self:Deactivate();
+				if self:IsReloading() then
+					self.HEATNonReloadStaging = false;
+				end
+			end
 			
 			local ctrl;
 			local screen;

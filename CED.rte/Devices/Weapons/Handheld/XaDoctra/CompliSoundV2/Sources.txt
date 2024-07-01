@@ -1,0 +1,4 @@
+Mech: Warframe PriestPistolMech, Warframe ProteaSMGMech
+Shot: Warframe ProteaSMGShot
+Bass: SW01_Weapons_Blasters_Shared_Corebass_Close_Thumb_VAR_01
+Reflections: CP2077 Shingen
