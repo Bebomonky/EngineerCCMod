@@ -1,8 +1,7 @@
 require("Mods.Extensions.ExtensionMan")
-local igui = require("Mods.Extensions.imenu.igui")
 
 function Create(self)
-	self.Menu = require("Mods.Extensions.imenu.core")
+	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"))
 	self.Menu:Initialize()
 
 	self.MenuFunc = {}
@@ -20,14 +19,13 @@ end
 
 --This is the greatest BuilderBasic of all time
 function BuilderBasic(self)
-	self.Main.Box = igui.CollectionBox()
+	self.Main.Box = self.Menu:CreateGUI("CollectionBox")
 	self.Main.Box:SetTitle("")
-	self.Main.Box:SetName("Main")
-	self.Main.Box:SetPos(Vector(10, 25))
-	self.Main.Box:SetSize(Vector(260, 50))
-	self.Main.Box:SetColor(146)
-	self.Main.Box:SetOutlineColor(71)
-	self.Main.Box:SetOutlineThickness(2)
+	self.Main.Box:SetPos(10, 25)
+	self.Main.Box:SetSize(260, 50)
+	self.Main.Box:Color(146)
+	self.Main.Box:OutlineColor(71)
+	self.Main.Box:OutlineThickness(2)
 
 	local category = {
 		{"Fortification", self.CEDAvailableBuildables.Fortifications},
@@ -54,27 +52,26 @@ function BuilderBasic(self)
 	local maxRadius = 20
 
 	local function drawMenu()
+		local buttons = {}
 		for i = 1, #category do
 			local tab = category[i]
 			local name = tab[1]
 			local buildableList = tab[2]
 
-			local x = -3 + self.Main.Box:GetPos().X + ((i - 1) % 4 + 1 - 1) * 65
+			local x = -3 + self.Main.Box:GetPosX() + ((i - 1) % 4 + 1 - 1) * 65
 			local y = 5 + (math.floor((i - 1) / 4 ) + 1 - 1) * 35
 
-			local mainTab = igui.Button()
-			mainTab:SetName(name)
+			local mainTab = self.Menu:CreateGUI("Button", self.Main.Box)
 			mainTab.BuildList = buildableList
-			mainTab:SetParent(self.Main.Box)
-			mainTab:SetPos(Vector(x, y))
-			mainTab:SetSize(Vector(50, 13))
-			mainTab:SetColor(146)
+			mainTab:SetPos(x, y)
+			mainTab:SetSize(50, 13)
 			mainTab:SetText(name)
-			mainTab:SetOutlineThickness(2)
-			mainTab:SetOutlineColor(144)
+			mainTab:Color(146)
+			mainTab:OutlineColor(144)
+			mainTab:OutlineThickness(2)
 
 			mainTab.Think = function(entity, screen)
-				mainTab:SetOutlineColor(mainTab.IsHovered and 117 or 144)
+				mainTab:OutlineColor(mainTab.IsHovered and 117 or 144)
 			end
 
 			mainTab.OnPress = function(key)
@@ -85,7 +82,7 @@ function BuilderBasic(self)
 						return
 					end
 
-					self.Main.Box.Child = {}
+					self.Main.Box:ClearChildren()
 					drawMenu()
 
 					local currentHeight = 40
@@ -94,15 +91,13 @@ function BuilderBasic(self)
 					local scroll = 0
 					local totalRows = math.ceil(#mainTab.BuildList / rows)
 
-					local tooltip_bar = igui.CollectionBox()
+					local tooltip_bar = self.Menu:CreateGUI("CollectionBox", self.Main.Box)
 					tooltip_bar:SetTitle("")
-					tooltip_bar:SetName("ToolTip_Bar")
-					tooltip_bar:SetParent(self.Main.Box)
-					tooltip_bar:SetPos(Vector(tooltip_bar.Parent:GetSize().X + 10, 25))
-					tooltip_bar:SetSize(Vector(100, 50))
-					tooltip_bar:SetColor(146)
-					tooltip_bar:SetOutlineColor(71)
-					tooltip_bar:SetOutlineThickness(2)
+					tooltip_bar:SetPos(tooltip_bar:GetParent():GetWidth() + 10, 25)
+					tooltip_bar:SetSize(100, 50)
+					tooltip_bar:Color(146)
+					tooltip_bar:OutlineColor(71)
+					tooltip_bar:OutlineThickness(2)
 					tooltip_bar:SetVisible(false) --Set to false to prevent flicker
 
 					tooltip_bar.Think = function(entity, screen)
@@ -110,35 +105,33 @@ function BuilderBasic(self)
 					end
 
 					for i = 1, #mainTab.BuildList do
-						local x = 0 + self.Main.Box:GetPos().X + ((i - 1) % rows + 1 - 1) * posMultiplier
+						local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
 						local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
 
-						local button = igui.Button()
-						button:SetName("Buildable " .. i)
+						local button = self.Menu:CreateGUI("Button", self.Main.Box)
 						button.Buildable = mainTab.BuildList[i]
-						button.Buildable.Selected = false
-						button:SetParent(self.Main.Box)
-						button:SetPos(Vector(x, y))
-						button:SetSize(Vector(65, 65))
-						button:SetColor(146)
+						button.Selected = false
+						button:SetPos(x, y)
+						button:SetSize(65, 65)
 						button:SetText(button.Buildable.DisplayName)
-						button:SetTextPos(Vector(0, 10))
-						button:SetOutlineThickness(2)
-						button:SetOutlineColor(144)
+						button:TextPos(0, 10)
+						button:Color(146)
+						button:OutlineColor(144)
+						button:OutlineThickness(2)
 
 						button.Think = function(entity, screen)
 							if button.IsHovered then
 								tooltip_bar:SetVisible(true)
 
-								button:SetOutlineColor(117)
+								button:OutlineColor(117)
 							else
-								button:SetOutlineColor(144)
+								button:OutlineColor(144)
 							end
-							local world_pos = button.Parent.Pos + button:GetPos() + CameraMan:GetOffset(screen)
-							local parent_world_pos = button.Parent.Pos + CameraMan:GetOffset(screen)
-							PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
+							local world_pos = Vector(button:GetParent():GetPos()) + Vector(button:GetPos()) + CameraMan:GetOffset(screen)
+							local parent_world_pos = Vector(button:GetParent():GetPos()) + CameraMan:GetOffset(screen)
+							PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(button:GetSize()) / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
 
-							if not cursor_inside(parent_world_pos, button.Parent.Size) and button.Buildable.Selected then
+							if not self.Menu:cursor_inside(parent_world_pos, Vector(button:GetParent():GetSize())) and button.Selected then
 								local size = (Vector(box.Width, box.Height) / 2)
 								renderPos = self.Menu.Cursor
 								if button.Buildable.SnapToGround then
@@ -167,24 +160,25 @@ function BuilderBasic(self)
 								end
 
 								local radius = math.abs(box.Corner.X)
-								local foundActors = 0;
+								local foundMO = nil
 								local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
 								for mo in MOs do
 									if mo then
-										if mo:IsInGroup("CED - Buildables") or mo:IsInGroup("CED - Buildings") then
-											validPlacement = false;
+										if mo:IsInGroup("CED - Buildables") then
+											foundMO = mo
 										end
 										if IsActor(mo) then
-											foundActors = foundActors + 1;
-											if foundActors == 3 then
-												validPlacement = false;
-											end
+											foundMO = mo
 										end
 									end
 								end
 
-								--If we are floating and meant to snap to ground, it's invalid
-								if button.Buildable.SnapToGround and SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
+								if foundMO then
+									validPlacement = false
+								end
+
+								--If we are floating it's invalid
+								if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
 									validPlacement = false
 								end
 
@@ -205,7 +199,6 @@ function BuilderBasic(self)
 												self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(entity.Team) - button.Buildable.Cost, entity.Team)
 												self.ConfirmSound:Play(-1)
 												self.SelectDelayTime:Reset()
-												button.Buildable.Selected = false
 												print("Just placed the following: " .. button.Buildable.DisplayName);
 											else
 												self.ErrorSound:Play(-1)
@@ -216,7 +209,7 @@ function BuilderBasic(self)
 								end
 							end
 							if isRemoving then
-								button.Buildable.Selected = false
+								button.Selected = false
 							end
 						end
 
@@ -226,17 +219,22 @@ function BuilderBasic(self)
 								box = button.Buildable.RenderSize
 								isRemoving = false
 								self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
-								button.Buildable.Selected = true
+								for _, btn in ipairs(buttons) do
+									btn.Selected = false
+								end
+								button.Selected = true
 							end
 						end
+
+						table.insert(buttons, button)
 
 						currentHeight = y + posMultiplier
 						height = math.min(maxHeight, currentHeight)
 					end
 
 					self.Main.Box.Think = function(entity, screen)
-						self.Main.Box:SetSize(Vector(260, height + self.cancel_button:GetSize().Y))
-						self.cancel_button:SetPos(Vector(5, self.Main.Box.Size.Y - 20))
+						self.Main.Box:SetSize(260, height + self.cancel_button:GetHeight())
+						self.cancel_button:SetPos(5, self.Main.Box:GetHeight() - 20)
 
 						if self.Menu.Controller then
 							--Without this if statement it will scroll regardless
@@ -261,9 +259,9 @@ function BuilderBasic(self)
 									if button then --If it somehow doesn't exist wtf
 
 										--Epic copy and paste
-										local x = 0 + self.Main.Box:GetPos().X + ((i - 1) % rows + 1 - 1) * posMultiplier
+										local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
 										local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
-										button:SetPos(Vector(x, y - scroll * posMultiplier))
+										button:SetPos(x, y - scroll * posMultiplier)
 										button:SetVisible(isVisible)
 									end
 								end
@@ -273,19 +271,17 @@ function BuilderBasic(self)
 				end
 			end
 		end
-		self.cancel_button = igui.Button()
-		self.cancel_button:SetName("Destroy_Button")
-		self.cancel_button:SetParent(self.Main.Box)
-		self.cancel_button:SetPos(Vector(5, self.Main.Box.Size.Y - 20))
-		self.cancel_button:SetSize(Vector(26, 16))
-		self.cancel_button:SetColor(146)
+		self.cancel_button = self.Menu:CreateGUI("Button", self.Main.Box)
+		self.cancel_button:SetPos(5, self.cancel_button:GetParent():GetHeight() - 20)
+		self.cancel_button:SetSize(26, 16)
 		self.cancel_button:SetText("Remove\nBuild")
-		self.cancel_button:SetTextPos(Vector(1, -4))
-		self.cancel_button:SetOutlineThickness(2)
-		self.cancel_button:SetOutlineColor(144)
+		self.cancel_button:TextPos(1, -4)
+		self.cancel_button:Color(146)
+		self.cancel_button:OutlineColor(144)
+		self.cancel_button:OutlineThickness(2)
 
 		self.cancel_button.Think = function(entity, screen)
-			self.cancel_button:SetOutlineColor(self.cancel_button.IsHovered and 117 or 144)
+			self.cancel_button:OutlineColor(self.cancel_button.IsHovered and 117 or 144)
 
 			if isRemoving then
 				local MOs = MovableMan:GetMOsInRadius(self.Menu.Cursor, 15, -1, false)
@@ -350,25 +346,17 @@ function ThreadedUpdate(self)
 			self.Menu:New(self, self.MenuFunc[1])
 			self:RemoveNumberValue("BuilderMenu")
 		end
+	else
+		self.Menu:Remove()
 	end
 	if self.Menu:Update(self) then
-	    igui.Update(self.Menu.Player, self.Menu:GetScreen(), self.Menu.Cursor)
 	    for k, gui in pairs(self.Main) do
-	        gui:Update(self)
+	        gui:Update(self, {Cursor = self.Menu.Cursor})
 	    end
-	    self.Menu:DrawCursor(self.Menu:GetScreen())
+	    self.Menu:DrawCursor(self.Menu.Screen)
 	end
 end
 
-function cursor_inside(el_pos, size)
-	local el_x = el_pos.X
-	local el_y = el_pos.Y
-
-	local el_width = size.X
-	local el_height = size.Y
-
-	local mouse_x = igui.Cursor.X
-	local mouse_y = igui.Cursor.Y
-
-	return (mouse_x > el_x) and (mouse_x < el_x + el_width) and (mouse_y > el_y) and (mouse_y < el_y + el_height)
+function Destroy()
+	self.Menu:Remove()
 end

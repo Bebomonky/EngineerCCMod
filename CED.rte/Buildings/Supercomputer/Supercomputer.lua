@@ -1,8 +1,7 @@
 require("Mods.Extensions.ExtensionMan")
 
-local igui = require("Mods.Extensions.imenu.igui")
 function Create(self)
-	self.Menu = require("Mods.Extensions.imenu.core")
+	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"))
 	self.Menu:Initialize()
 
 	self.MenuFunc = {}
@@ -35,31 +34,32 @@ function Create(self)
 end
 
 function SupercomputerTechMenu(self)
-	self.Main.Box = igui.CollectionBox()
+	self.Main.Box = self.Menu:CreateGUI("CollectionBox")
 	self.Main.Box:SetTitle("")
-	self.Main.Box:SetName("Main")
-	self.Main.Box:SetPos(Vector(10, 25))
-	self.Main.Box:SetSize(Vector(260, 100))
-	self.Main.Box:SetColor(146)
-	self.Main.Box:SetOutlineColor(71)
-	self.Main.Box:SetOutlineThickness(2)
+	self.Main.Box:SetPos(10, 25)
+	self.Main.Box:SetSize(260, 50)
+	self.Main.Box:Color(146)
+	self.Main.Box:OutlineColor(71)
+	self.Main.Box:OutlineThickness(2)
 end
 
 function ThreadedUpdate(self)
 	if self:IsPlayerControlled() then
-		if not self.menuOpen then
+		if not self.Menu.Open then
 			self.Main = {};
 			self.Menu:New(self, self.MenuFunc[1]);
-			self.menuOpen = true;
 		end
 	else
-		self.menuOpen = false;
+		self.Menu:Remove()
 	end
 	if self.Menu:Update(self) then
-	    igui.Update(self.Menu.Player, self.Menu:GetScreen(), self.Menu.Cursor);
 	    for k, gui in pairs(self.Main) do
-	        gui:Update(self);
+			gui:Update(self, {Cursor = self.Menu.Cursor})
 	    end
-	    self.Menu:DrawCursor(self.Menu:GetScreen());
+	    self.Menu:DrawCursor(self.Menu.Screen)
 	end
+end
+
+function Destroy()
+	self.Menu:Remove()
 end
