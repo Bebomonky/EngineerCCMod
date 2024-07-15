@@ -111,7 +111,7 @@ function Create(self)
 	self.HEATTotalEmptyReloadTime = self.HEATTotalEmptyReloadTimeOverride or nil;
 	-- If there weren't any Overrides set in the Stats, then autocalculate best guesses.
 	if not self.HEATTotalFullReloadTime then
-		local totalFullTime = 0;
+		local totalFullTime = 50;
 		for i = 1, #self.HEATReloadPhases do
 			totalFullTime = totalFullTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
 			if self.HEATReloadPhases[i].endIfNotEmptyReload then
@@ -121,7 +121,7 @@ function Create(self)
 		self.HEATTotalFullReloadTime = totalFullTime + 1;
 	end
 	if not self.HEATTotalEmptyReloadTime then
-		local totalEmptyTime = 0;
+		local totalEmptyTime = 50;
 		for i = 1, #self.HEATReloadPhases do
 			totalEmptyTime = totalEmptyTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
 		end	
@@ -417,7 +417,11 @@ function ThreadedUpdate(self)
 					if self.HEATToSpawnCasing and self.HEATCurrentReloadPhaseData.spawnCasing then
 						local casing
 						casing = self.HEATCasing:Clone();
-						casing.Pos = self.Pos + Vector(self.HEATCasingOffset.X * self.FlipFactor, self.HEATCasingOffset.Y):RadRotate(self.RotAngle);
+						if not self.HEATCasingOffset then
+							casing.Pos = self.EjectionPos;
+						else
+							casing.Pos = self.Pos + Vector(self.HEATCasingOffset.X * self.FlipFactor, self.HEATCasingOffset.Y):RadRotate(self.RotAngle);
+						end
 						casing.Vel = self.Vel + Vector(self.HEATCasingVelocity.X * self.FlipFactor, self.HEATCasingVelocity.Y):RadRotate(self.RotAngle);
 						casing.RotAngle = self.RotAngle;
 						casing.HFlipped = self.HFlipped;

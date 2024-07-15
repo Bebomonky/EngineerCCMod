@@ -36,14 +36,12 @@ function Create(self)
 	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
-		self.KhMOSKARBulletLoaded = false;
+
 	end
 	
 	-- Callback when a CC reload is finished, after variables are set.
 	self.HEATDoneReloadingCallback = function (self)
-		if self.KhMOSKARBulletLoaded then
-			self.Magazine.RoundCount = 1;
-		end
+
 	end
 
 	-----------------
@@ -67,9 +65,9 @@ function Create(self)
 	self.useHEATCompliSound = true;
 	
 	-- CreateSoundContainer for your outdoors tail sound.
-	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Khrabarovsk MOSKA", "CED.rte");
+	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Vossberg Titan AMI", "CED.rte");
 	-- CreateSoundContainer for your indoors tail sound.
-	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Khrabarovsk MOSKA", "CED.rte");
+	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Vossberg Titan AMI", "CED.rte");
 
 	-----------------
 	----------------- Staged reload system
@@ -81,14 +79,14 @@ function Create(self)
 	-- Whether to take away one round from the final reload when reloading from empty.
 	self.HEATPlusOneChamberedRound = false;
 	-- Your full magazine size, including the one in the chamber. This should be equal to the Magazine's RoundCount.
-	self.HEATFullMagazineRoundCount = 5;
+	self.HEATFullMagazineRoundCount = 1;
 	
 	-- Whether this becomes dual-reloadable when not emptied. Won't have an effect if you don't expect this to ever be dual-wielded.
 	-- If you don't want the HEATSystem to meddle with this at all, leave it false.
 	self.HEATDualReloadableIfNotEmpty = false;
 	
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
-	self.HEATStageAfterEveryShot = true;
+	self.HEATStageAfterEveryShot = false;
 	-- Phase to go to if the above is true, and triggered during regular gunfire where the gun isn't emptied.
 	-- Useful to skip your reloading first phase to go to, for example, a pumping second and third phase.
 	self.HEATPhaseAfterFiringIfNotReloading = 1;
@@ -97,10 +95,10 @@ function Create(self)
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
 	-- Make sure not to set these two variables lower than the actual time that will be taken or it will end the reload prematurely
 	-- and break things.
-	self.HEATTotalFullReloadTimeOverride = 19999;
+	self.HEATTotalFullReloadTimeOverride = nil;
 	-- Override for the ReloadTime when reloading from empty.
 	-- Autocalculated using all phases if nil here. Relevant only for the progress bar.
-	self.HEATTotalEmptyReloadTimeOverride = 19999;
+	self.HEATTotalEmptyReloadTimeOverride = nil;
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = CreateMOSParticle("Casing Long", "Base.rte");
@@ -134,24 +132,24 @@ function Create(self)
 	-- if the reload was interrupted after passing prepareDelay.
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	-- SoundContainer to play while preparing to finish this phase.
-	reloadPhase.prepareSound = CreateSoundContainer("Bolt Up Prepare CED Khrabarovsk MOSKA", "CED.rte");
+	reloadPhase.prepareSound = CreateSoundContainer("Bolt Up Prepare CED Vossberg Titan AMI", "CED.rte");
 	-- Time it takes to finish this phase.
-	reloadPhase.prepareDelay = 300;
+	reloadPhase.prepareDelay = 320;
 	-- Time before finishing that the prepareSound will play. You can line up short prepareSounds with long prepareDelays
 	-- this way.
-	reloadPhase.prepareSoundLength = 100;
+	reloadPhase.prepareSoundLength = 320;
 	-- Sound upon finishing the phase.
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Up CED Khrabarovsk MOSKA", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Up CED Vossberg Titan AMI", "CED.rte");
 	-- Time after finishing the phase before the reload is progressed.
-	reloadPhase.afterDelay = 30;
+	reloadPhase.afterDelay = 100;
 	-- Absolute StanceOffset to set when in this phase.
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadStanceOffsetTarget = Vector(5, 6);
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(-3, 0)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-7, 0)
 	-- Rotation to set in this phase.
-	reloadPhase.rotationTarget = 2;
+	reloadPhase.rotationTarget = -20;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
 	reloadPhase.angVel = 0;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
@@ -179,17 +177,7 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
-		-- I would have liked this at OnReload but the execution order was wonky, so it goes here.
-		-- This switches away from an R Bullet upon a manual reload before firing the bullet.
-		if not self.KhMOSKARBulletFired then
-			self.KhMOSKAToLoadRBullet = false;
-			self.HEATToSpawnCasing = true;
-			self.HEATRecoilStrength = 39
-			self.HEATRecoilPowStrength = 0.2
-			self.HEATRecoilRandomUpper = 1.1
-			self.HEATRecoilDamping = 0.7
-			self.HEATRecoilMax = 4
-		end
+
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
@@ -197,7 +185,7 @@ function Create(self)
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-		self.HEATReloadSupportOffsetTarget.Y = -2;
+		self.HEATReloadSupportOffsetTarget.Y = -4;
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -215,14 +203,14 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = nil;
-	reloadPhase.prepareDelay = 70;
+	reloadPhase.prepareDelay = 100;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Khrabarovsk MOSKA", "CED.rte");
-	reloadPhase.afterDelay = 200;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.afterDelay = 360;
+	reloadPhase.reloadStanceOffsetTarget = Vector(7, 11);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-3, -2)
-	reloadPhase.rotationTarget = 2;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-11, -2)
+	reloadPhase.rotationTarget = -40;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
@@ -236,31 +224,15 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = true;
 	reloadPhase.enterPhaseCallback = function (self)
-		if self.KhMOSKARBulletLoaded and self.KhMOSKAToLoadRBullet then
-			self.HEATToSpawnCasing = false;
-		elseif self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount then
-			self.HEATToSpawnCasing = true;
-		end
+
 	end
 	reloadPhase.constantCallback = function (self)
-	
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
+		end			
 	end
 	reloadPhase.finishCallback = function (self)
-		if (self.KhMOSKAToLoadRBullet and self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount and not self.KhMOSKARBulletLoaded)
-		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
-			self.HEATAmmoCounter = self.HEATAmmoCounter - 1;
-			self.KhMOSKARBulletLoaded = false;
-			self.KhMOSKARBulletFired = true;
-		end
-		if self.HEATToSpawnCasing then
-			self.KhMOSKACasingEjectAddSound:Play(self.Pos);
-		end
-		if (not self:IsReloading())
-		or (self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount and not self.KhMOSKAToLoadRBullet)
-		or (self.KhMOSKARBulletLoaded and self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletFired) then
-			self.HEATReloadPhaseOverride = 4;
-		end
-		self.HEATReloadSupportOffsetTarget.X = -6;
+		self.HEATReloadSupportOffsetTarget.X = -14;
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -276,43 +248,35 @@ function Create(self)
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
-	reloadPhase.prepareSound = CreateSoundContainer("Round In Prepare CED Khrabarovsk MOSKA", "CED.rte");
-	reloadPhase.prepareDelay = 300;
-	reloadPhase.prepareSoundLength = 300;
-	reloadPhase.afterSound = CreateSoundContainer("Round In CED Khrabarovsk MOSKA", "CED.rte");
-	reloadPhase.afterDelay = 100;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.prepareSound = CreateSoundContainer("Round In Prepare CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.prepareDelay = 590;
+	reloadPhase.prepareSoundLength = 590;
+	reloadPhase.afterSound = CreateSoundContainer("Round In CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.afterDelay = 250;
+	reloadPhase.reloadStanceOffsetTarget = Vector(7, 11);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(0, 2)
-	reloadPhase.rotationTarget = 10;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-10, -3)
+	reloadPhase.rotationTarget = -35;
 	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 1;
 	reloadPhase.verticalAnim = 1;
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 6;
-	reloadPhase.endFrame = 6;
+	reloadPhase.endFrame = 8;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
-	reloadPhase.shotgunReloadLoop = true;
+	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-		self.HEATRotationTarget = 10 - (3 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))		
+		self.HEATRotationTarget = -35 - (3 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))		
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATReloadSupportOffsetTarget = Vector(6, 0);
-		self.KhMOSKARBulletLoaded = self.KhMOSKAToLoadRBullet;
-		if self.KhMOSKARBulletLoaded then
-			self.KhMOSKARBulletFired = false;
-		end
-		if self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount or self.KhMOSKAToLoadRBullet then
-			self.HEATCurrentReloadPhaseData.afterDelay = 300;
-			self.HEATReloadPhaseOverride = 4;
-		end
+		self.HEATReloadSupportOffsetTarget = Vector(-9, 0);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -328,15 +292,15 @@ function Create(self)
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
-	reloadPhase.prepareSound = nil;
-	reloadPhase.prepareDelay = 65;
-	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk MOSKA", "CED.rte");
-	reloadPhase.afterDelay = 120;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.prepareSound = CreateSoundContainer("Bolt Forward Prepare CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.prepareDelay = 575;
+	reloadPhase.prepareSoundLength = 575;
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.afterDelay = 280;
+	reloadPhase.reloadStanceOffsetTarget = Vector(7, 11);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-6, -3)
-	reloadPhase.rotationTarget = -1;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-14, -3)
+	reloadPhase.rotationTarget = -30;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
@@ -344,7 +308,7 @@ function Create(self)
 	reloadPhase.startFrame = 6;
 	reloadPhase.endFrame = 2;
 	reloadPhase.setEndFrameAsPersistent = true;
-	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -353,14 +317,12 @@ function Create(self)
 	
 	end
 	reloadPhase.constantCallback = function (self)
-		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
-		or (self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletLoaded)
-		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
-			self.HEATReloadPhaseOverride = 2;
+		if not self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.Frame = 8;
 		end
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATReloadSupportOffsetTarget.X = -3;
+		self.HEATReloadSupportOffsetTarget.X = -10;
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 	
@@ -377,14 +339,14 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = nil;
-	reloadPhase.prepareDelay = 60;
+	reloadPhase.prepareDelay = 20;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Down CED Khrabarovsk MOSKA", "CED.rte");
-	reloadPhase.afterDelay = 100;
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Down CED Vossberg Titan AMI", "CED.rte");
+	reloadPhase.afterDelay = 480;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-3, -3)
-	reloadPhase.rotationTarget = 0;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-10, -4)
+	reloadPhase.rotationTarget = -15;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
@@ -401,12 +363,7 @@ function Create(self)
 	
 	end
 	reloadPhase.constantCallback = function (self)
-		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
-		or (self.KhMOSKAToLoadRBullet and not self.KhMOSKARBulletLoaded)
-		or (self.KhMOSKARBulletLoaded and not self.KhMOSKAToLoadRBullet) then
-			self.HEATReloadPhaseOverride = 1;
-		end
-			
+
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATReloadSupportOffsetTarget.Y = 0;
@@ -427,23 +384,23 @@ function Create(self)
 	self.useHEATRecoil = true;
 	
 	-- Strength of the horizontal "kick" animation when firing.
-	self.HEATRecoilHorizontalAnim = 5;
+	self.HEATRecoilHorizontalAnim = 10;
 	-- Strength of the rotational "kick" animation when firing.
-	self.HEATRecoilAngAnim = 10;
+	self.HEATRecoilAngAnim = 16;
 	-- Variative multiplier for the rotational kick animation. A value of "0.1" here would give you anywhere from x0.95 to x1.05 the AngAnim.
 	self.HEATRecoilAngVariation = 0.3;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 39
+	self.HEATRecoilStrength = 45
 	-- Some sort of mathemagical strength value to affect the recoil.
 	self.HEATRecoilPowStrength = 0.2
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.
 	self.HEATRecoilRandomUpper = 1.1
 	-- Damping effect on the recoil - how fast it returns to normal.
-	self.HEATRecoilDamping = 0.7
+	self.HEATRecoilDamping = 0.4
 	
 	-- Maximum rotation in degrees the recoil can cause.
-	self.HEATRecoilMax = 4
+	self.HEATRecoilMax = 6
 	
 	
 	-----------------
@@ -451,10 +408,10 @@ function Create(self)
 	-----------------
 	
 	-- Whether to enable the delayed fire system or not.
-	self.useHEATDelayedFire = true;
+	self.useHEATDelayedFire = false;
 	
 	-- The sound to play when being activated, before firing.
-	self.HEATPreSound = CreateSoundContainer("Pre CED Khrabarovsk MOSKA", "CED.rte");
+	self.HEATPreSound = nil;
 	-- Delay between being activated and firing.
-	self.HEATDelayedFireTimeMS = 50;
+	self.HEATDelayedFireTimeMS = 0;
 end

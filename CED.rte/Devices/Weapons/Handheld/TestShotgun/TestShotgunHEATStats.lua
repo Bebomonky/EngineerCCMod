@@ -102,8 +102,8 @@ function Create(self)
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = CreateAEmitter("Shell CED Test Shotgun", "CED.rte");
-	-- Position to spawn the casing at. Basically EjectionOffset. Don't include FlipFactor.
-	self.HEATCasingOffset = Vector(-3, -1);
+	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
+	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
 	self.HEATCasingVelocity = Vector(-3, -3);
 	

@@ -1,0 +1,8 @@
+COD:MW sn_alpha50 for most of it
+COD:MW 50bmg_casing_rings
+
+BF1 Bulldog Eject Shell -35
+BF1 Bulldog Insert Bullet -35
+BF1 MartiniHenry Insert Bullet
+
+EmptyClick: COD:MW Romeo870 Mech
