@@ -137,6 +137,31 @@ function BuilderBasic(self)
 								if button.Buildable.SnapToGround then
 									renderPos = SceneMan:MovePointToGround(renderPos, 1, 1)
 									renderPos.Y = renderPos.Y - (box.Height / 2)
+	
+									local radius = math.abs(box.Corner.X)
+									local foundMO = nil
+									local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
+									for mo in MOs do
+										if mo then
+											if mo:IsInGroup("CED - Buildables") then
+												foundMO = mo
+											end
+											if IsActor(mo) then
+												foundMO = mo
+											end
+										end
+									end
+	
+									if foundMO then
+										validPlacement = false
+									end
+	
+									--If we are floating it's invalid
+									if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
+										validPlacement = false
+									end
+								else
+									validPlacement = true
 								end
 
 								local startPos = renderPos - size
@@ -156,29 +181,6 @@ function BuilderBasic(self)
 
 								local nonAirRatio = nonAirPixels / totalPixels
 								if nonAirRatio > tolerance then
-									validPlacement = false
-								end
-
-								local radius = math.abs(box.Corner.X)
-								local foundMO = nil
-								local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
-								for mo in MOs do
-									if mo then
-										if mo:IsInGroup("CED - Buildables") then
-											foundMO = mo
-										end
-										if IsActor(mo) then
-											foundMO = mo
-										end
-									end
-								end
-
-								if foundMO then
-									validPlacement = false
-								end
-
-								--If we are floating it's invalid
-								if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
 									validPlacement = false
 								end
 
@@ -357,6 +359,6 @@ function ThreadedUpdate(self)
 	end
 end
 
-function Destroy()
+function Destroy(self)
 	self.Menu:Remove()
 end
