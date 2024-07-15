@@ -94,11 +94,22 @@ function BuilderBasic(self)
 					local tooltip_bar = self.Menu:CreateGUI("CollectionBox", self.Main.Box)
 					tooltip_bar:SetTitle("")
 					tooltip_bar:SetPos(tooltip_bar:GetParent():GetWidth() + 10, 25)
-					tooltip_bar:SetSize(100, 50)
+					tooltip_bar:SetSize(100, 75)
 					tooltip_bar:Color(146)
 					tooltip_bar:OutlineColor(71)
 					tooltip_bar:OutlineThickness(2)
 					tooltip_bar:SetVisible(false) --Set to false to prevent flicker
+
+					local desc = self.Menu:CreateGUI("Label", tooltip_bar)
+					desc:SmallText(true)
+					desc:SetContentAlignment(1)
+					desc:SetSize(tooltip_bar:GetSize())
+					desc:SetPos(desc:GetPosX() + 10, desc:GetPosY() + 10)
+					desc:SetVisible(false)
+
+					desc.Think = function(entity, screen)
+						desc:SetVisible(false)
+					end
 
 					tooltip_bar.Think = function(entity, screen)
 						tooltip_bar:SetVisible(false)
@@ -122,6 +133,11 @@ function BuilderBasic(self)
 						button.Think = function(entity, screen)
 							if button.IsHovered then
 								tooltip_bar:SetVisible(true)
+								desc:SetVisible(true)
+								if tooltip_bar:GetTitle() ~= button.Buildable.DisplayName then
+									desc:SetText(button.Buildable.Description)
+									tooltip_bar:SetTitle(button.Buildable.DisplayName)
+								end
 
 								button:OutlineColor(117)
 							else

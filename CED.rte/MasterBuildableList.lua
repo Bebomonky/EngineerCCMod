@@ -7,6 +7,11 @@ CEDMasterBuildableList.Utility = {};
 
 -------  FORTIFICATIONS  -------
 CEDMasterBuildableList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
+								  ["Description"] = [[
+Desc: Builds the CED Logo
+Cost: 50oz
+What it does: Yes
+Yay!]],
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericTerrainBuildable/GenericTerrainBuildable.png",
@@ -20,6 +25,11 @@ CEDMasterBuildableList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
 
 -------  TURRETS  -------
 CEDMasterBuildableList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
+								  ["Description"] = [[
+Desc: Builds the Plink Turret
+Cost: 50oz
+What it does: Yes
+Yay!]],
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericBuildable/GenericBuildable.png",
@@ -34,6 +44,11 @@ CEDMasterBuildableList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
 
 -------  BUILDINGS  -------
 CEDMasterBuildableList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
+								  ["Description"] = [[
+Desc: Builds the Atmo-coagulator
+Cost: 100oz
+What it does: Yes
+Yay!]],
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Coagulator/Coagulator.png",
@@ -46,6 +61,11 @@ CEDMasterBuildableList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagu
 								  ["SnapToGround"] = true};	
 								  
 CEDMasterBuildableList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
+								  ["Description"] = [[
+Desc: Builds the Supercomputer
+Cost: 500oz
+What it does: Yes
+Yay!]],
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Supercomputer/Supercomputer.png",
