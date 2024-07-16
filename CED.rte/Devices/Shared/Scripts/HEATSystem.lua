@@ -111,6 +111,8 @@ function Create(self)
 	self.HEATTotalEmptyReloadTime = self.HEATTotalEmptyReloadTimeOverride or nil;
 	-- If there weren't any Overrides set in the Stats, then autocalculate best guesses.
 	if not self.HEATTotalFullReloadTime then
+		-- I know 50 here is super arbitrary, but having it at 0 or 1 has the game sometimes manage to prematurely end a reload. The autocalculation isn't perfect.
+		-- This is just a safety buffer.
 		local totalFullTime = 50;
 		for i = 1, #self.HEATReloadPhases do
 			totalFullTime = totalFullTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
@@ -301,12 +303,12 @@ function ThreadedUpdate(self)
 			if self.HEATWasInterrupted then
 				self.HEATWasInterrupted = false;
 				-- Autocalculate best guesses again so we can keep it accurate
-				local totalTime = 0;
+				local totalTime = 50;
 				if self.HEATEmptyReload and not self.HEATTotalEmptyReloadTimeOverride then
 					for i = self.HEATCurrentReloadPhase, #self.HEATReloadPhases do
 						totalTime = totalTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
 					end	
-					self.BaseReloadTime = totalTime + 1;
+					self.BaseReloadTime = totalTime;
 				elseif not self.HEATTotalFullReloadTimeOverride then
 					for i = self.HEATCurrentReloadPhase, #self.HEATReloadPhases do
 						totalTime = totalTime + self.HEATReloadPhases[i].prepareDelay + self.HEATReloadPhases[i].afterDelay;
@@ -314,7 +316,7 @@ function ThreadedUpdate(self)
 							break;
 						end
 					end
-					self.BaseReloadTime = totalTime + 1;
+					self.BaseReloadTime = totalTime;
 				end
 			end
 					

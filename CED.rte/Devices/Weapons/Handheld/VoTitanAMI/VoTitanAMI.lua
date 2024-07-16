@@ -9,6 +9,8 @@ end
 
 function OnFire(self)
 
+	CameraMan:AddScreenShake(30, self.Pos);
+
 	local velocity = 180;
 
 	local shot = CreateMOPixel("Bullet CED Vossberg Titan AMI Scripted", "CED.rte");
