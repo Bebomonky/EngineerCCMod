@@ -1,0 +1,11 @@
+All CP2077
+
+smart_ashura_handle_pull, tech_achilles_servo
+
+smart_sidewinder_mag_in
+
+smart_ashura_handle_release
+
+emptyclick = w_gun_rifle_power_masamune_trigger
+
+switch: tech achilles loaded
