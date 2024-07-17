@@ -103,7 +103,7 @@ function Create(self)
 	self.HEATTotalEmptyReloadTimeOverride = 19999;
 	
 	-- Casing object to spawn on phases with spawnCasing.
-	self.HEATCasing = CreateMOSParticle("Casing Long", "Base.rte");
+	self.HEATCasing = CreateMOSParticle("CompliSound Medium Casing Long", "0CompliSoundEmporium.rte");
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.

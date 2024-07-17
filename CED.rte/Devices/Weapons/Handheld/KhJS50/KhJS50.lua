@@ -12,6 +12,18 @@ function Create(self)
 	self.HEATOriginalSharpLength = self.KhJS50SharpLengthSettings[self.KhJS50CurrentSharpLengthSetting];
 end
 
+function OnFire(self)
+	-- Use our HEATStats to spawn a casing every time we fire.
+	local casing
+	casing = self.HEATCasing:Clone();
+	casing.Pos = self.EjectionPos;
+	casing.Vel = self.Vel + Vector(self.HEATCasingVelocity.X * self.FlipFactor, self.HEATCasingVelocity.Y):RadRotate(self.RotAngle);
+	casing.RotAngle = self.RotAngle;
+	casing.HFlipped = self.HFlipped;
+	MovableMan:AddParticle(casing);
+end
+					
+
 function ThreadedUpdate(self)
 	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
 		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
