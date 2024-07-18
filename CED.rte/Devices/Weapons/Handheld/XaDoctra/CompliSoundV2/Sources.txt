@@ -1,4 +1,4 @@
-Mech: Warframe PriestPistolMech, Warframe ProteaSMGMech
+Mech: Warframe PriestPistolMech, Warframe ProteaSMGMech, BF5 Weapons_Shared_HiFi_1911_Wave
 Shot: Warframe ProteaSMGShot
 Bass: SW01_Weapons_Blasters_Shared_Corebass_Close_Thumb_VAR_01
 Reflections: CP2077 Shingen
