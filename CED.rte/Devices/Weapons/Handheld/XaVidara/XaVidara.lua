@@ -61,6 +61,16 @@ function ThreadedUpdate(self)
 				self.XaVidaraWoundDamageMultiplier = 1;
 				self.RateOfFire = 400;
 				self.HEATRecoilStrength = 20;
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 10;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;									
 			else
 				self.XaVidaraSwitchShotgunSound:Play(self.Pos);
 				self.XaVidaraSpreadshotMode = true;
@@ -69,6 +79,16 @@ function ThreadedUpdate(self)
 				self.XaVidaraWoundDamageMultiplier = 0.7; -- hey, the description is accurate!
 				self.RateOfFire = 150;
 				self.HEATRecoilStrength = 50;
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 30;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 30;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 0.7;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;		
 			end
 		end
 	end

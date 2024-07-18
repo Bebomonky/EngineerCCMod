@@ -8,7 +8,7 @@ function Update(self)
 	self.CompliSoundActorPlayJumpSound = false;
 	local controller = self:GetController();
 	
-	if controller:IsState(Controller.BODY_JUMPSTART) == true and controller:IsState(Controller.BODY_CROUCH) == false and self.jumpTimer:IsPastSimMS(self.jumpDelay) and not self.isJumping then
+	if controller:IsState(Controller.BODY_JUMPSTART) == true and controller:IsState(Controller.BODY_CROUCH) == false and self.jumpTimer:IsPastSimMS(self.jumpDelay) and not self.CompliSoundActorIsJumping and not self.CompliSoundActorWasInAir then
 		if (self:IsPlayerControlled() and self.CompliSoundActorFootContacts[1] == true or self.CompliSoundActorFootContacts[2] == true) or self.CompliSoundActorWasInAir == false then
 			local jumpVec = Vector(0, -self.jumpStrength)
 			local jumpWalkX = 3

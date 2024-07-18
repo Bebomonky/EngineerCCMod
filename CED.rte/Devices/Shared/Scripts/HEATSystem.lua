@@ -21,6 +21,9 @@ function Create(self)
 	-- Our HFLipped last frame. Used to prevent rotational animation from flipping out.
 	self.HEATLastHFlipped = self.HFlipped
 	
+	-- Particle utility.
+	self.HEATParticleUtility = require("Scripts/Utility/ParticleUtility");
+	
 	-----------------
 	----------------- Original values
 	-----------------
@@ -633,6 +636,14 @@ function ThreadedUpdate(self)
 					self.HEATReflectionIndoorsSound:Play(self.Pos);
 				end
 			end
+		end
+		
+		-- Smoke
+		if self.useHEATParticleUtilityFiringSmoke then
+			self.HEATParticleUtilityFiringSmokeDataTable.Position = self.MuzzlePos;
+			self.HEATParticleUtilityFiringSmokeDataTable.Source = self;
+			self.HEATParticleUtilityFiringSmokeDataTable.RadAngle = self.HFlipped and (self.RotAngle + math.pi) or self.RotAngle;
+			self.HEATParticleUtility:CreateDirectionalSmokeEffect(self.HEATParticleUtilityFiringSmokeDataTable);
 		end
 		
 		self.HEATFireCallback(self);

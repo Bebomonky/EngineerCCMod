@@ -60,6 +60,25 @@ function Create(self)
 	self.HEATLockBackOnEmpty = false;
 	
 	-----------------
+	----------------- ParticleUtility firing smoke
+	-----------------
+	
+	-- Disable or enable using the ParticleUtility for firing smoke FX.
+	self.useHEATParticleUtilityFiringSmoke = true;
+	
+	-- Data to feed into the ParticleUtility. Read the ParticleUtility itself for information on these properties.
+	self.HEATParticleUtilityFiringSmokeDataTable = {};
+	self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
+	self.HEATParticleUtilityFiringSmokeDataTable.Spread = 35;
+	self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.6;
+	self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
+	self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.35;
+	self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 2.4;
+	self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.8;
+	self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
+	
+	-----------------
 	----------------- CompliSound firing sound system
 	-----------------
 	

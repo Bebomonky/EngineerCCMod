@@ -80,6 +80,16 @@ function Update(self)
 				self.HEATRecoilRandomUpper = 1.1
 				self.HEATRecoilDamping = 0.7
 				self.HEATRecoilMax = 4
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 35;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.6;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.35;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 2.4;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.8;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
 				-- Note that AmmoCounter 1 and an unfired R Bullet means we're about to eject the one round and get to 0
 				if not self:IsReloading() and self.HEATAmmoCounter == 0 or (self.HEATAmmoCounter == 1 and not self.KhMOSKARBulletFired) then
 					self:Reload();
@@ -103,6 +113,16 @@ function Update(self)
 				self.HEATRecoilRandomUpper = 1.1
 				self.HEATRecoilDamping = 0.35
 				self.HEATRecoilMax = 12
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 45;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 20;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.7;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.4;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
 				if not self:IsReloading() then
 					self:Reload();
 				end
