@@ -17,6 +17,14 @@ function Create(self)
 	self.Activity = ActivityMan:GetActivity()
 end
 
+function DisplayNumber(self, screen, color, pos, text)
+	for i = 1, string.len(text) do
+		local digit = string.sub(text, i, i)
+		PrimitiveMan:DrawBitmapPrimitive(pos + Vector((3 + 1) * (i - 1) + 1, 5),
+		"CED.rte/Actors/Shared/Sprites/Font/" .. color .. "/Numbers/" .. digit .. ".png", 0)
+	end
+end
+
 --This is the greatest BuilderBasic of all time
 function BuilderBasic(self)
 	self.Main.Box = self.Menu:CreateGUI("CollectionBox")
@@ -46,10 +54,15 @@ function BuilderBasic(self)
 	local rows = 3
 	local maxHeight = 295
 	local height = 0
-	local isHovering = false
 	--used for Distance between buttons, height
 	local posMultiplier = 85
 	local maxRadius = 20
+
+	local textWidth = 0
+	local textWidth_price = 0
+	local oz_width = 0
+	local textPos = Vector()
+	local itemFund = false
 
 	local function drawMenu()
 		local buttons = {}
@@ -103,7 +116,6 @@ function BuilderBasic(self)
 					local desc = self.Menu:CreateGUI("Label", tooltip_bar)
 					desc:SmallText(true)
 					desc:SetContentAlignment(1)
-					desc:SetSize(tooltip_bar:GetSize())
 					desc:SetPos(desc:GetPosX() + 10, desc:GetPosY() + 10)
 					desc:SetVisible(false)
 
@@ -122,6 +134,7 @@ function BuilderBasic(self)
 						local button = self.Menu:CreateGUI("Button", self.Main.Box)
 						button.Buildable = mainTab.BuildList[i]
 						button.Selected = false
+						button.IsResearched = false
 						button:SetPos(x, y)
 						button:SetSize(65, 65)
 						button:SetText(button.Buildable.DisplayName)
@@ -131,20 +144,48 @@ function BuilderBasic(self)
 						button:OutlineThickness(2)
 
 						button.Think = function(entity, screen)
+							local offset = CameraMan:GetOffset(screen)
+							local world_pos = Vector(button:GetParent():GetPos()) + Vector(button:GetPos()) + offset
+							local parent_world_pos = Vector(button:GetParent():GetPos()) + offset
+							local hasFund = self.Activity:GetTeamFunds(entity.Team) >= button.Buildable.Cost
+
+							button:Color(hasFund and 146 or 248)
+
 							if button.IsHovered then
+								itemFund = self.Activity:GetTeamFunds(entity.Team) >= button.Buildable.Cost
 								tooltip_bar:SetVisible(true)
 								desc:SetVisible(true)
 								if tooltip_bar:GetTitle() ~= button.Buildable.DisplayName then
+									local size = button.Buildable.TooltipSize
+									tooltip_bar:SetSize(size.X, size.Y)
+									desc:SetSize(size.X, size.Y)
 									desc:SetText(button.Buildable.Description)
 									tooltip_bar:SetTitle(button.Buildable.DisplayName)
+
+									textWidth = FrameMan:CalculateTextWidth(button.Buildable.DisplayName .. " ", true)
+									textWidth_price = FrameMan:CalculateTextWidth(tostring(button.Buildable.Cost), true)
+									oz_width = FrameMan:CalculateTextWidth("oz", true)
+									textPos = offset + Vector(textWidth, 0) + Vector(tooltip_bar:GetPosX() + 10, tooltip_bar:GetPosY() + 25)
 								end
 
-								button:OutlineColor(117)
+								PrimitiveMan:DrawTextPrimitive(screen, textPos, "(", true, 0)
+								DisplayNumber(self, screen,
+								itemFund and "Green" or "Red",
+								textPos + Vector(4, 0),
+								tostring(button.Buildable.Cost))
+
+								PrimitiveMan:DrawTextPrimitive(screen, textPos + Vector(4 + textWidth_price, 0), "oz", true, 0)
+								PrimitiveMan:DrawTextPrimitive(screen,
+								textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
+								true,
+								0)
+								button:OutlineColor(itemFund and 117 or 13)
+
+								button:Color(hasFund and 127 or 249)
 							else
 								button:OutlineColor(144)
 							end
-							local world_pos = Vector(button:GetParent():GetPos()) + Vector(button:GetPos()) + CameraMan:GetOffset(screen)
-							local parent_world_pos = Vector(button:GetParent():GetPos()) + CameraMan:GetOffset(screen)
+
 							PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(button:GetSize()) / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
 
 							if not self.Menu:cursor_inside(parent_world_pos, Vector(button:GetParent():GetSize())) and button.Selected then
@@ -153,24 +194,6 @@ function BuilderBasic(self)
 								if button.Buildable.SnapToGround then
 									renderPos = SceneMan:MovePointToGround(renderPos, 1, 1)
 									renderPos.Y = renderPos.Y - (box.Height / 2)
-	
-									local radius = math.abs(box.Corner.X)
-									local foundMO = nil
-									local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
-									for mo in MOs do
-										if mo then
-											if mo:IsInGroup("CED - Buildables") then
-												foundMO = mo
-											end
-											if IsActor(mo) then
-												foundMO = mo
-											end
-										end
-									end
-	
-									if foundMO then
-										validPlacement = false
-									end
 	
 									--If we are floating it's invalid
 									if SceneMan:FindAltitude(renderPos, 0, 10) > button.Buildable.MaxAltitude then
@@ -197,6 +220,24 @@ function BuilderBasic(self)
 
 								local nonAirRatio = nonAirPixels / totalPixels
 								if nonAirRatio > tolerance then
+									validPlacement = false
+								end
+
+								local radius = math.abs(box.Corner.X)
+								local foundMO = nil
+								local MOs = MovableMan:GetMOsInRadius(renderPos, radius + maxRadius, -1, false)
+								for mo in MOs do
+									if mo then
+										if mo:IsInGroup("CED - Buildables") then
+											foundMO = mo
+										end
+										if IsActor(mo) then
+											foundMO = mo
+										end
+									end
+								end
+
+								if foundMO then
 									validPlacement = false
 								end
 
@@ -233,14 +274,19 @@ function BuilderBasic(self)
 
 						button.OnPress = function(key)
 							if key == Controller.PRIMARY_ACTION then
-								self.SelectDelayTime:Reset()
-								box = button.Buildable.RenderSize
-								isRemoving = false
-								self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
-								for _, btn in ipairs(buttons) do
-									btn.Selected = false
+								if itemFund then
+									self.ConfirmSound:Play(-1)
+									self.SelectDelayTime:Reset()
+									box = button.Buildable.RenderSize
+									isRemoving = false
+									self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
+									for _, btn in ipairs(buttons) do
+										btn.Selected = false
+									end
+									button.Selected = true
+								else
+									self.ErrorSound:Play(-1)
 								end
-								button.Selected = true
 							end
 						end
 

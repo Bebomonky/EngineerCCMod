@@ -1,17 +1,18 @@
-CEDMasterBuildableList = {};
+CEDMasterList = {};
 
-CEDMasterBuildableList.Fortifications = {};
-CEDMasterBuildableList.Turrets = {};
-CEDMasterBuildableList.Buildings = {};
-CEDMasterBuildableList.Utility = {};
+CEDMasterList.Fortifications = {};
+CEDMasterList.Turrets = {};
+CEDMasterList.Buildings = {};
+CEDMasterList.Utility = {};
+CEDMasterList.Technology = {};
 
 -------  FORTIFICATIONS  -------
-CEDMasterBuildableList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
+CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
 								  ["Description"] = [[
 Desc: Builds the CED Logo
-Cost: 50oz
 What it does: Yes
 Yay!]],
+								  ["TooltipSize"] = Vector(100, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericTerrainBuildable/GenericTerrainBuildable.png",
@@ -24,12 +25,12 @@ Yay!]],
 								  ["SnapToGround"] = false};
 
 -------  TURRETS  -------
-CEDMasterBuildableList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
+CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
 								  ["Description"] = [[
 Desc: Builds the Plink Turret
-Cost: 50oz
 What it does: Yes
 Yay!]],
+								  ["TooltipSize"] = Vector(100, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericBuildable/GenericBuildable.png",
@@ -43,12 +44,12 @@ Yay!]],
 
 
 -------  BUILDINGS  -------
-CEDMasterBuildableList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
+CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
 								  ["Description"] = [[
 Desc: Builds the Atmo-coagulator
-Cost: 100oz
 What it does: Yes
 Yay!]],
+								  ["TooltipSize"] = Vector(130, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Coagulator/Coagulator.png",
@@ -60,12 +61,12 @@ Yay!]],
 								  ["Cost"] = 100,
 								  ["SnapToGround"] = true};	
 								  
-CEDMasterBuildableList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
+CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
 								  ["Description"] = [[
 Desc: Builds the Supercomputer
-Cost: 500oz
 What it does: Yes
 Yay!]],
+								  ["TooltipSize"] = Vector(130, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Supercomputer/Supercomputer.png",
@@ -78,3 +79,27 @@ Yay!]],
 								  ["SnapToGround"] = true};	
 
 -------  UTILITY  -------
+
+-------  TECHNOLOGY  -------
+CEDMasterList.Technology.PlinkTurret = {["DisplayName"] = "Research\nPlink Turret",
+								  ["ResearchName"] = "Plink_Turret",
+								  ["Description"] = [[
+Desc: Researches the Plink Turret
+What it does: Researches
+Yay!]],
+								  ["Delay"] = 1000,
+								  ["TooltipSize"] = Vector(130, 75),
+								  ["Cost"] = 1000,
+}
+
+CEDMasterList.Technology.Atmo_coagulator = {["DisplayName"] = "Research\nAtmo-coagulator",
+								  ["ResearchName"] = "Atmo_coagulator",
+								  ["Description"] = [[
+Desc: Researches the
+Atmo-coagulator
+What it does: Researches
+Yay!]],
+								  ["Delay"] = 1000,
+								  ["TooltipSize"] = Vector(130, 75),
+								  ["Cost"] = 500,
+}
