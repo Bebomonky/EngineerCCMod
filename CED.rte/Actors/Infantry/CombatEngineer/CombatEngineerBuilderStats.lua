@@ -1,4 +1,4 @@
-require("MasterBuildableList")
+require("MasterList")
 
 function Create(self)
 	self.CEDBuildRange = 150;
@@ -17,7 +17,7 @@ function Create(self)
 	
 	-------  TURRETS  -------
 	local i = 1;
-	self.CEDAvailableBuildables.Turrets[i] = CEDMasterBuildableList.Turrets.PlinkTurret
+	self.CEDAvailableBuildables.Turrets[i] = CEDMasterList.Turrets.PlinkTurret
 	i = i + 1;
 	
 	

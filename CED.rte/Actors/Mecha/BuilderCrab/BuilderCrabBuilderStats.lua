@@ -1,4 +1,4 @@
-require("MasterBuildableList")
+require("MasterList")
 
 function Create(self)
 	self.CEDBuildRange = 200;
@@ -14,20 +14,20 @@ function Create(self)
 	self.CEDAvailableBuildables.Utility = {};
 	-------  FORTIFICATIONS  -------
 	local i = 1;
-	self.CEDAvailableBuildables.Fortifications[i] = CEDMasterBuildableList.Fortifications.CEDLogo
+	self.CEDAvailableBuildables.Fortifications[i] = CEDMasterList.Fortifications.CEDLogo
 	i = i + 1;
 	
 	-------  TURRETS  -------
 	local i = 1;
-	self.CEDAvailableBuildables.Turrets[i] = CEDMasterBuildableList.Turrets.PlinkTurret
+	self.CEDAvailableBuildables.Turrets[i] = CEDMasterList.Turrets.PlinkTurret
 	i = i + 1;
 	
 	
 	-------  BUILDINGS  -------
 	local i = 1;
-	self.CEDAvailableBuildables.Buildings[i] = CEDMasterBuildableList.Buildings.AtmoCoagulator
+	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.AtmoCoagulator
 	i = i + 1;
-	self.CEDAvailableBuildables.Buildings[i] = CEDMasterBuildableList.Buildings.Supercomputer
+	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.Supercomputer
 	i = i + 1;
 	
 	-------  UTILITY  -------
