@@ -1,0 +1,7 @@
+Walk: Warframe AladV, GhoulDevourerStepDefault
+Sprint: Warframe AladVPet, GhoulDevourerStepDefault
+
+Land: Warframe GrineerLeto Step, BOOMLibrary WeapArmr
+Others: BOOMLibrary WeapArmr
+
+Impacts: Warframe TennoBodyfall, BOOMLibrary WeapArmr

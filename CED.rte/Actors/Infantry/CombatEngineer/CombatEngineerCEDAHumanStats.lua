@@ -5,7 +5,11 @@ function Create(self)
 	
 	self.CEDAHumanAccelerationFactor = 0.4;
 	self.CEDAHumanWalkMultiplier = 0.6;
-	self.CEDAHumanSprintMultiplier = 1.15;
+	self.CEDAHumanSprintMultiplier = 1.0;
+	self.CEDAHumanSprintingRotAngleOffset = -0.15;
+	self.CEDAHumanCrouchRunAmount = 1.0;
+	
+	self.CEDAHumanFoleyAIVolume = 0.8;
 
 	self.CEDAHumanFoleySounds = {};
 	self.CEDAHumanFoleySounds.Walk = CreateSoundContainer("Walk CED Combat Engineer", "CED.rte");
@@ -16,5 +20,7 @@ function Create(self)
 	self.CEDAHumanFoleySounds.Stand = CreateSoundContainer("Stand CED Combat Engineer", "CED.rte");
 	self.CEDAHumanFoleySounds.ProneStart = CreateSoundContainer("Prone Start CED Combat Engineer", "CED.rte");
 	self.CEDAHumanFoleySounds.Crawl = CreateSoundContainer("Crawl CED Combat Engineer", "CED.rte");
+	self.CEDAHumanFoleySounds.ImpactLight = nil;
+	self.CEDAHumanFoleySounds.ImpactHeavy = nil;
 
 end

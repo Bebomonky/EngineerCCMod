@@ -54,22 +54,24 @@ function Create(self)
 	end
 	
 	self.CompliSoundActorImpactLightCallback = function (self)
-		if self.CEDAHumanFoleySounds.Impact then
-			self.CEDAHumanFoleySounds.Impact:Play(self.Pos);
+		if self.CEDAHumanFoleySounds.ImpactLight then
+			self.CEDAHumanFoleySounds.ImpactLight:Play(self.Pos);
 		end		
 	end
 	
 	self.CompliSoundActorImpactHeavyCallback = function (self)
-		if self.CEDAHumanFoleySounds.Impact then
-			self.CEDAHumanFoleySounds.Impact:Play(self.Pos);
+		if self.CEDAHumanFoleySounds.ImpactLight then
+			self.CEDAHumanFoleySounds.ImpactHeavy:Play(self.Pos);
 		end				
 	end
 	
 end
 
 function ThreadedUpdate(self)
+	local isPlayerControlled = self:IsPlayerControlled();
 	for soundType, soundContainer in pairs(self.CEDAHumanFoleySounds) do
 		soundContainer.Pos = self.Pos;
+		soundContainer.Volume = isPlayerControlled and 1.0 or self.CEDAHumanFoleyAIVolume;
 	end
 
 	self.CompliSoundActorPlayJumpSound = false;
@@ -96,7 +98,7 @@ function ThreadedUpdate(self)
 	
 	-- Jumping
 	if controller:IsState(Controller.BODY_JUMPSTART) == true and controller:IsState(Controller.BODY_CROUCH) == false and self.CEDAHumanJumpTimer:IsPastSimMS(self.CEDAHumanJumpDelay) and not self.CompliSoundActorIsJumping and not self.CompliSoundActorWasInAir then
-		if (self:IsPlayerControlled() and self.CompliSoundActorFootContacts[1] == true or self.CompliSoundActorFootContacts[2] == true) or self.CompliSoundActorWasInAir == false then
+		if (isPlayerControlled and self.CompliSoundActorFootContacts[1] == true or self.CompliSoundActorFootContacts[2] == true) or self.CompliSoundActorWasInAir == false then
 			local jumpStrength = self.CompliSoundActorIsSprinting and self.CEDAHumanJumpStrength * 2 or self.CEDAHumanJumpStrength;
 			local jumpVec = Vector(0, -self.CEDAHumanJumpStrength)
 			local jumpWalkX = 3
@@ -117,12 +119,14 @@ function ThreadedUpdate(self)
 	end
 	
 	-- Sprinting
-	local sprintInput =	self:IsPlayerControlled()
+	local sprintInput = (not isPlayerControlled and not self.AI.Target)
+	or
+	(isPlayerControlled
 	and UInputMan:KeyHeld(Key.LSHIFT)
 	and not (crouching and not self.CompliSoundActorIsSprinting)
 	and ((controller:IsState(Controller.MOVE_LEFT) == true or controller:IsState(Controller.MOVE_RIGHT) == true)
 	and not (controller:IsState(Controller.MOVE_LEFT) == true and controller:IsState(Controller.MOVE_RIGHT) == true))
-	and not (controller:IsState(Controller.MOVE_LEFT) == true and self.HFlipped == false or controller:IsState(Controller.MOVE_RIGHT) == true and self.HFlipped == true)
+	and not (controller:IsState(Controller.MOVE_LEFT) == true and self.HFlipped == false or controller:IsState(Controller.MOVE_RIGHT) == true and self.HFlipped == true))
 	
 	if sprintInput then
 		self.CompliSoundActorIsSprinting = true;
@@ -132,12 +136,12 @@ function ThreadedUpdate(self)
 	end	
 	
 	if self.CompliSoundActorIsSprinting then
-		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget - 0.15);
+		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget + self.CEDAHumanSprintingRotAngleOffset);
 		self.CrouchAmountOverride = 0.15;
 		controller:SetState(Controller.AIM_SHARP, false);
 	
 		if crouching then
-			self.CrouchAmountOverride = 1.0
+			self.CrouchAmountOverride = self.CEDAHumanCrouchRunAmount;
 			self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
 		end
 		
