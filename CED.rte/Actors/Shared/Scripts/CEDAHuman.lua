@@ -1,11 +1,12 @@
--- Handles jumping as well as all non-CompliSound-provided foley sounds, via its callbacks or otherwise.
--- Makes use of CompliSound script variables like the MoveSoundTimer.
+-- CED AHuman functionality like foley sounds, jumping, sprinting.
+-- Tightly integrated with CompliSound ActorMovementSounds.
 
 function Create(self)
 	self.CEDAHumanJumpTimer = Timer();
 	self.CEDAHumanJumpDelay = 400;
 	self.CEDAHumanJumpStrength = self.CEDAHumanJumpStrength or 1.5;
 
+	self.CEDAHumanSprintAndWalkDifference = self.CEDAHumanSprintMultiplier - self.CEDAHumanWalkMultiplier;
 	self.CEDAHumanCurrentMoveMultiplier = 1;
 	
 	self.CEDAHumanLimbPathDefaultSpeed0 = self:GetLimbPathSpeed(0);
@@ -19,10 +20,16 @@ function Create(self)
 	self.CompliSoundActorStepCallback = function (self)
 		if self.CompliSoundActorIsSprinting then
 			if self.CEDAHumanFoleySounds.Sprint then
+				self.CEDAHumanFoleySounds.Sprint.Volume = (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference)
 				self.CEDAHumanFoleySounds.Sprint:Play(self.Pos);
+			end
+			if self.CEDAHumanFoleySounds.Walk then
+				self.CEDAHumanFoleySounds.Walk.Volume = 1 - self.CEDAHumanFoleySounds.Sprint.Volume;
+				self.CEDAHumanFoleySounds.Walk:Play(self.Pos);
 			end
 		else
 			if self.CEDAHumanFoleySounds.Walk then
+				self.CEDAHumanFoleySounds.Walk.Volume = 1;
 				self.CEDAHumanFoleySounds.Walk:Play(self.Pos);
 			end		
 		end
@@ -71,7 +78,6 @@ function ThreadedUpdate(self)
 	local isPlayerControlled = self:IsPlayerControlled();
 	for soundType, soundContainer in pairs(self.CEDAHumanFoleySounds) do
 		soundContainer.Pos = self.Pos;
-		soundContainer.Volume = isPlayerControlled and 1.0 or self.CEDAHumanFoleyAIVolume;
 	end
 
 	self.CompliSoundActorPlayJumpSound = false;
@@ -119,7 +125,7 @@ function ThreadedUpdate(self)
 	end
 	
 	-- Sprinting
-	local sprintInput = (not isPlayerControlled and not self.AI.Target)
+	local sprintInput = (not isPlayerControlled and self.AI.Target)
 	or
 	(isPlayerControlled
 	and UInputMan:KeyHeld(Key.LSHIFT)
@@ -136,8 +142,8 @@ function ThreadedUpdate(self)
 	end	
 	
 	if self.CompliSoundActorIsSprinting then
-		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget + self.CEDAHumanSprintingRotAngleOffset);
-		self.CrouchAmountOverride = 0.15;
+		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget + (self.CEDAHumanSprintingRotAngleOffset) * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference));
+		self.CrouchAmountOverride = 0.15 * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference)
 		controller:SetState(Controller.AIM_SHARP, false);
 	
 		if crouching then

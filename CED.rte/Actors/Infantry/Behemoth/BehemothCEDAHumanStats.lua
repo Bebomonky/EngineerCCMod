@@ -3,13 +3,14 @@ require("MasterList")
 function Create(self)
 	self.CEDAHumanJumpStrength = 1.0;
 	
-	self.CEDAHumanAccelerationFactor = 0.4;
+	self.CEDAHumanAccelerationFactor = 0.1;
 	self.CEDAHumanWalkMultiplier = 0.55;
-	self.CEDAHumanSprintMultiplier = 1.0;
-	self.CEDAHumanSprintingRotAngleOffset = -0.02;
+	self.CEDAHumanSprintMultiplier = 1.2;
+	self.CEDAHumanSprintingRotAngleOffset = -0.09;
 	self.CEDAHumanCrouchRunAmount = 0.6;
 	
-	self.CEDAHumanFoleyAIVolume = 0.6;
+	self.CompliSoundActorTerrainSoundDefaultVolumeOverride = 1.3;
+	self.CompliSoundActorTerrainSoundPitchOverride = 0.7;
 
 	self.CEDAHumanFoleySounds = {};
 	self.CEDAHumanFoleySounds.Walk = CreateSoundContainer("Walk CED Behemoth", "CED.rte");
