@@ -14,6 +14,8 @@ function Create(self)
 	
 	self.CEDAHumanLimbPathDefaultPushForce = self.LimbPathPushForce;
 	
+	self.CEDAHumanOriginalWalkRotAngleTarget = self:GetRotAngleTarget(AHuman.WALK);
+	
 	self.CEDAHumanSprintDoubleTapState = 0;
 	self.CEDAHumanSprintDoubleTapTimer = Timer();
 	self.CEDAHumanSprintDoubleTapMaxDelay = 250;
@@ -138,12 +140,14 @@ function Update(self)
 	end
 	
 	if self.CompliSoundActorIsSprinting then
-		self.CrouchAmountOverride = 0.25;
+		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget - 0.15);
+		self.CrouchAmountOverride = 0.15;
 		controller:SetState(Controller.AIM_SHARP, false);
 		controller:SetState(Controller.BODY_CROUCH, false);
 		
 		if crouching then
 			self.CrouchAmountOverride = 1.0
+			self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
 		end
 		
 		if self.CEDAHumanCurrentMoveMultiplier < self.CEDAHumanSprintMultiplier then
@@ -159,6 +163,8 @@ function Update(self)
 		
 		self.LimbPathPushForce = self.CEDAHumanLimbPathDefaultPushForce * 1.5
 	else
+		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
+		self.WalkRotAngleTarget = self.CEDAHumanOriginalWalkRotAngleTarget;
 		self.CrouchAmountOverride = -1;
 		self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanWalkMultiplier;
 		self:SetLimbPathSpeed(0, self.CEDAHumanLimbPathDefaultSpeed0 * self.CEDAHumanCurrentMoveMultiplier);
