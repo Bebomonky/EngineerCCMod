@@ -16,10 +16,6 @@ function Create(self)
 	
 	self.CEDAHumanOriginalWalkRotAngleTarget = self:GetRotAngleTarget(AHuman.WALK);
 	
-	self.CEDAHumanSprintDoubleTapState = 0;
-	self.CEDAHumanSprintDoubleTapTimer = Timer();
-	self.CEDAHumanSprintDoubleTapMaxDelay = 250;
-	
 	self.CompliSoundActorStepCallback = function (self)
 		if self.CompliSoundActorIsSprinting then
 			if self.CEDAHumanFoleySounds.Sprint then
@@ -71,8 +67,11 @@ function Create(self)
 	
 end
 
--- Update and not ThreadedUpdate so we can guarantee the PlayJumpSound variable always being seen by the CompliSound script.
-function Update(self)
+function ThreadedUpdate(self)
+	for soundType, soundContainer in pairs(self.CEDAHumanFoleySounds) do
+		soundContainer.Pos = self.Pos;
+	end
+
 	self.CompliSoundActorPlayJumpSound = false;
 	local controller = self:GetController();
 	local crouching = controller:IsState(Controller.BODY_CROUCH)
@@ -118,33 +117,25 @@ function Update(self)
 	end
 	
 	-- Sprinting
-	local sprintInput = not self.CompliSoundActorIsJumping
-	and not crouching
+	local sprintInput =	self:IsPlayerControlled()
+	and UInputMan:KeyHeld(Key.LSHIFT)
+	and not (crouching and not self.CompliSoundActorIsSprinting)
 	and ((controller:IsState(Controller.MOVE_LEFT) == true or controller:IsState(Controller.MOVE_RIGHT) == true)
 	and not (controller:IsState(Controller.MOVE_LEFT) == true and controller:IsState(Controller.MOVE_RIGHT) == true))
 	and not (controller:IsState(Controller.MOVE_LEFT) == true and self.HFlipped == false or controller:IsState(Controller.MOVE_RIGHT) == true and self.HFlipped == true)
 	
-	if self.CEDAHumanSprintDoubleTapState == 0 then
-		if sprintInput == true then
-			self.CEDAHumanSprintDoubleTapTimer:Reset()
-		else
-			self.CEDAHumanSprintDoubleTapState = 1
-		end
-	elseif self.CEDAHumanSprintDoubleTapState == 1 then
-		if self.CEDAHumanSprintDoubleTapTimer:IsPastSimMS(self.CEDAHumanSprintDoubleTapMaxDelay) then
-			self.CEDAHumanSprintDoubleTapState = 0
-		elseif sprintInput == true then
-			self.CompliSoundActorIsSprinting = true
-			self.CEDAHumanSprintDoubleTapState = 0
-		end
-	end
+	if sprintInput then
+		self.CompliSoundActorIsSprinting = true;
+		controller:SetState(Controller.BODY_CROUCH, false);
+	else
+		self.CompliSoundActorIsSprinting = false;
+	end	
 	
 	if self.CompliSoundActorIsSprinting then
 		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget - 0.15);
 		self.CrouchAmountOverride = 0.15;
 		controller:SetState(Controller.AIM_SHARP, false);
-		controller:SetState(Controller.BODY_CROUCH, false);
-		
+	
 		if crouching then
 			self.CrouchAmountOverride = 1.0
 			self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
@@ -170,9 +161,5 @@ function Update(self)
 		self:SetLimbPathSpeed(0, self.CEDAHumanLimbPathDefaultSpeed0 * self.CEDAHumanCurrentMoveMultiplier);
 		self:SetLimbPathSpeed(1, self.CEDAHumanLimbPathDefaultSpeed1 * self.CEDAHumanCurrentMoveMultiplier);
 		self:SetLimbPathSpeed(2, self.CEDAHumanLimbPathDefaultSpeed2 * self.CEDAHumanCurrentMoveMultiplier);
-	end
-	
-	if not moving then
-		self.CompliSoundActorIsSprinting = false;
 	end
 end
