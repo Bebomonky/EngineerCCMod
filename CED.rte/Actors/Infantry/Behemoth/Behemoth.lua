@@ -2,6 +2,7 @@ function Create(self)
 	self.BehemothSprintWhooshSound = CreateSoundContainer("Sprint Whoosh CED Behemoth", "CED.rte");
 	self.BehemothIsTackling = false;
 	self.BehemothOriginalMass = self.IndividualMass;
+	self.BehemothLimbPathDefaultPushForce = self.LimbPathPushForce;
 	
 	self.BehemothTackleGraceTimer = Timer();
 	self.BehemothTackleGraceTime = 400;
@@ -40,7 +41,8 @@ function ThreadedUpdate(self)
 		if not self.BehemothIsTackling then
 			self.BehemothIsTackling = true;
 			self.BehemothSprintWhooshSound:Play(self.Pos);
-			self.Mass = self.Mass + 35;
+			self.Mass = self.Mass + 15;
+			self.LimbPathPushForce = self.BehemothLimbPathDefaultPushForce * 1.5;
 		else
 			self.BehemothTackleGraceTimer:Reset();
 		

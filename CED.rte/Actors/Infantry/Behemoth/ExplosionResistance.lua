@@ -1,14 +1,11 @@
---[[MULTITHREAD]]--
-
 function Create(self)
-
 	self.oldWoundCount = 0;
 	self.actualGibWoundLimit = self.GibWoundLimit;
 	self.GibWoundLimit = 200;
 
 end
-function Update(self)
 
+function ThreadedUpdate(self)
 	if self.WoundCount > self.oldWoundCount then
 		if self.WoundCount - self.oldWoundCount > 10 then
 			self:RemoveWounds((self.WoundCount - self.oldWoundCount) / 2)
@@ -17,7 +14,5 @@ function Update(self)
 			self:GibThis();
 		end
 	end
-	
 	self.oldWoundCount = self.WoundCount;
-
 end
