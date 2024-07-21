@@ -5,3 +5,7 @@ Land: Warframe GrineerLeto Step, BOOMLibrary WeapArmr
 Others: BOOMLibrary WeapArmr
 
 Impacts: Warframe TennoBodyfall, BOOMLibrary WeapArmr
+
+Jetpack: Contained within REAPER project
+
+SprintWhoosh: ME_Faith_Mario_Attack_Whoosh 0 0 0 (yea, it's called that)

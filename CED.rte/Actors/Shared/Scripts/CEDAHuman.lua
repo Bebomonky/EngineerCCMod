@@ -67,7 +67,7 @@ function Create(self)
 	end
 	
 	self.CompliSoundActorImpactHeavyCallback = function (self)
-		if self.CEDAHumanFoleySounds.ImpactLight then
+		if self.CEDAHumanFoleySounds.ImpactHeavy then
 			self.CEDAHumanFoleySounds.ImpactHeavy:Play(self.Pos);
 		end				
 	end
