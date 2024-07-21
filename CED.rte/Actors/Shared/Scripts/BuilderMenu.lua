@@ -21,7 +21,7 @@ function DisplayNumber(self, screen, color, pos, text)
 	for i = 1, string.len(text) do
 		local digit = string.sub(text, i, i)
 		PrimitiveMan:DrawBitmapPrimitive(pos + Vector((3 + 1) * (i - 1) + 1, 5),
-		"CED.rte/Actors/Shared/Sprites/Font/" .. color .. "/Numbers/" .. digit .. ".png", 0)
+		"CED.rte/Effects/Font/" .. color .. "/Numbers/" .. digit .. ".png", 0)
 	end
 end
 
