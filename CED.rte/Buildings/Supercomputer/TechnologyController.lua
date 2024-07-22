@@ -1,12 +1,24 @@
 function OnGlobalMessage(self, message, object)
 	if message == "CED_UnlockTechnology" then
 		self.Technologies[object] = true;
+		self:SetNumberValue(object, 1)
+		for actor in MovableMan.Actors do
+			if self.UtilityActor[actor.PresetName] and actor.Team == self.fixedTeam then
+				actor:SendMessage(tostring(self.fixedTeam) .. "_Research", object)
+			end
+		end
 	end
 end
 
 function OnMessage(self, message, object)
 	if message == "CED_UnlockTechnology" then
 		self.Technologies[object] = true;
+		self:SetNumberValue(object, 1)
+		for actor in MovableMan.Actors do
+			if self.UtilityActor[actor.PresetName] and actor.Team == self.fixedTeam then
+				actor:SendMessage(tostring(self.fixedTeam) .. "_Research", object)
+			end
+		end
 	end
 end
 
@@ -14,7 +26,13 @@ function Create(self)
 	self.Activity = ActivityMan:GetActivity();
 	
 	self.fixedTeam = self.Team;
-	
+
+	self.UtilityActor = {
+		["Builder Crab"] = true,
+		["Combat Engineer"] = true,
+		["Supercomputer"] = true,
+	}
+
 	self.saveLoadHandler = require("Activities/Utility/SaveLoadHandler");
 	self.saveLoadHandler:Initialize(false);
 	

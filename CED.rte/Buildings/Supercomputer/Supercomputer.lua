@@ -42,15 +42,17 @@ function Create(self)
 			Timer = Timer(),
 			SavedElapsedSimTimeMS = 0,
 			InProgress = false,
-			IsResearched = false,
+			IsResearched = self.technologyController:NumberValueExists(tech.ResearchName) and true or false,
 			PBarActive = false,
 			PBarVisible = false,
 			PBarFraction = 0,
-			ButtonText = tech.DisplayName,
+			ButtonText = self.technologyController:NumberValueExists(tech.ResearchName) and tech.DisplayName:gsub("^%w+", "Researched!") or tech.DisplayName,
 			PBar = nil,
 			Button = nil
 		}
 	end
+
+	self.ActiveResearch = false
 end
 
 function DisplayNumber(self, screen, color, pos, text)
@@ -80,7 +82,6 @@ function SupercomputerTechMenu(self)
 	local oz_width = 0
 	local textPos = Vector()
 	local itemFund = false
-	local activeResearch = false
 
 	local function drawMenu()
 
@@ -143,7 +144,6 @@ function SupercomputerTechMenu(self)
 			self.TechProgress[i].PBar.Active = self.TechProgress[i].PBarActive
 			self.TechProgress[i].PBar:SetFraction(self.TechProgress[i].PBarFraction)
 			self.TechProgress[i].PBar.Delay = self.TechProgress[i].Button.Technology.Delay
-			self.TechProgress[i].PBar.ResearchName = self.TechProgress[i].Button.Technology.ResearchName
 
 			--This is the greatest isUpdated of all time
 			--This is to prevent a visual bug for the Progessbar when it doesn't show for the first time (while in progress)
@@ -190,18 +190,18 @@ function SupercomputerTechMenu(self)
 					true,
 					0)
 
-					if self.TechProgress[i].IsResearched == false then
+					if self.TechProgress[i].IsResearched == true then
+						self.TechProgress[i].Button:Color(249)
+					else
 						self.TechProgress[i].Button:OutlineColor(itemFund and 117 or 13)
 
-						self.TechProgress[i].Button:Color(hasFund and 127 or 249)
-					else
-						self.TechProgress[i].Button:Color(249)
+						self.TechProgress[i].Button:Color(itemFund and 127 or 249)
 					end
 				else
-					if self.TechProgress[i].IsResearched == false then
-						self.TechProgress[i].Button:OutlineColor(144)
-					else
+					if self.TechProgress[i].IsResearched == true then
 						self.TechProgress[i].Button:Color(249)
+					else
+						self.TechProgress[i].Button:OutlineColor(144)
 					end
 				end
 				if self.TechProgress[i].Button.InProgress then
@@ -211,7 +211,7 @@ function SupercomputerTechMenu(self)
 
 			self.TechProgress[i].Button.OnPress = function(key)
 				if key == Controller.PRIMARY_ACTION then
-					if activeResearch == true then
+					if self.ActiveResearch == true then
 						self.ErrorSound:Play(-1)
 					else
 						if itemFund then
@@ -222,7 +222,7 @@ function SupercomputerTechMenu(self)
 								self.TechProgress[i].PBar.Timer:Reset()
 								self.TechProgress[i].PBar.Active = true
 								self.ActivePBar = i
-								activeResearch = true
+								self.ActiveResearch = true
 								self.TechProgress[i].InProgress = true
 								self.TechProgress[i].PBarActive = true
 								self.TechProgress[i].PBarVisible = true
@@ -263,7 +263,7 @@ function SupercomputerTechMenu(self)
 						self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(self.Team) + button.Technology.Cost, self.Team)
 						pBar:SetVisible(false)
 						pBar.Active = false
-						activeResearch = false
+						self.ActiveResearch = false
 						self.TechProgress[i].InProgress = false
 						self.TechProgress[i].PBarActive = false
 						self.TechProgress[i].PBarVisible = false
@@ -278,13 +278,15 @@ function SupercomputerTechMenu(self)
 
 		self.Main.Box.Think = function(entity, screen)
 			for i = 1, #self.TechProgress do
-				if self.TechProgress[i].IsResearched == true and self.TechProgress[i].InProgress == true then
-					self.TechProgress[i].ButtonText = "Researched!\n" .. self.TechProgress[i].Button:GetText()
-					self.TechProgress[i].Button:SetText("Researched!\n" .. self.TechProgress[i].Button:GetText())
-					self.TechProgress[i].Button:OutlineThickness(0)
-					self.TechProgress[i].PBarVisible = false
-					self.TechProgress[i].PBar:SetVisible(false)
-					self.TechProgress[i].InProgress = false
+				if self.TechProgress[i].IsResearched == true then
+					self.TechProgress[i].Button:SetText(self.TechProgress[i].ButtonText)
+					if self.TechProgress[i].InProgress == true then
+						self.TechProgress[i].ButtonText = self.TechProgress[i].Button:GetText():gsub("^%w+", "Researched!")
+						self.TechProgress[i].Button:OutlineThickness(0)
+						self.TechProgress[i].PBarVisible = false
+						self.TechProgress[i].PBar:SetVisible(false)
+						self.TechProgress[i].InProgress = false
+					end
 				end
 			end
 			self.Main.Box:SetSize(260, height + self.cancel_button:GetHeight())
@@ -335,25 +337,28 @@ function ThreadedUpdate(self)
 		self.Menu:Remove()
 	end
 
-	for i = 1, #self.CEDAvailableTechnology do
-		if i == self.ActivePBar then
-			local pBar = self.TechProgress[i].PBar
-			if pBar and pBar.IsProgressBar then --goofy ahhh check
-				pBar.OnComplete = function(entity)
-					pBar.Active = false
-					self.TechProgress[i].PBarActive = pBar.Active
-					self.TechProgress[i].IsResearched = true
-					self.technologyController:SendMessage("CED_UnlockTechnology", pBar.ResearchName)
-					self.technologyController:SetNumberValue(pBar.ResearchName, 1)
-				end
+	if self.ActiveResearch == true then
+		for i = 1, #self.CEDAvailableTechnology do
+			if i == self.ActivePBar then
+				local pBar = self.TechProgress[i].PBar
+				if pBar and pBar.IsProgressBar then --goofy ahhh check
+					if self.TechProgress[i].PBarActive == true then
+						if pBar.Timer:IsPastSimMS(pBar.Delay) then
+							self.TechProgress[i].PBarFraction = self.TechProgress[i].PBarFraction + 0.05
+							pBar:SetFraction(self.TechProgress[i].PBarFraction)
+							pBar.Timer:Reset()
+						end
+						pBar:SetText(string.format("%.0f%%", self.TechProgress[i].PBarFraction * 100))
 
-				if self.TechProgress[i].PBarActive == true then
-					if pBar.Timer:IsPastSimMS(pBar.Delay) then
-						self.TechProgress[i].PBarFraction = self.TechProgress[i].PBarFraction + 0.05
-						pBar:SetFraction(self.TechProgress[i].PBarFraction)
-						pBar.Timer:Reset()
+						if self.TechProgress[i].PBarFraction >= 0.99 then
+							pBar.Active = false
+							self.TechProgress[i].PBarActive = false
+							self.TechProgress[i].IsResearched = true
+							self.technologyController:SendMessage("CED_UnlockTechnology", self.TechProgress[i].Button.Technology.ResearchName)
+							self.ActiveResearch = false
+							self.TechProgress[i].PBarFraction = 0
+						end
 					end
-					pBar:SetText(string.format("%.0f%%", self.TechProgress[i].PBarFraction * 100))
 				end
 			end
 		end

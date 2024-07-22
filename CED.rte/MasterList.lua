@@ -12,7 +12,7 @@ CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
 Desc: Builds the CED Logo
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(100, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericTerrainBuildable/GenericTerrainBuildable.png",
@@ -26,11 +26,12 @@ Yay!]],
 
 -------  TURRETS  -------
 CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
+								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
 Desc: Builds the Plink Turret
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(100, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericBuildable/GenericBuildable.png",
@@ -45,11 +46,12 @@ Yay!]],
 
 -------  BUILDINGS  -------
 CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
+								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
 Desc: Builds the Atmo-coagulator
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(130, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Coagulator/Coagulator.png",
@@ -66,7 +68,7 @@ CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
 Desc: Builds the Supercomputer
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(130, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Supercomputer/Supercomputer.png",
@@ -82,24 +84,24 @@ Yay!]],
 
 -------  TECHNOLOGY  -------
 CEDMasterList.Technology.PlinkTurret = {["DisplayName"] = "Research\nPlink Turret",
-								  ["ResearchName"] = "Plink_Turret",
+								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
 Desc: Researches the Plink Turret
 What it does: Researches
 Yay!]],
 								  ["Delay"] = 1000,
-								  ["TooltipSize"] = Vector(130, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["Cost"] = 1000,
 }
 
 CEDMasterList.Technology.Atmo_coagulator = {["DisplayName"] = "Research\nAtmo-coagulator",
-								  ["ResearchName"] = "Atmo_coagulator",
+								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
 Desc: Researches the
 Atmo-coagulator
 What it does: Researches
 Yay!]],
 								  ["Delay"] = 1000,
-								  ["TooltipSize"] = Vector(130, 75),
+								  ["TooltipSize"] = Vector(150, 75),
 								  ["Cost"] = 500,
 }

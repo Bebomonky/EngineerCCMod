@@ -1,7 +1,6 @@
 require("MasterList")
 
 function Create(self)
-	self.CEDTechnologyRate = 10
 	self.CEDAvailableTechnology = {}
 
 	-------  TECHNOLOGY  -------

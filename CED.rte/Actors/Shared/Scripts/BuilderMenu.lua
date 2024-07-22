@@ -1,5 +1,35 @@
 require("Mods.Extensions.ExtensionMan")
 
+function OnGlobalMessage(self, message, object)
+	if message == tostring(self.Team) .. "_Research" then
+		for i = 1, #self.Category do
+			local tab = self.Category[i]
+			local buildableList = tab[2]
+			for j = 1, #buildableList do
+				local buildable = buildableList[j]
+				if buildable.ResearchName == object then
+					self.ResearchList[i][j] = true
+				end
+			end
+		end
+	end
+end
+
+function OnMessage(self, message, object)
+	if message == tostring(self.Team) .. "_Research" then
+		for i = 1, #self.Category do
+			local tab = self.Category[i]
+			local buildableList = tab[2]
+			for j = 1, #buildableList do
+				local buildable = buildableList[j]
+				if buildable.ResearchName ~= nil and buildable.ResearchName == object then
+					self.ResearchList[i][j] = true
+				end
+			end
+		end
+	end
+end
+
 function Create(self)
 	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"))
 	self.Menu:Initialize()
@@ -15,6 +45,44 @@ function Create(self)
 	self.SelectDelayTime = Timer()
 
 	self.Activity = ActivityMan:GetActivity()
+
+	for mo in MovableMan.Particles do
+		if mo.PresetName == "CED Technology Controller" and mo.Team == self.Team then
+			self.technologyController = mo;
+		end
+	end
+	for mo in MovableMan.AddedParticles do
+		if mo.PresetName == "CED Technology Controller" and mo.Team == self.Team then
+			self.technologyController = mo;
+		end
+	end
+
+	self.Category = {
+		{"Fortification", self.CEDAvailableBuildables.Fortifications},
+		{"Turrets", self.CEDAvailableBuildables.Turrets},
+		{"Buildings", self.CEDAvailableBuildables.Buildings},
+		{"Utility", self.CEDAvailableBuildables.Utility}
+	}
+
+	self.ResearchList = {}
+	for i = 1, #self.Category do
+		local tab = self.Category[i]
+		local buildableList = tab[2]
+		self.ResearchList[i] = {}
+		for j = 1, #buildableList do
+			local buildable = buildableList[j]
+			if buildable.ResearchName ~= nil then
+				self.ResearchList[i][j] = false
+				if self.technologyController ~= nil then
+					if self.technologyController:NumberValueExists(buildable.ResearchName) then
+						self.ResearchList[i][j] = true
+					end
+				end
+			else
+				self.ResearchList[i][j] = true
+			end
+		end
+	end
 end
 
 function DisplayNumber(self, screen, color, pos, text)
@@ -34,13 +102,6 @@ function BuilderBasic(self)
 	self.Main.Box:Color(146)
 	self.Main.Box:OutlineColor(71)
 	self.Main.Box:OutlineThickness(2)
-
-	local category = {
-		{"Fortification", self.CEDAvailableBuildables.Fortifications},
-		{"Turrets", self.CEDAvailableBuildables.Turrets},
-		{"Buildings", self.CEDAvailableBuildables.Buildings},
-		{"Utility", self.CEDAvailableBuildables.Utility}
-	}
 
 	local isRemoving = false
 	local renderPos = Vector()
@@ -66,8 +127,8 @@ function BuilderBasic(self)
 
 	local function drawMenu()
 		local buttons = {}
-		for i = 1, #category do
-			local tab = category[i]
+		for i = 1, #self.Category do
+			local tab = self.Category[i]
 			local name = tab[1]
 			local buildableList = tab[2]
 
@@ -76,6 +137,7 @@ function BuilderBasic(self)
 
 			local mainTab = self.Menu:CreateGUI("Button", self.Main.Box)
 			mainTab.BuildList = buildableList
+			mainTab.Index = i
 			mainTab:SetPos(x, y)
 			mainTab:SetSize(50, 13)
 			mainTab:SetText(name)
@@ -112,6 +174,7 @@ function BuilderBasic(self)
 					tooltip_bar:OutlineColor(71)
 					tooltip_bar:OutlineThickness(2)
 					tooltip_bar:SetVisible(false) --Set to false to prevent flicker
+					tooltip_bar.Displaying = false
 
 					local desc = self.Menu:CreateGUI("Label", tooltip_bar)
 					desc:SmallText(true)
@@ -134,7 +197,7 @@ function BuilderBasic(self)
 						local button = self.Menu:CreateGUI("Button", self.Main.Box)
 						button.Buildable = mainTab.BuildList[i]
 						button.Selected = false
-						button.IsResearched = false
+						button.HasThickness = true
 						button:SetPos(x, y)
 						button:SetSize(65, 65)
 						button:SetText(button.Buildable.DisplayName)
@@ -148,25 +211,44 @@ function BuilderBasic(self)
 							local world_pos = Vector(button:GetParent():GetPos()) + Vector(button:GetPos()) + offset
 							local parent_world_pos = Vector(button:GetParent():GetPos()) + offset
 							local hasFund = self.Activity:GetTeamFunds(entity.Team) >= button.Buildable.Cost
-
+							button.IsResearched = self.ResearchList[mainTab.Index][i]
+							if button.IsResearched == true then
+								if button.HasThickness == false then
+									button:OutlineThickness(2)
+									button.HasThickness = true
+								end
+							else
+								if button.HasThickness == true then
+									button:OutlineThickness(0)
+									button.HasThickness = false
+								end
+							end
 							button:Color(hasFund and 146 or 248)
 
 							if button.IsHovered then
 								itemFund = self.Activity:GetTeamFunds(entity.Team) >= button.Buildable.Cost
 								tooltip_bar:SetVisible(true)
 								desc:SetVisible(true)
-								if tooltip_bar:GetTitle() ~= button.Buildable.DisplayName then
+								if tooltip_bar.Displaying == false then
 									local size = button.Buildable.TooltipSize
 									tooltip_bar:SetSize(size.X, size.Y)
 									desc:SetSize(size.X, size.Y)
-									desc:SetText(button.Buildable.Description)
 									tooltip_bar:SetTitle(button.Buildable.DisplayName)
 
 									textWidth = FrameMan:CalculateTextWidth(button.Buildable.DisplayName .. " ", true)
 									textWidth_price = FrameMan:CalculateTextWidth(tostring(button.Buildable.Cost), true)
 									oz_width = FrameMan:CalculateTextWidth("oz", true)
 									textPos = offset + Vector(textWidth, 0) + Vector(tooltip_bar:GetPosX() + 10, tooltip_bar:GetPosY() + 25)
+									tooltip_bar.Displaying = true
 								end
+
+								local button_text
+								if button.IsResearched == true then
+									button_text = button.Buildable.Description
+								else
+									button_text = "Research Required: " .. button.Buildable.ResearchName .. "\n" .. button.Buildable.Description
+								end
+								desc:SetText(button_text)
 
 								PrimitiveMan:DrawTextPrimitive(screen, textPos, "(", true, 0)
 								DisplayNumber(self, screen,
@@ -179,11 +261,21 @@ function BuilderBasic(self)
 								textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
 								true,
 								0)
-								button:OutlineColor(itemFund and 117 or 13)
+								if button.IsResearched == true then
+									button:OutlineColor(itemFund and 117 or 13)
 
-								button:Color(hasFund and 127 or 249)
+									button:Color(itemFund and 127 or 249)
+								else
+									button:OutlineColor(13)
+									button:Color(249)
+								end
 							else
-								button:OutlineColor(144)
+								if button.IsResearched == true then
+									button:OutlineColor(144)
+								else
+									button:Color(249)
+								end
+								tooltip_bar.Displaying = false
 							end
 
 							PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(button:GetSize()) / 2 + button.Buildable.IconPos, button.Buildable.IconPath, 0)
@@ -274,18 +366,22 @@ function BuilderBasic(self)
 
 						button.OnPress = function(key)
 							if key == Controller.PRIMARY_ACTION then
-								if itemFund then
-									self.ConfirmSound:Play(-1)
-									self.SelectDelayTime:Reset()
-									box = button.Buildable.RenderSize
-									isRemoving = false
-									self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
-									for _, btn in ipairs(buttons) do
-										btn.Selected = false
-									end
-									button.Selected = true
-								else
+								if button.IsResearched == false then
 									self.ErrorSound:Play(-1)
+								else
+									if itemFund then
+										self.ConfirmSound:Play(-1)
+										self.SelectDelayTime:Reset()
+										box = button.Buildable.RenderSize
+										isRemoving = false
+										self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png"
+										for _, btn in ipairs(buttons) do
+											btn.Selected = false
+										end
+										button.Selected = true
+									else
+										self.ErrorSound:Play(-1)
+									end
 								end
 							end
 						end
