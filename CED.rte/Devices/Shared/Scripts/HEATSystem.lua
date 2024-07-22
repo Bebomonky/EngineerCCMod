@@ -250,7 +250,7 @@ function ThreadedUpdate(self)
 	
 	if self.useHEATFiringAnimation then
 		local f = math.max(1 - math.min((self.HEATFiringAnimationTimer.ElapsedSimTimeMS) / 200, 1), 0)
-		self.Frame = math.floor(f * 3 + 0.55);
+		self.Frame = math.floor(f * self.HEATFiringAnimationEndFrame + 0.55);
 		if self.HEATEmptyReload and self.HEATLockBackOnEmpty and self.Frame == self.HEATFiringAnimationEndFrame then
 			self.HEATPersistentFrame = self.HEATFiringAnimationEndFrame;
 		end
@@ -681,7 +681,7 @@ function ThreadedUpdate(self)
 			local recoilB = (math.sin(self.HEATRecoilAcc * 0.5) * self.HEATRecoilStr) * 0.01 * self.HEATRecoilStr
 			local recoilC = (math.sin(self.HEATRecoilAcc * 0.25) * self.HEATRecoilStr) * 0.05 * self.HEATRecoilStr
 			
-			local recoilFinal = math.max(math.min(recoilA + recoilB + recoilC, self.HEATRecoilMax), -self.HEATRecoilMax)
+			local recoilFinal = math.max(math.min(recoilA + recoilB + recoilC, self.HEATRecoilMax), -self.HEATRecoilMax/10)
 			
 			self.SharpLength = math.max(self.HEATOriginalSharpLength - (self.HEATRecoilStr * 3 + math.abs(recoilFinal)), 0)
 			

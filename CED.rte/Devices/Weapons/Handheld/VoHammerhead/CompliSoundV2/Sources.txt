@@ -1,0 +1,7 @@
+
+Bass: COD:MW weap_slima_fire_plr
+Shot: Titanfall 2 wingman wpnfire shot, CP2077 revol crusher
+
+Mech: CP2077 lexington mech
+
+Reflections: CP2077 revol crusher
