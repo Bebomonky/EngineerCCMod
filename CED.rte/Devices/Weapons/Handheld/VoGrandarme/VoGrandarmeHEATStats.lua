@@ -41,7 +41,7 @@ function Create(self)
 	
 	-- Callback when a CC reload is finished, after variables are set.
 	self.HEATDoneReloadingCallback = function (self)
-
+		
 	end
 
 	-----------------
@@ -49,10 +49,10 @@ function Create(self)
 	-----------------
 	
 	-- Disable or enable the firing animation system.
-	self.useHEATFiringAnimation = false;
+	self.useHEATFiringAnimation = true;
 	
 	-- Final frame of the firing animation. Start frame is always 0.
-	self.HEATFiringAnimationEndFrame = 0;
+	self.HEATFiringAnimationEndFrame = 5;
 	-- Whether to set the PersistentFrame to the above EndFrame on the final shot of a magazine.
 	-- Note that this can happily be overriden later by your callbacks.
 	self.HEATLockBackOnEmpty = false;
@@ -66,27 +66,28 @@ function Create(self)
 	
 	-- Data to feed into the ParticleUtility. Read the ParticleUtility itself for information on these properties.
 	self.HEATParticleUtilityFiringSmokeDataTable = {};
-	self.HEATParticleUtilityFiringSmokeDataTable.Power = 10;
+	self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
 	self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
 	self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
 	self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
-	self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
-	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+	self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1;
 	self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
-	self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
-	self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;		
+	self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.2;
+	self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
 	
 	-----------------
 	----------------- CompliSound firing sound system
 	-----------------
 	
 	-- Disable or enable the CompliSound system.
-	self.useHEATCompliSound = false;
+	self.useHEATCompliSound = true;
 	
 	-- CreateSoundContainer for your outdoors tail sound.
-	self.HEATReflectionOutdoorsSound = nil;
+	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Vossberg Grandarme", "CED.rte");
 	-- CreateSoundContainer for your indoors tail sound.
-	self.HEATReflectionIndoorsSound = nil;
+	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Vossberg Grandarme", "CED.rte");
+
 
 	-----------------
 	----------------- Staged reload system
@@ -96,19 +97,19 @@ function Create(self)
 	self.useHEATReload = true;
 	
 	-- Whether to take away one round from the final reload when reloading from empty.
-	self.HEATPlusOneChamberedRound = false;
+	self.HEATPlusOneChamberedRound = true;
 	-- Your full magazine size, including the one in the chamber. This should be equal to the Magazine's RoundCount.
-	self.HEATFullMagazineRoundCount = 18;
+	self.HEATFullMagazineRoundCount = 31;
 	
 	-- Whether this becomes dual-reloadable when not emptied. Won't have an effect if you don't expect this to ever be dual-wielded.
 	-- If you don't want the HEATSystem to meddle with this at all, leave it false.
-	self.HEATDualReloadableIfNotEmpty = false;
+	self.HEATDualReloadableIfNotEmpty = false;	
 	
 	-- Whether to trigger the reload staging after every shot, for pump-actions, bolt-actions, etcetera.
 	self.HEATStageAfterEveryShot = false;
 	-- Phase to go to if the above is true, and triggered during regular gunfire where the gun isn't emptied.
 	-- Useful to skip your reloading first phase to go to, for example, a pumping second and third phase.
-	self.HEATPhaseAfterFiringIfNotReloading = 1;
+	self.HEATPhaseAfterFiringIfNotReloading = nil;
 	
 	-- Override for the ReloadTime when reloading with rounds still in the magazine.
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
@@ -120,71 +121,71 @@ function Create(self)
 	self.HEATTotalEmptyReloadTimeOverride = nil;
 	
 	-- Casing object to spawn on phases with spawnCasing.
-	self.HEATCasing = CreateAEmitter("Battery CED Xarix Vidara", "CED.rte");
+	self.HEATCasing = CreateAEmitter("CompliSound Smoking Large Casing", "0CompliSoundEmporium.rte");
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
-	self.HEATCasingVelocity = Vector(-3, -7);
+	self.HEATCasingVelocity = Vector(-3, -4);
 	
 	-- MOSRotating object to spawn on phases with removesMag.
-	self.HEATFakeMagazineMOSRotating = nil;
+	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Vossberg Grandarme", "CED.rte");
 	-- Position to spawn the object at.  Don't include FlipFactor.
-	self.HEATFakeMagazineOffset = Vector(0, 0);
+	self.HEATFakeMagazineOffset = Vector(-1, 5);
 	-- Velocity with which to spawn the object.  Don't include FlipFactor.
-	self.HEATFakeMagazineVelocity = Vector(0, 0);
+	self.HEATFakeMagazineVelocity = Vector(0.5, 0.5);
 	-- AngularVel to spawn the object with.  Don't include FlipFactor.
-	self.HEATFakeMagazineAngularVel = 0;
+	self.HEATFakeMagazineAngularVel = -1;
 	
 	self.HEATReloadPhases = {};
 	
-	------------------------------------------------------------------------------
+	------------------------------------------------------------------------------		
 	
 	local i = 1;
 	local reloadPhase = {};
 	-- Name of the reloadPhase. Used for organization only.
-	reloadPhase.Name = "BoltBack";
+	reloadPhase.Name = "MagOut";
 	-- Whether to remove the FakeMag and spawn a fake magazine object on this phase.
-	reloadPhase.removesMag = false;
+	reloadPhase.removesMag = true;
 	-- Whether to trigger the FakeMag to be visible on the gun again this phase.
 	reloadPhase.addsMag = false;
 	-- Whether to consider this phase finished and progress to the next one (or a specified phase number)
 	-- if the reload was interrupted after passing prepareDelay.
-	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = true;
 	-- SoundContainer to play while preparing to finish this phase.
-	reloadPhase.prepareSound = nil;
+	reloadPhase.prepareSound = CreateSoundContainer("Mag Out Prepare CED Vossberg Grandarme", "CED.rte");
 	-- Time it takes to finish this phase.
-	reloadPhase.prepareDelay = 320;
+	reloadPhase.prepareDelay = 1070;
 	-- Time before finishing that the prepareSound will play. You can line up short prepareSounds with long prepareDelays
 	-- this way.
-	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.prepareSoundLength = 1070;
 	-- Sound upon finishing the phase.
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Xarix Vidara", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Mag Out CED Vossberg Grandarme", "CED.rte");
 	-- Time after finishing the phase before the reload is progressed.
-	reloadPhase.afterDelay = 300;
+	reloadPhase.afterDelay = 1000;
 	-- Absolute StanceOffset to set when in this phase.
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadStanceOffsetTarget = Vector(2, 1);
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(-5, 6)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-3, 4)
 	-- Rotation to set in this phase.
-	reloadPhase.rotationTarget = -3;
+	reloadPhase.rotationTarget = 35;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
-	reloadPhase.angVel = 0;
+	reloadPhase.angVel = 2;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
 	reloadPhase.horizontalAnim = 0;
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
-	reloadPhase.verticalAnim = 0;
+	reloadPhase.verticalAnim = 1;
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
-	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
 	reloadPhase.startFrame = 0;
 	-- End frame of the auto animation.
-	reloadPhase.endFrame = 4;
+	reloadPhase.endFrame = 0;
 	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
-	reloadPhase.setEndFrameAsPersistent = true;
+	reloadPhase.setEndFrameAsPersistent = false;
 	-- Easing function to use. You could define your own here if you really wanted.
-	reloadPhase.easingFunction = self.HEATEaseLinear
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
 	reloadPhase.phaseOnInterrupt = nil;
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
@@ -193,18 +194,21 @@ function Create(self)
 	-- This will also trigger shotgun ammo counting and setting behavior and makes PlusOneChamberedRound irrelevant.
 	reloadPhase.shotgunReloadLoop = false;
 	-- Whether this phase spawns a casing when finished.
-	reloadPhase.spawnCasing = true;
+	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
-
+		
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
-		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 4) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
+			self.HEATCurrentReloadPhaseData.rotationTarget = 45;
+		end		
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 6);
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -213,28 +217,78 @@ function Create(self)
 	
 	self.HEATReloadPhases[i] = reloadPhase;
 	
-	------------------------------------------------------------------------------	
+	------------------------------------------------------------------------------		
 	
 	i = i + 1;
 	reloadPhase = {};
 	reloadPhase.Name = "MagIn";
 	reloadPhase.removesMag = false;
-	reloadPhase.addsMag = false;
+	reloadPhase.addsMag = true;
 	reloadPhase.autoProgressIfFinishedButInterrupted = true;
-	reloadPhase.prepareSound = CreateSoundContainer("Mag In Prepare CED Xarix Vidara", "CED.rte");
-	reloadPhase.prepareDelay = 700;
-	reloadPhase.prepareSoundLength = 500;
-	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Xarix Vidara", "CED.rte");
-	reloadPhase.afterDelay = 250;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.prepareSound = CreateSoundContainer("Mag In Prepare CED Vossberg Grandarme", "CED.rte");
+	reloadPhase.prepareDelay = 1300;
+	reloadPhase.prepareSoundLength = 1300;
+	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Vossberg Grandarme", "CED.rte");
+	reloadPhase.afterDelay = 500;
+	reloadPhase.reloadStanceOffsetTarget = Vector(2, -4);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -4)
-	reloadPhase.rotationTarget = -3;
-	reloadPhase.angVel = 1;
-	reloadPhase.horizontalAnim = 1;
-	reloadPhase.verticalAnim = 1;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-9, 5)
+	reloadPhase.rotationTarget = 50;
+	reloadPhase.angVel = -2;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = -1;
+	reloadPhase.autoAnimateFrames = false;
+	reloadPhase.startFrame = 0;
+	reloadPhase.endFrame = 0;
+	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.endIfNotEmptyReload = true;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
+	reloadPhase.enterPhaseCallback = function (self)
+		
+	end
+	reloadPhase.constantCallback = function (self)
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 4);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 8);
+		end
+	end
+	reloadPhase.finishCallback = function (self)
+
+	end
+	reloadPhase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
+	
+	i = i + 1;
+	reloadPhase = {};
+	reloadPhase.Name = "BoltBack";
+	reloadPhase.removesMag = false;
+	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.prepareSound = nil;
+	reloadPhase.prepareDelay = 520;
+	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Vossberg Grandarme", "CED.rte");
+	reloadPhase.afterDelay = 180;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
+	reloadPhase.reloadSupportOffsetSpeed = 10;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-1, -1)
+	reloadPhase.rotationTarget = -25;
+	reloadPhase.angVel = -2;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 4;
+	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 5;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
@@ -243,13 +297,13 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-		
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, -1);
 	end
 	reloadPhase.constantCallback = function (self)
-		self.HEATRotationTarget = -3 - (3 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))		
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-5, -1);
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATReloadSupportOffsetTarget = Vector(-10, -4);
+		
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -257,7 +311,7 @@ function Create(self)
 	
 	self.HEATReloadPhases[i] = reloadPhase;
 	
-	------------------------------------------------------------------------------	
+	------------------------------------------------------------------------------		
 	
 	i = i + 1;
 	reloadPhase = {};
@@ -266,43 +320,45 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = nil;
-	reloadPhase.prepareDelay = 575;
-	reloadPhase.prepareSoundLength = 575;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Xarix Vidara", "CED.rte");
-	reloadPhase.afterDelay = 500;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
-	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(3, 2)
-	reloadPhase.rotationTarget = 0;
-	reloadPhase.angVel = 0;
+	reloadPhase.prepareDelay = 190;
+	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Vossberg Grandarme", "CED.rte");
+	reloadPhase.afterDelay = 1000;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
+	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-5, -1)
+	reloadPhase.rotationTarget = -25;
+	reloadPhase.angVel = 15;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 4;
+	reloadPhase.startFrame = 5;
 	reloadPhase.endFrame = 0;
-	reloadPhase.setEndFrameAsPersistent = true;
-	reloadPhase.easingFunction = self.HEATEaseLinear;
-	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.easingFunction = self.HEATEaseOutCubic;
+	reloadPhase.phaseOnInterrupt = 3;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		
 	end
 	reloadPhase.constantCallback = function (self)
-		if not self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.Frame = 5;
-		end	
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
+			self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(0, 0);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 4);
+		end		
 	end
 	reloadPhase.finishCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(-1, -1);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-	
+		
 	end
-
-	self.HEATReloadPhases[i] = reloadPhase;
 	
+	self.HEATReloadPhases[i] = reloadPhase;
+
 	------------------------------------------------------------------------------	
 	
 	-----------------
@@ -313,25 +369,25 @@ function Create(self)
 	self.useHEATRecoil = true;
 	
 	-- Strength of the horizontal "kick" animation when firing.
-	self.HEATRecoilHorizontalAnim = 4;
+	self.HEATRecoilHorizontalAnim = 12;
 	-- Strength of the rotational "kick" animation when firing.
-	self.HEATRecoilAngAnim = 4;
+	self.HEATRecoilAngAnim = 3;
 	-- Variative multiplier for the rotational kick animation. A value of "0.1" here would give you anywhere from x0.95 to x1.05 the AngAnim.
-	self.HEATRecoilAngVariation = 0.3;
+	self.HEATRecoilAngVariation = 1;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 20
+	self.HEATRecoilStrength = 8
 	-- Some sort of mathemagical strength value to affect the recoil.
-	self.HEATRecoilPowStrength = 0.2
+	self.HEATRecoilPowStrength = 0.2;
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.
-	self.HEATRecoilRandomUpper = 1.1
+	self.HEATRecoilRandomUpper = 2
 	-- Damping effect on the recoil - how fast it returns to normal.
-	self.HEATRecoilDamping = 0.8
+	self.HEATRecoilDamping = 0.55
 	
 	-- Maximum rotation in degrees the recoil can cause.
-	self.HEATRecoilMax = 2
+	self.HEATRecoilMax = 12;
 	-- Maximum low value for SharpLength as a multiplier.
-	self.HEATSharpLengthMinimumMult = 0.6;
+	self.HEATSharpLengthMinimumMult = 0.4;
 	
 	
 	-----------------
@@ -339,10 +395,10 @@ function Create(self)
 	-----------------
 	
 	-- Whether to enable the delayed fire system or not.
-	self.useHEATDelayedFire = false;
+	self.useHEATDelayedFire = true;
 	
 	-- The sound to play when being activated, before firing.
-	self.HEATPreSound = nil;
+	self.HEATPreSound = CreateSoundContainer("Pre CED Vossberg Grandarme", "CED.rte");
 	-- Delay between being activated and firing.
-	self.HEATDelayedFireTimeMS = 0;
+	self.HEATDelayedFireTimeMS = 50;
 end

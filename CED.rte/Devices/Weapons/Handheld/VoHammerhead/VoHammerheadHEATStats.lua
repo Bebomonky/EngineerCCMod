@@ -381,7 +381,8 @@ function Create(self)
 	
 	-- Maximum rotation in degrees the recoil can cause.
 	self.HEATRecoilMax = 12;
-	
+	-- Maximum low value for SharpLength as a multiplier.
+	self.HEATSharpLengthMinimumMult = 0.4;
 	
 	-----------------
 	----------------- Delayed fire system

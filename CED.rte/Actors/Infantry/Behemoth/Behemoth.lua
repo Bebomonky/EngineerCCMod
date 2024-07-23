@@ -41,8 +41,7 @@ function ThreadedUpdate(self)
 		if not self.BehemothIsTackling then
 			self.BehemothIsTackling = true;
 			self.BehemothSprintWhooshSound:Play(self.Pos);
-			self.Mass = self.Mass + 15;
-			self.LimbPathPushForce = self.BehemothLimbPathDefaultPushForce * 1.5;
+			self.LimbPathPushForce = self.BehemothLimbPathDefaultPushForce * 2;
 		else
 			self.BehemothTackleGraceTimer:Reset();
 		
@@ -90,7 +89,6 @@ function ThreadedUpdate(self)
 		end
 	elseif self.BehemothTackleGraceTimer:IsPastSimMS(self.BehemothTackleGraceTime) then
 		self.BehemothIsTackling = false;
-		self.Mass = self.BehemothOriginalMass;
 	end
 end
 

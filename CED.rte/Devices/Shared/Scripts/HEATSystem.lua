@@ -531,12 +531,11 @@ function ThreadedUpdate(self)
 	
 	if self.useHEATDelayedFire then
 		local fire = self:IsActivated() and self.RoundInMagCount > 0;
-		if self.RoundInMagCount > 0 then
-			self:Deactivate()
-		end
 
 		if self.HEATParent and self.HEATDelayedFirstShot == true then
-			
+			if self.RoundInMagCount > 0 then
+				self:Deactivate()
+			end
 			--if self.parent:GetController():IsState(Controller.WEAPON_FIRE) and not self:IsReloading() then
 			if fire and not self:IsReloading() then
 				if not self.Magazine or self.Magazine.RoundCount < 1 then
@@ -683,7 +682,7 @@ function ThreadedUpdate(self)
 			
 			local recoilFinal = math.max(math.min(recoilA + recoilB + recoilC, self.HEATRecoilMax), -self.HEATRecoilMax/10)
 			
-			self.SharpLength = math.max(self.HEATOriginalSharpLength - (self.HEATRecoilStr * 3 + math.abs(recoilFinal)), 0)
+			self.SharpLength = math.max(self.HEATOriginalSharpLength * self.HEATSharpLengthMinimumMult, math.max(self.HEATOriginalSharpLength - (self.HEATRecoilStr * 3 + math.abs(recoilFinal)), 0))
 			
 			self.HEATRotationTarget = self.HEATRotationTarget + recoilFinal -- apply the recoil	
 		end
