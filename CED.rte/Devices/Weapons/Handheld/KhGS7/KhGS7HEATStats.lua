@@ -83,9 +83,9 @@ function Create(self)
 	self.useHEATCompliSound = true;
 	
 	-- CreateSoundContainer for your outdoors tail sound.
-	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Test Shotgun", "CED.rte");
+	self.HEATReflectionOutdoorsSound = CreateSoundContainer("Reflection Outdoors CED Khrabarovsk GS7", "CED.rte");
 	-- CreateSoundContainer for your indoors tail sound.
-	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Test Shotgun", "CED.rte");
+	self.HEATReflectionIndoorsSound = CreateSoundContainer("Reflection Indoors CED Khrabarovsk GS7", "CED.rte");
 
 	-----------------
 	----------------- Staged reload system
@@ -119,7 +119,7 @@ function Create(self)
 	self.HEATTotalEmptyReloadTimeOverride = 19999;
 	
 	-- Casing object to spawn on phases with spawnCasing.
-	self.HEATCasing = CreateAEmitter("Shell CED Test Shotgun", "CED.rte");
+	self.HEATCasing = CreateAEmitter("Shell CED Khrabarovsk GS7", "CED.rte");
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
@@ -157,7 +157,7 @@ function Create(self)
 	-- this way.
 	reloadPhase.prepareSoundLength = 0;
 	-- Sound upon finishing the phase.
-	reloadPhase.afterSound = CreateSoundContainer("Raise CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Raise CED Khrabarovsk GS7", "CED.rte");
 	-- Time after finishing the phase before the reload is progressed.
 	reloadPhase.afterDelay = 450;
 	-- Absolute StanceOffset to set when in this phase.
@@ -195,7 +195,7 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
-		
+
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
@@ -206,7 +206,11 @@ function Create(self)
 		if self.HEATAmmoCounter == 0 then
 			self.HEATReloadPhaseOverride = 2;
 		else
-			self.HEATReloadPhaseOverride = 5;
+			if self.KhGS7SlamFireMode then
+				self.HEATReloadPhaseOverride = 6;
+			else
+				self.HEATReloadPhaseOverride = 5;
+			end
 		end
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
@@ -227,7 +231,7 @@ function Create(self)
 	reloadPhase.prepareSound = nil;
 	reloadPhase.prepareDelay = 200;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.afterDelay = 200;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 6;
@@ -246,7 +250,11 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = true;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		if self.KhGS7SlamFireMode and not self:IsReloading() then
+			self.HEATForceEndReload = true;
+			self.HEATCurrentReloadPhaseData.prepareDelay = self.KhGS7SlamFireModePostFireTime;
+			self.HEATCurrentReloadPhaseData.afterDelay = self.KhGS7SlamFireModeBoltBackTime;
+		end
 	end
 	reloadPhase.constantCallback = function (self)
 		if self:IsReloading() then
@@ -254,7 +262,7 @@ function Create(self)
 		else
 			self.HEATRotationTarget = (5 * self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
 		end
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + 150) then
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay * 0.75) then
 			self.HEATReloadSupportOffsetTarget.X = -2
 		end		
 	end
@@ -283,10 +291,10 @@ function Create(self)
 	reloadPhase.removesMag = false;
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
-	reloadPhase.prepareSound = CreateSoundContainer("First Round In Prepare CED Test Shotgun", "CED.rte");
+	reloadPhase.prepareSound = CreateSoundContainer("First Round In Prepare CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.prepareDelay = 600;
 	reloadPhase.prepareSoundLength = 280;
-	reloadPhase.afterSound = CreateSoundContainer("First Round In CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("First Round In CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.afterDelay = 300;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 3;
@@ -331,7 +339,7 @@ function Create(self)
 	reloadPhase.prepareSound = nil;
 	reloadPhase.prepareDelay = 300;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.afterDelay = 400;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 10;
@@ -395,7 +403,7 @@ function Create(self)
 	reloadPhase.prepareSound = nil;
 	reloadPhase.prepareDelay = 450;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Round In CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Round In CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.afterDelay = 380;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
@@ -442,7 +450,7 @@ function Create(self)
 	reloadPhase.prepareSound = nil;
 	reloadPhase.prepareDelay = 200;
 	reloadPhase.prepareSoundLength = 0;
-	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Test Shotgun", "CED.rte");
+	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk GS7", "CED.rte");
 	reloadPhase.afterDelay = 350;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 7;
