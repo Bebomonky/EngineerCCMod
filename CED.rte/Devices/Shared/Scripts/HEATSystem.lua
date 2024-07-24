@@ -45,6 +45,8 @@ function Create(self)
 	self.HEATRotation = 0
 	-- The rotation we want to get to.
 	self.HEATRotationTarget = 0
+	-- Override for the above, to ignore reloads or set a new default (but not ignore recoil and angular velocity)
+	self.HEATRotationTargetOverride = nil;
 	-- The speed at which we rotate towards our RotationTarget.
 	self.HEATRotationSpeed = 9
 	-- Horizontal offset to SupportOffset, used for transient "kick" effects.
@@ -53,6 +55,8 @@ function Create(self)
 	self.HEATVerticalAnim = 0
 	-- Rotational "velocity" with which to affect our Rotation, used for transient "kick" effects.
 	self.HEATAngVel = 0
+	-- Adds rotational velocity manually for one frame.
+	self.HEATAngVelOverride = 0
 	-- Our RotAngle last frame.
 	self.HEATLastRotAngle = self.RotAngle
 	-- Persistent frame to set, overriding fire animation, but not overriding reload animation.
@@ -217,6 +221,7 @@ function ThreadedUpdate(self)
     
     self.HEATLastRotAngle = self.RotAngle
     self.HEATAngVel = (result / TimerMan.DeltaTimeSecs) * self.FlipFactor
+	self.HEATAngVel = self.HEATAngVel + self.HEATAngVelOverride;
     
     if self.HEATLastHFlipped ~= nil then
         if self.HEATLastHFlipped ~= self.HFlipped then
@@ -359,7 +364,7 @@ function ThreadedUpdate(self)
 					end			
 				
 					local frameChange = self.HEATCurrentReloadPhaseData.endFrame - self.HEATCurrentReloadPhaseData.startFrame
-					self.Frame = math.floor(self.HEATCurrentReloadPhaseData.startFrame + math.floor(frameChange * progressFactor, 0.55))
+					self.Frame = math.floor(self.HEATCurrentReloadPhaseData.startFrame + math.floor(frameChange * progressFactor + 0.55))
 				end
 				
 				if self.HEATParent then
@@ -664,6 +669,7 @@ function ThreadedUpdate(self)
 		stance = stance + Vector(-1,0) * self.HEATHorizontalAnim -- Horizontal animation
 		stance = stance + Vector(0,5) * self.HEATVerticalAnim -- Vertical animation
 		
+		self.HEATRotationTarget = self.HEATRotationTargetOverride or self.HEATRotationTarget;
 		self.HEATRotationTarget = self.HEATRotationTarget - (self.HEATAngVel * 4)
 		
 		if self.useHEATRecoil then		

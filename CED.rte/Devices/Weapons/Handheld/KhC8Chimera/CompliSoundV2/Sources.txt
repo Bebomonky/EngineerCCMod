@@ -1,0 +1,8 @@
+BF1: HiFI LMG 5
+COD:MW akilo47 fire plr
+Warframe TnoBladedPistol Shot
+
+COD:MW weap_ar3_fire_plr_atmo_ext1_01
+COD:MW weap_lmg_fire_plr_atmo_int1_01
+
+The Divison 2: LMG_M60_2D_Pre_Shot_v2_03
