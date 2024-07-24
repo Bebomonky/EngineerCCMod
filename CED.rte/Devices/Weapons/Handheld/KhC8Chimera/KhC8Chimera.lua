@@ -14,8 +14,14 @@ function Create(self)
 	self.KhC8ChimeraInvalidlyDeployed = false;
 	self.KhC8ChimeraDeploySoundPlayed = false;
 	self.KhC8ChimeraUndeploySoundPlayed = false;
+	self.KHC8ChimeraInvalidStanceGraceTimer = Timer();
+	self.KHC8ChimeraInvalidStanceGraceTime = 400;
 	self.KhC8ChimeraDeployTimer = Timer();
 	self.KhC8ChimeraDeployTime = 1000;
+	
+	self.KhC8ChimeraAIFairnessTimer = Timer();
+	self.KhC8ChimeraAIFairnessTime = 1000;
+	self.KhC8ChimeraAIFairnessEnabled = false;
 	
 	self.KhC8ChimeraOriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y);
 end
@@ -58,34 +64,39 @@ function ThreadedUpdate(self)
 		if isMoving or isNotCrouching then
 			invalidStance = true;
 		end
-		local validnessOverride = (self.parent.IndividualMass > 59 and not isMoving) or not self.parent:IsPlayerControlled();
+		local heavyEnoughForStandingFire = self.parent.IndividualMass >= 60;
+		local superHeavy = self.parent.IndividualMass >= 90;
+		local isPlayerControlled = self.parent:IsPlayerControlled();
+		local validnessOverride = (heavyEnoughForStandingFire and not isMoving) or (superHeavy) or not isPlayerControlled;
 		local aimAngle = math.deg(self.parent:GetAimAngle(false));
 		
 		if (invalidStance or self.parent.Vel.Magnitude > 3) and not self:IsReloading() and not validnessOverride then
-			if self.KhC8ChimeraDeployed then
-				self.KhC8ChimeraDeployed = false;
-				self.KhC8ChimeraDeploySound:FadeOut(200);
-				self.KhC8ChimeraUndeploySound:Play(self.Pos);
-				
-				self.KhC8ChimeraDeploySoundPlayed = false;
-			end
-			
-			self.KhC8ChimeraDeployTimer:Reset();
-
-			self.HUDVisible = false;
-			controller:SetState(Controller.AIM_SHARP, false)
-			self.HEATOriginalSharpLength = 0;
-			
-			self.HEATRotationTargetOverride = 70 - aimAngle;
-			self.HEATRotationSpeed = 3;
-			
-			if IsAHuman(self.parent) and ToAHuman(self.parent).StrideFrame then
-				self.HEATAngVelOverride = 18;
-				if self.Magazine then
-					self.KhC8ChimeraWalkBeltSound:Play(self.Pos);
+			if self.KHC8ChimeraInvalidStanceGraceTimer:IsPastSimMS(self.KHC8ChimeraInvalidStanceGraceTime) then
+				if self.KhC8ChimeraDeployed then
+					self.KhC8ChimeraDeployed = false;
+					self.KhC8ChimeraDeploySound:FadeOut(200);
+					self.KhC8ChimeraUndeploySound:Play(self.Pos);
+					
+					self.KhC8ChimeraDeploySoundPlayed = false;
 				end
-			else
-				self.HEATAngVelOverride = 0;
+				
+				self.KhC8ChimeraDeployTimer:Reset();
+
+				self.HUDVisible = false;
+				controller:SetState(Controller.AIM_SHARP, false)
+				self.HEATOriginalSharpLength = 0;
+				
+				self.HEATRotationTargetOverride = 70 - aimAngle;
+				self.HEATRotationSpeed = 3;
+				
+				if IsAHuman(self.parent) and ToAHuman(self.parent).StrideFrame then
+					self.HEATAngVelOverride = 18;
+					if self.Magazine then
+						self.KhC8ChimeraWalkBeltSound:Play(self.Pos);
+					end
+				else
+					self.HEATAngVelOverride = 0;
+				end
 			end
 		else
 			if not self.KhC8ChimeraDeploySoundPlayed then
@@ -102,6 +113,7 @@ function ThreadedUpdate(self)
 			self.HEATRotationTargetOverride = nil;
 			
 			if self.KhC8ChimeraDeployTimer:IsPastSimMS(self.KhC8ChimeraDeployTime) or validnessOverride then
+				self.KHC8ChimeraInvalidStanceGraceTimer:Reset();
 				self.HEATRotationSpeed = 9;
 				self.HEATAngVelOverride = 0;
 				if not self.KhC8ChimeraDeployed then
@@ -122,6 +134,21 @@ function ThreadedUpdate(self)
 					self.HEATRecoilMax = self.parent:IsPlayerControlled() and 12 or 4;
 					self.SharpShakeRange = 6;
 					self.ShakeRange = 6;
+					
+					-- We're here via AI control if this is false
+					if (isMoving and not superHeavy) or not heavyEnoughForStandingFire then
+						if self.KhC8ChimeraAIFairnessTimer:IsPastSimMS(self.KhC8ChimeraAIFairnessTime) then
+							if self.KhC8ChimeraAIFairnessEnabled then
+								self.KhC8ChimeraAIFairnessEnabled = false;
+							else
+								self.KhC8ChimeraAIFairnessEnabled = true;
+							end
+							self.KhC8ChimeraAIFairnessTime = math.random(1000, 2000)
+							self.KhC8ChimeraAIFairnessTimer:Reset();
+						end
+					else
+						self.KhC8ChimeraAIFairnessEnabled = false;
+					end
 				else
 					if self.KhC8ChimeraInvalidlyDeployed then
 						self.KhC8ChimeraDeployTimer:Reset();
@@ -150,4 +177,9 @@ function ThreadedUpdate(self)
 	if not self.KhC8ChimeraDeployed then
 		self:Deactivate();
 	end
+	
+	if self.KhC8ChimeraAIFairnessEnabled then
+		self:Deactivate();
+	end
+	
 end
