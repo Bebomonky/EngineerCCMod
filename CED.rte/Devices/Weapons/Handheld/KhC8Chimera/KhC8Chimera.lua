@@ -126,7 +126,7 @@ function ThreadedUpdate(self)
 				self.HEATRecoilStrength = 8
 				self.HEATRecoilDamping = 0.55
 				self.HEATRecoilMax = 4;
-				self.SharpShakeRange = 4;
+				self.SharpShakeRange = 3;
 				self.ShakeRange = 5;				
 				
 				if invalidStance then

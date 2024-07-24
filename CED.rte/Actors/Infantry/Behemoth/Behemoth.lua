@@ -54,6 +54,12 @@ function ThreadedUpdate(self)
 				rayVec = Vector(4 * self.FlipFactor, 0):RadRotate(self.EquippedBGItem.RotAngle);
 				rayOrigin = self.EquippedBGItem.MuzzlePos and self.EquippedBGItem.MuzzlePos or self.EquippedBGItem.Pos;
 			end
+			
+			-- Reset back to our pos if the muzzle is too far up or down
+			if math.abs(rayOrigin.Y - self.Pos.Y) > 10 then
+				rayOrigin = self.Pos;
+				rayVec = Vector(20 * self.FlipFactor, 0);
+			end
 				
 			local moCheck = SceneMan:CastMORay(rayOrigin, rayVec, self.ID, self.Team, 0, false, 2);		
 			
