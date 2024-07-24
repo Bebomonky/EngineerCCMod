@@ -226,10 +226,10 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = true;
 	reloadPhase.prepareSound = CreateSoundContainer("Belt Off Prepare CED Khrabarovsk C8 Chimera", "CED.rte");
-	reloadPhase.prepareDelay = 1190;
-	reloadPhase.prepareSoundLength = 1190;
+	reloadPhase.prepareDelay = 400;
+	reloadPhase.prepareSoundLength = 400;
 	reloadPhase.afterSound = CreateSoundContainer("Belt Off CED Khrabarovsk C8 Chimera", "CED.rte");
-	reloadPhase.afterDelay = 1250;
+	reloadPhase.afterDelay = 700;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -3)

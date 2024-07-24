@@ -122,20 +122,29 @@ function ThreadedUpdate(self)
 				end
 				self.HEATRotationTargetOverride = nil;
 				
+				self.HEATOriginalSharpLength = 170;
+				self.HEATRecoilStrength = 8
+				self.HEATRecoilDamping = 0.55
+				self.HEATRecoilMax = 4;
+				self.SharpShakeRange = 4;
+				self.ShakeRange = 5;				
+				
 				if invalidStance then
 					if not self.KhC8ChimeraInvalidlyDeployed then
 						self.KhC8ChimeraInvalidlyDeployed = true;
 						self.KhC8ChimeraDeploySound:FadeOut(200);
 						self.KhC8ChimeraUndeploySound:Play(self.Pos);
 					end
-					self.HEATOriginalSharpLength = 50;
-					self.HEATRecoilStrength = 14
-					self.HEATRecoilDamping = 0.2
-					self.HEATRecoilMax = self.parent:IsPlayerControlled() and 12 or 4;
-					self.SharpShakeRange = 6;
-					self.ShakeRange = 6;
+					if isPlayerControlled then
+						self.HEATOriginalSharpLength = 50;
+						self.HEATRecoilStrength = 14
+						self.HEATRecoilDamping = 0.2
+						self.HEATRecoilMax = 12;
+						self.SharpShakeRange = 6;
+						self.ShakeRange = 6;
+					end
 					
-					-- We're here via AI control if this is false
+					-- AI fairness stuff if they shouldn't be firing at all during this time
 					if (isMoving and not superHeavy) or not heavyEnoughForStandingFire then
 						if self.KhC8ChimeraAIFairnessTimer:IsPastSimMS(self.KhC8ChimeraAIFairnessTime) then
 							if self.KhC8ChimeraAIFairnessEnabled then
@@ -155,12 +164,10 @@ function ThreadedUpdate(self)
 						self.KhC8ChimeraDeploySoundPlayed = false;
 						self.KhC8ChimeraInvalidlyDeployed = false;
 					end
-					self.HEATOriginalSharpLength = 170;
-					self.HEATRecoilStrength = 8
-					self.HEATRecoilDamping = 0.55
-					self.HEATRecoilMax = 4;
-					self.SharpShakeRange = 4;
-					self.ShakeRange = 5;
+				end
+				
+				if not isPlayerControlled then
+					self.HEATRecoilMax = 0; -- they just can't deal with it...
 				end
 				
 			elseif self.KhC8ChimeraDeployTimer:IsPastSimMS(self.KhC8ChimeraDeployTime / 3) then
