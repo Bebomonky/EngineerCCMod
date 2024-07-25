@@ -655,7 +655,11 @@ function ThreadedUpdate(self)
 	end
 	
 	if self.HEATDelayedFire and self.HEATDelayedFireTimer:IsPastSimMS(self.HEATDelayedFireTimeMS) then
-		self:Activate()	
+		self:Activate()
+		-- Super roundabout dual wielding fire fix - it won't choose the other weapon to fire if it "fires itself"
+		if self.HEATParent then
+			self.HEATParent:GetController():SetState(Controller.WEAPON_FIRE, true);
+		end
 		self.HEATDelayedFire = false
 		self.HEATDelayedFirstShot = false;
 	end

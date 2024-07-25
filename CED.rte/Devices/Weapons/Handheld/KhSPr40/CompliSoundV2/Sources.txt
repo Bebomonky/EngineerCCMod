@@ -1,0 +1,4 @@
+COD:MW cpapa
+COD:MW pistol ext/int
+
+CP2077 w_tail_revol_power_nova_int

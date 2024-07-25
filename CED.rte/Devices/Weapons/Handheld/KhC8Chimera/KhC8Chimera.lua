@@ -155,8 +155,6 @@ function ThreadedUpdate(self)
 							self.KhC8ChimeraAIFairnessTime = math.random(1000, 2000)
 							self.KhC8ChimeraAIFairnessTimer:Reset();
 						end
-					else
-						self.KhC8ChimeraAIFairnessEnabled = false;
 					end
 				else
 					if self.KhC8ChimeraInvalidlyDeployed then
@@ -179,13 +177,12 @@ function ThreadedUpdate(self)
 				self.HEATRotationSpeed = 3;
 				self.HEATRotationTargetOverride = 20;
 			end
+			if self.KhC8ChimeraAIFairnessEnabled and not isPlayerControlled then
+				self:Deactivate();
+			end
 		end
 	end
 	if not self.KhC8ChimeraDeployed then
-		self:Deactivate();
-	end
-	
-	if self.KhC8ChimeraAIFairnessEnabled then
 		self:Deactivate();
 	end
 	
