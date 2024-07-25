@@ -1,0 +1,11 @@
+Warframe VenusFlyingSpacemanJetpackBurst
+
+Battlefront SW01_Destruction_Explosions_Modular_Medium_Corebass_Close_VAR_05 1 2 0
+Battlefront Modular Small SFX
+Battlefront Modular Small Ambience
+
+COD:MW frag_expl_env_int_01
+
+Titanfall 2 wpn_empgrenade_1p_pinpull_2ch_v1_01
+
+Bf4: Explosion_CoreBassClose_Wave 0 0 0

@@ -366,7 +366,7 @@ function Create(self)
 		end
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 3);
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 0);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
