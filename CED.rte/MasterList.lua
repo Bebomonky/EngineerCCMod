@@ -2,6 +2,8 @@ CEDMasterList = {};
 
 CEDMasterList.Fortifications = {};
 CEDMasterList.Turrets = {};
+CEDMasterList.Actors = {};
+CEDMasterList.Guns = {};
 CEDMasterList.Buildings = {};
 CEDMasterList.Utility = {};
 CEDMasterList.Technology = {};
@@ -43,6 +45,36 @@ Yay!]],
 								  ["Cost"] = 50,
 								  ["SnapToGround"] = true};
 
+-------  ACTORS  -------
+CEDMasterList.Actors.Behemoth = {["DisplayName"] = "Behemoth",
+								  ["Description"] = [[
+Desc: Consumes Combat Engineer and
+transforms into a behemoth!
+Requirement: 1 Combat Engineer
+Yay!]],
+								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "CED.rte/Actors/Infantry/Behemoth/Helmet.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["EntityPresetName"] = "CED.rte/Behemoth",
+								  ["EntityClassName"] = "AHuman",
+								  ["EntityTechName"] = "CED",
+								  ["QueueTime"] = 20000,
+								  ["Cost"] = 100};
+-------  GUNS  -------
+CEDMasterList.Guns.XarixVidara = {["DisplayName"] = "Xarix Vidara",
+								  ["Description"] = [[
+Desc: Creates a gun
+and pops out the machine!
+Yay!]],
+								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaVidara/XaVidaraBuyIcon.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["EntityPresetName"] = "CED.rte/Xarix Vidara",
+								  ["EntityClassName"] = "HDFirearm",
+								  ["EntityTechName"] = "CED",
+								  ["QueueTime"] = 10000,
+								  ["Cost"] = 200};
+
 
 -------  BUILDINGS  -------
 CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
@@ -61,7 +93,7 @@ Yay!]],
 								  ["BuildableTechName"] = "CED",
 								  ["MaxAltitude"] = 57,
 								  ["Cost"] = 100,
-								  ["SnapToGround"] = true};	
+								  ["SnapToGround"] = true};
 								  
 CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
 								  ["Description"] = [[
@@ -78,7 +110,25 @@ Yay!]],
 								  ["BuildableTechName"] = "CED",
 								  ["MaxAltitude"] = 57,
 								  ["Cost"] = 500,
-								  ["SnapToGround"] = true};	
+								  ["SnapToGround"] = true};
+
+CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "Xarix-Nanofab",
+								  ["ResearchName"] = "Xarix Start 1",
+								  ["Description"] = [[
+Desc: Builds the Xarix-Nanofab
+What it does: Yes
+Yay!]],
+								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["RenderPath"] = "CED.rte/Buildings/XarixNanofab/XarixNanofab.png",
+								  ["RenderSize"] = Box(Vector(-50, -50), Vector(50, 50)),
+								  ["BuildablePresetName"] = "CED Xarix Nanofab Buildable",
+								  ["BuildableClassName"] = "MOSRotating",
+								  ["BuildableTechName"] = "CED",
+								  ["MaxAltitude"] = 57,
+								  ["Cost"] = 250,
+								  ["SnapToGround"] = true};
 
 -------  UTILITY  -------
 
@@ -99,6 +149,18 @@ CEDMasterList.Technology.Atmo_coagulator = {["DisplayName"] = "Research\nAtmo-co
 								  ["Description"] = [[
 Desc: Researches the
 Atmo-coagulator
+What it does: Researches
+Yay!]],
+								  ["Delay"] = 1000,
+								  ["TooltipSize"] = Vector(150, 75),
+								  ["Cost"] = 500,
+}
+
+CEDMasterList.Technology.XarixNanofab = {["DisplayName"] = "Research\nXarix-Nanofab",
+								  ["ResearchName"] = "Xarix Start 1",
+								  ["Description"] = [[
+Desc: Researches the
+Xarix-Nanofab
 What it does: Researches
 Yay!]],
 								  ["Delay"] = 1000,
