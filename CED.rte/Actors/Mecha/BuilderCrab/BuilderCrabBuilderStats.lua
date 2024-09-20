@@ -29,6 +29,8 @@ function Create(self)
 	i = i + 1;
 	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.Supercomputer
 	i = i + 1;
+	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.XarixNanofab
+	i = i + 1;
 	
 	-------  UTILITY  -------
 end
