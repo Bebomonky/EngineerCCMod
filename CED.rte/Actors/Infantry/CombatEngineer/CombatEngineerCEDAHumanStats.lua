@@ -5,7 +5,7 @@ function Create(self)
 	
 	self.CEDAHumanAccelerationFactor = 0.4;
 	self.CEDAHumanWalkMultiplier = 0.6;
-	self.CEDAHumanSprintMultiplier = 1.0;
+	self.CEDAHumanSprintMultiplier = 1.3;
 	self.CEDAHumanSprintingRotAngleOffset = -0.15;
 	self.CEDAHumanCrouchRunAmount = 1.0;
 	

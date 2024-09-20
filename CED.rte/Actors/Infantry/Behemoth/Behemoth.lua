@@ -1,5 +1,6 @@
 function Create(self)
 	self.BehemothSprintWhooshSound = CreateSoundContainer("Sprint Whoosh CED Behemoth", "CED.rte");
+	self.BehemothSprintWhooshSound.Volume = 0.5;
 	self.BehemothIsTackling = false;
 	self.BehemothOriginalMass = self.IndividualMass;
 	self.BehemothLimbPathDefaultPushForce = self.LimbPathPushForce;

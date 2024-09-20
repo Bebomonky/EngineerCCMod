@@ -23,6 +23,9 @@ function Update(self)
 	self.bounceJetSound.Pos = self.Pos;
 
 	if self.firstExploDone then
+		if self.Vel.Magnitude > 2 then
+			self.GlobalAccScalar = self.originalAccScalar;
+		end
 		if self.Timer:IsPastSimMS(self.secondExploDelay) then
 		
 			local outdoorRays = 0;
@@ -70,7 +73,9 @@ function Update(self)
 			self.firstExploDone = true;
 			self.Timer:Reset();
 			
-			self.GlobalAccScalar = 0.2;
+			 -- Account for activities that might lower this by themselves
+			self.originalAccScalar = self.GlobalAccScalar;
+			self.GlobalAccScalar = math.min(self.GlobalAccScalar * 0.2, 0.2);
 			
 			for i = 1, 2 do
 				local flipFactor = i == 1 and -1 or 1;

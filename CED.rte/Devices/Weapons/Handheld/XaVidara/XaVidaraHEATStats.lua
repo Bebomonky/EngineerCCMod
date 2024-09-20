@@ -329,7 +329,7 @@ function Create(self)
 	self.HEATRecoilDamping = 0.8
 	
 	-- Maximum rotation in degrees the recoil can cause.
-	self.HEATRecoilMax = 2
+	self.HEATRecoilMax = 1
 	-- Maximum low value for SharpLength as a multiplier.
 	self.HEATSharpLengthMinimumMult = 0.6;
 	
