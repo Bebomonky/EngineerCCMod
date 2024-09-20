@@ -414,15 +414,14 @@ function BuilderBasic(self)
 								for i = 1, #mainTab.BuildList do
 									local row = math.floor((i - 1) / rows) + 1
 									local isVisible = row >= scroll + 1 and row < scroll + 1 + rows
-									--Everything that is parented to self.Main.Box is a key string
-									local button = self.Main.Box.Child["Buildable " .. i]
-									if button then --If it somehow doesn't exist wtf
-
-										--Epic copy and paste
-										local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
-										local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
-										button:SetPos(x, y - scroll * posMultiplier)
-										button:SetVisible(isVisible)
+									for ii, button in pairs(self.Main.Box:GetChildren()) do
+										if i == ii then
+											--Epic copy and paste
+											local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
+											local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
+											button:SetPos(x, y - scroll * posMultiplier)
+											button:SetVisible(isVisible)
+										end
 									end
 								end
 							end
