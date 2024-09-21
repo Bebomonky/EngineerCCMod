@@ -58,7 +58,7 @@ function ThreadedUpdate(self)
 	if self.parent then
 		local controller = self.parent:GetController();
 		local isMoving = (controller:IsState(Controller.MOVE_LEFT) == true or controller:IsState(Controller.MOVE_RIGHT) == true);
-		local isNotCrouching = (controller:IsState(Controller.MOVE_DOWN) == false);
+		local isNotCrouching = (controller:IsState(Controller.BODY_PRONE) == false) and (controller:IsState(Controller.BODY_WALKCROUCH) == false);
 		-- I tried a lot to get this neater, but without an if statement it goes weird and returns nil for no reason... very strange
 		local invalidStance;
 		if isMoving or isNotCrouching then

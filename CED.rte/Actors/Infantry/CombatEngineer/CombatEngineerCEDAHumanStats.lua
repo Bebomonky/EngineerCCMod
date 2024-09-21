@@ -3,9 +3,10 @@ require("MasterList")
 function Create(self)
 	self.CEDAHumanJumpStrength = 1.5;
 	
-	self.CEDAHumanAccelerationFactor = 0.4;
-	self.CEDAHumanWalkMultiplier = 0.6;
-	self.CEDAHumanSprintMultiplier = 1.3;
+	self.CEDAHumanAccelerationFactor = 1.0;
+	self.CEDAHumanDecelerationFactor = 1.0;
+	self.CEDAHumanWalkMultiplier = 1.0;
+	self.CEDAHumanSprintMultiplier = 2.0;
 	self.CEDAHumanSprintingRotAngleOffset = -0.15;
 	self.CEDAHumanCrouchRunAmount = 1.0;
 	

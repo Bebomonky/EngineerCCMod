@@ -9,13 +9,9 @@ function Create(self)
 	self.CEDAHumanSprintAndWalkDifference = self.CEDAHumanSprintMultiplier - self.CEDAHumanWalkMultiplier;
 	self.CEDAHumanCurrentMoveMultiplier = 1;
 	
-	self.CEDAHumanLimbPathDefaultSpeed0 = self:GetLimbPathSpeed(0);
-	self.CEDAHumanLimbPathDefaultSpeed1 = self:GetLimbPathSpeed(1);
-	self.CEDAHumanLimbPathDefaultSpeed2 = self:GetLimbPathSpeed(2);
+	self.CEDAHumanLimbPathDefaultSpeed = self:GetLimbPathTravelSpeed(Actor.WALK);
 	
-	self.CEDAHumanLimbPathDefaultPushForce = self.LimbPathPushForce;
-	
-	self.CEDAHumanOriginalWalkRotAngleTarget = self:GetRotAngleTarget(AHuman.WALK);
+	self.CEDAHumanDefaultWalkRotAngleTarget = self:GetRotAngleTarget(Actor.WALK);
 	
 	self.CompliSoundActorStepCallback = function (self)
 		if self.CompliSoundActorIsSprinting then
@@ -30,6 +26,9 @@ function Create(self)
 		else
 			if self.CEDAHumanFoleySounds.Walk then
 				self.CEDAHumanFoleySounds.Walk.Volume = 1;
+				if self.CompliSoundActorCrouching then
+					self.CEDAHumanFoleySounds.Walk.Volume = 0.4;
+				end
 				self.CEDAHumanFoleySounds.Walk:Play(self.Pos);
 			end		
 		end
@@ -82,17 +81,16 @@ function ThreadedUpdate(self)
 
 	self.CompliSoundActorPlayJumpSound = false;
 	local controller = self:GetController();
-	local crouching = controller:IsState(Controller.BODY_CROUCH)
+	local crouching = controller:IsState(Controller.BODY_WALKCROUCH)
+	local proning = controller:IsState(Controller.BODY_PRONE)
+	local sprinting = controller:IsState(Controller.MOVE_FAST)
+	self.CompliSoundActorIsSprinting = sprinting;
 	local moving = controller:IsState(Controller.MOVE_LEFT) or controller:IsState(Controller.MOVE_RIGHT);
 	
 	-- Crouching/standing
 	if (crouching and not self.CEDAHumanCrouching) and self.CompliSoundActorMoveSoundTimer:IsPastSimMS(500) then
 		self.CEDAHumanCrouching = true;
-		if moving and not self.CompliSoundActorIsSprinting then
-			self.CEDAHumanFoleySounds.ProneStart:Play(self.Pos);
-		else
-			self.CEDAHumanFoleySounds.Crouch:Play(self.Pos);
-		end
+		self.CEDAHumanFoleySounds.Crouch:Play(self.Pos);
 		self.CompliSoundActorMoveSoundTimer:Reset();
 	elseif (self.CEDAHumanCrouching and not crouching) then
 		self.CEDAHumanCrouching = false;
@@ -102,10 +100,23 @@ function ThreadedUpdate(self)
 		end
 	end
 	
+	-- Proning/standing
+	if (proning and not self.CEDAHumanProning) and self.CompliSoundActorMoveSoundTimer:IsPastSimMS(500) then
+		self.CEDAHumanProning = true;
+		self.CEDAHumanFoleySounds.ProneStart:Play(self.Pos);
+		self.CompliSoundActorMoveSoundTimer:Reset();
+	elseif (self.CEDAHumanProning and not proning) then
+		self.CEDAHumanProning = false;
+		if self.CompliSoundActorMoveSoundTimer:IsPastSimMS(500) then
+			self.CEDAHumanFoleySounds.Stand:Play(self.Pos);
+			self.CompliSoundActorMoveSoundTimer:Reset();
+		end
+	end
+	
 	-- Jumping
 	if controller:IsState(Controller.BODY_JUMPSTART) == true and controller:IsState(Controller.BODY_CROUCH) == false and self.CEDAHumanJumpTimer:IsPastSimMS(self.CEDAHumanJumpDelay) and not self.CompliSoundActorIsJumping and not self.CompliSoundActorWasInAir then
 		if (isPlayerControlled and self.CompliSoundActorFootContacts[1] == true or self.CompliSoundActorFootContacts[2] == true) or self.CompliSoundActorWasInAir == false then
-			local jumpStrength = self.CompliSoundActorIsSprinting and self.CEDAHumanJumpStrength * 2 or self.CEDAHumanJumpStrength;
+			local jumpStrength = sprinting and self.CEDAHumanJumpStrength * 2 or self.CEDAHumanJumpStrength;
 			local jumpVec = Vector(0, -self.CEDAHumanJumpStrength)
 			local jumpWalkX = 3
 			if controller:IsState(Controller.MOVE_LEFT) == true then
@@ -125,31 +136,10 @@ function ThreadedUpdate(self)
 	end
 	
 	-- Sprinting
-	local sprintInput = (not isPlayerControlled and self.AI.Target)
-	or
-	(isPlayerControlled
-	and UInputMan:KeyHeld(Key.LSHIFT)
-	and not (crouching and not self.CompliSoundActorIsSprinting)
-	and ((controller:IsState(Controller.MOVE_LEFT) == true or controller:IsState(Controller.MOVE_RIGHT) == true)
-	and not (controller:IsState(Controller.MOVE_LEFT) == true and controller:IsState(Controller.MOVE_RIGHT) == true))
-	and not (controller:IsState(Controller.MOVE_LEFT) == true and self.HFlipped == false or controller:IsState(Controller.MOVE_RIGHT) == true and self.HFlipped == true))
+	if sprinting and self.Vel.Magnitude > 1 then
 	
-	if sprintInput then
-		self.CompliSoundActorIsSprinting = true;
-		controller:SetState(Controller.BODY_CROUCH, false);
-	else
-		self.CompliSoundActorIsSprinting = false;
-	end	
-	
-	if self.CompliSoundActorIsSprinting then
-		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget + (self.CEDAHumanSprintingRotAngleOffset) * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference));
-		self.CrouchAmountOverride = 0.15 * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference)
-		controller:SetState(Controller.AIM_SHARP, false);
-	
-		if crouching then
-			self.CrouchAmountOverride = self.CEDAHumanCrouchRunAmount;
-			self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
-		end
+		-- Acceleration
+		self:SetRotAngleTarget(AHuman.RUN, self.CEDAHumanDefaultWalkRotAngleTarget + (self.CEDAHumanSprintingRotAngleOffset) * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference));
 		
 		if self.CEDAHumanCurrentMoveMultiplier < self.CEDAHumanSprintMultiplier then
 			self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanCurrentMoveMultiplier + TimerMan.DeltaTimeSecs * self.CEDAHumanAccelerationFactor;
@@ -157,19 +147,27 @@ function ThreadedUpdate(self)
 				self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanSprintMultiplier;
 			end
 		end
+
+		--self:SetLimbPathTravelSpeed(Actor.RUN, self.CEDAHumanLimbPathDefaultSpeed * self.CEDAHumanCurrentMoveMultiplier);
 		
-		self:SetLimbPathSpeed(0, self.CEDAHumanLimbPathDefaultSpeed0 * self.CEDAHumanCurrentMoveMultiplier);
-		self:SetLimbPathSpeed(1, self.CEDAHumanLimbPathDefaultSpeed1 * self.CEDAHumanCurrentMoveMultiplier);
-		self:SetLimbPathSpeed(2, self.CEDAHumanLimbPathDefaultSpeed2 * self.CEDAHumanCurrentMoveMultiplier);
-		
-		self.LimbPathPushForce = self.CEDAHumanLimbPathDefaultPushForce * 1.5
+		self:GetLimbPath(AHuman.FGROUND, Actor.RUN).BaseTravelSpeedMultiplier = self.CEDAHumanCurrentMoveMultiplier;
+		self:GetLimbPath(AHuman.BGROUND, Actor.RUN).BaseTravelSpeedMultiplier = self.CEDAHumanCurrentMoveMultiplier;
 	else
-		self:SetRotAngleTarget(AHuman.WALK, self.CEDAHumanOriginalWalkRotAngleTarget);
-		self.WalkRotAngleTarget = self.CEDAHumanOriginalWalkRotAngleTarget;
-		self.CrouchAmountOverride = -1;
-		self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanWalkMultiplier;
-		self:SetLimbPathSpeed(0, self.CEDAHumanLimbPathDefaultSpeed0 * self.CEDAHumanCurrentMoveMultiplier);
-		self:SetLimbPathSpeed(1, self.CEDAHumanLimbPathDefaultSpeed1 * self.CEDAHumanCurrentMoveMultiplier);
-		self:SetLimbPathSpeed(2, self.CEDAHumanLimbPathDefaultSpeed2 * self.CEDAHumanCurrentMoveMultiplier);
+		-- Slowing down
+		if self.CEDAHumanCurrentMoveMultiplier > self.CEDAHumanWalkMultiplier then
+			self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanCurrentMoveMultiplier - TimerMan.DeltaTimeSecs * self.CEDAHumanDecelerationFactor;
+			if self.CEDAHumanCurrentMoveMultiplier < self.CEDAHumanWalkMultiplier then
+				self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanWalkMultiplier;
+			end
+		end
+		
+		if not moving then
+			self.CEDAHumanCurrentMoveMultiplier = self.CEDAHumanWalkMultiplier;
+		end
+		
+		--self:SetLimbPathTravelSpeed(Actor.WALK, self.CEDAHumanLimbPathDefaultSpeed * self.CEDAHumanCurrentMoveMultiplier);
+		
+		self:GetLimbPath(AHuman.FGROUND, Actor.WALK).BaseTravelSpeedMultiplier = self.CEDAHumanCurrentMoveMultiplier;
+		self:GetLimbPath(AHuman.BGROUND, Actor.WALK).BaseTravelSpeedMultiplier = self.CEDAHumanCurrentMoveMultiplier;
 	end
 end

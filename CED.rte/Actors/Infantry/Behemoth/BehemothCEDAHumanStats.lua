@@ -3,12 +3,12 @@ require("MasterList")
 function Create(self)
 	self.CEDAHumanJumpStrength = 1.0;
 	
-	self.CEDAHumanAccelerationFactor = 0.1;
-	self.CEDAHumanWalkMultiplier = 0.55;
-	self.CEDAHumanSprintMultiplier = 1.2;
+	self.CEDAHumanAccelerationFactor = 0.2;
+	self.CEDAHumanDecelerationFactor = 0.2;
+	self.CEDAHumanWalkMultiplier = 0.9;
+	self.CEDAHumanSprintMultiplier = 2.0;
 	self.CEDAHumanSprintingRotAngleOffset = -0.09;
-	self.CEDAHumanCrouchRunAmount = 0.6;
-	
+
 	self.CompliSoundActorTerrainSoundDefaultVolumeOverride = 1.3;
 	self.CompliSoundActorTerrainSoundPitchOverride = 0.7;
 

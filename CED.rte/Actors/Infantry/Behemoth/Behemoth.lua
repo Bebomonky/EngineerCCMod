@@ -3,7 +3,6 @@ function Create(self)
 	self.BehemothSprintWhooshSound.Volume = 0.5;
 	self.BehemothIsTackling = false;
 	self.BehemothOriginalMass = self.IndividualMass;
-	self.BehemothLimbPathDefaultPushForce = self.LimbPathPushForce;
 	
 	self.BehemothTackleGraceTimer = Timer();
 	self.BehemothTackleGraceTime = 400;
@@ -42,7 +41,6 @@ function ThreadedUpdate(self)
 		if not self.BehemothIsTackling then
 			self.BehemothIsTackling = true;
 			self.BehemothSprintWhooshSound:Play(self.Pos);
-			self.LimbPathPushForce = self.BehemothLimbPathDefaultPushForce * 2;
 		else
 			self.BehemothTackleGraceTimer:Reset();
 		
