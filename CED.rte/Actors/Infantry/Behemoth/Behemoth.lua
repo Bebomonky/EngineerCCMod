@@ -37,7 +37,7 @@ function ThreadedUpdate(self)
 		self.BehemothHitMOTableResetTimer:Reset();
 	end
 			
-	if self.CompliSoundActorIsSprinting and self.CEDAHumanCurrentMoveMultiplier > self.CEDAHumanSprintMultiplier - 0.1 and self.Vel.Magnitude > 1 then
+	if self.CompliSoundActorSprinting and self.CEDAHumanCurrentMoveMultiplier > self.CEDAHumanSprintMultiplier - 0.1 and self.Vel.Magnitude > 1 then
 		if not self.BehemothIsTackling then
 			self.BehemothIsTackling = true;
 			self.BehemothSprintWhooshSound:Play(self.Pos);

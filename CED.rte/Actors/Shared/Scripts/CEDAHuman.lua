@@ -14,7 +14,7 @@ function Create(self)
 	self.CEDAHumanDefaultWalkRotAngleTarget = self:GetRotAngleTarget(Actor.WALK);
 	
 	self.CompliSoundActorStepCallback = function (self)
-		if self.CompliSoundActorIsSprinting then
+		if self.CompliSoundActorSprinting then
 			if self.CEDAHumanFoleySounds.Sprint then
 				self.CEDAHumanFoleySounds.Sprint.Volume = (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference)
 				self.CEDAHumanFoleySounds.Sprint:Play(self.Pos);
@@ -83,8 +83,6 @@ function ThreadedUpdate(self)
 	local controller = self:GetController();
 	local crouching = controller:IsState(Controller.BODY_WALKCROUCH)
 	local proning = controller:IsState(Controller.BODY_PRONE)
-	local sprinting = controller:IsState(Controller.MOVE_FAST)
-	self.CompliSoundActorIsSprinting = sprinting;
 	local moving = controller:IsState(Controller.MOVE_LEFT) or controller:IsState(Controller.MOVE_RIGHT);
 	
 	-- Crouching/standing
@@ -136,7 +134,7 @@ function ThreadedUpdate(self)
 	end
 	
 	-- Sprinting
-	if sprinting and self.Vel.Magnitude > 1 then
+	if self.CompliSoundActorSprinting and self.Vel.Magnitude > 1 then
 	
 		-- Acceleration
 		self:SetRotAngleTarget(AHuman.RUN, self.CEDAHumanDefaultWalkRotAngleTarget + (self.CEDAHumanSprintingRotAngleOffset) * (self.CEDAHumanCurrentMoveMultiplier - self.CEDAHumanWalkMultiplier) / (self.CEDAHumanSprintAndWalkDifference));
