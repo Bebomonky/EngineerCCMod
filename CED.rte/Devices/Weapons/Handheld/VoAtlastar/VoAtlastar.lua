@@ -9,6 +9,7 @@ function Create(self)
 	self.VoAtlastarFired = false;
 	self.VoAtlastarBurstCounter = 0;
 	self.VoAtlastarBurstReflectionSoundPlayed = false;
+	self.VoAtlastarLastRoundInMagCount = self.RoundInMagCount;
 
 	self.VoAtlastarPostFireTimer = Timer();
 	self.VoAtlastarPostFireCooldown = 250;
@@ -27,6 +28,10 @@ function OnFire(self)
 			self.VoAtlastarFirstShotSound:Play(self.Pos);
 		end
 	end
+	if self.RoundInMagCount == 0 then
+		self.VoAtlastarLastRoundInMagCount = 0;
+	end
+	self.VoAtlastarToSpawnCasing = false;
 	self.VoAtlastarPostFireTimer:Reset();
 	
 	self.VoAtlastarBurstCounter = self.VoAtlastarBurstCounter + 1;
@@ -60,6 +65,12 @@ function OnDetach(self)
 end
 
 function OnReload(self)
+	if self.VoAtlastarLastRoundInMagCount == 1 then
+		self.HEATEmptyReload = true;
+		-- HEATSystem will have picked the wrong one
+		self.BaseReloadTime = self.HEATTotalEmptyReloadTimeOverride;
+		self.VoAtlastarToSpawnCasing = true;
+	end
 	self.VoAtlastarPostFireSound:Stop(-1);
 	if self.VoAtlastarBurstCounter > 1 then
 		if not self.VoAtlastarBurstReflectionSoundPlayed then
@@ -81,6 +92,10 @@ end
 
 function ThreadedUpdate(self)
 	self.VoAtlastarPostFireSound.Pos = self.Pos;
+	
+	if self.Magazine then
+		self.VoAtlastarLastRoundInMagCount = self.RoundInMagCount;
+	end
 	
 	if self.VoAtlastarFired then
 		if self.VoAtlastarBurstCounter < 4 then

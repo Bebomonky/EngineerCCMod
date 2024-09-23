@@ -118,14 +118,14 @@ function Create(self)
 	self.HEATTotalFullReloadTimeOverride = 2340;
 	-- Override for the ReloadTime when reloading from empty.
 	-- Autocalculated using all phases if nil here. Relevant only for the progress bar.
-	self.HEATTotalEmptyReloadTimeOverride = nil;
+	self.HEATTotalEmptyReloadTimeOverride = 2870;
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = CreateMOSParticle("CompliSound Small Casing", "0CompliSoundEmporium.rte");
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
-	self.HEATCasingVelocity = Vector(-2, -1);
+	self.HEATCasingVelocity = Vector(-3, -4);
 	
 	-- MOSRotating object to spawn on phases with removesMag.
 	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Vossberg Atlastar", "CED.rte");
@@ -356,9 +356,17 @@ function Create(self)
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
-	reloadPhase.spawnCasing = false;
+	reloadPhase.spawnCasing = true;
 	reloadPhase.enterPhaseCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, -3);
+		if self.VoAtlastarToSpawnCasing then
+			self.VoAtlastarToSpawnCasing = false;
+			self.HEATToSpawnCasing = true;
+			self.HEATCurrentReloadPhaseData.spawnCasing = true;
+		else
+			self.HEATCurrentReloadPhaseData.spawnCasing = false;
+			self.HEATToSpawnCasing = false;
+		end
 	end
 	reloadPhase.constantCallback = function (self)
 		
