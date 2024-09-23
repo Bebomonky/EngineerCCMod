@@ -1,0 +1,14 @@
+Shot: COD:MW smgolf45 fire_plr
+Mech: COD:MW papa90 fire_plr_mech
+
+ReflectionOutdoors: COD:MW smg3 fire plr atmo ext1
+
+ReflectionIndoors: COD:MW smg_plr_atmo_int1
+
+Postfire: COD:MW: ocscar12 charge
+
+BurstReflectionOutdoors: BF4: Reflection Close Desert
+BurstReflectionIndoors:
+
+Titanfall 2: wpn_dmr_1p_wpnfire_crackshort_2ch_v1_01
+CP2077: w_gun_rifle_power_sor22_fire_15

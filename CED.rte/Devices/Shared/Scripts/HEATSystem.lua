@@ -185,7 +185,53 @@ function Create(self)
 	-- Mathemagical recoil variable. Shouldn't be messed with.
 	self.HEATRecoilStr = 0
 	
+	-----------------
+	----------------- Miscellaneous
+	-----------------	
 	
+	-- Helper function.
+	self.HEATCheckIfPointIsIndoors = function (self, point)
+		if point then
+			local outdoorRays = 0;
+			local indoorRays = 0;
+			local bigIndoorRays = 0;
+			local rayThreshold = 2;
+
+			local Vector2 = Vector(0,-700); -- straight up
+			local Vector2Left = Vector(0,-700):RadRotate(45*(math.pi/180));
+			local Vector2Right = Vector(0,-700):RadRotate(-45*(math.pi/180));			
+			local Vector2SlightLeft = Vector(0,-700):RadRotate(22.5*(math.pi/180));
+			local Vector2SlightRight = Vector(0,-700):RadRotate(-22.5*(math.pi/180));		
+			local Vector3 = Vector(0,0); -- dont need this but is needed as an arg
+			local Vector4 = Vector(0,0); -- dont need this but is needed as an arg
+
+			local ray = SceneMan:CastObstacleRay(point, Vector2, Vector3, Vector4, self.RootID, self.Team, 128, 7);
+			local rayRight = SceneMan:CastObstacleRay(point, Vector2Right, Vector3, Vector4, self.RootID, self.Team, 128, 7);
+			local rayLeft = SceneMan:CastObstacleRay(point, Vector2Left, Vector3, Vector4, self.RootID, self.Team, 128, 7);			
+			local raySlightRight = SceneMan:CastObstacleRay(point, Vector2SlightRight, Vector3, Vector4, self.RootID, self.Team, 128, 7);
+			local raySlightLeft = SceneMan:CastObstacleRay(point, Vector2SlightLeft, Vector3, Vector4, self.RootID, self.Team, 128, 7);
+			
+			local rayTable = {ray, rayRight, rayLeft, raySlightRight, raySlightLeft};
+			
+			for _, rayLength in ipairs(rayTable) do
+				if rayLength < 0 then
+					outdoorRays = outdoorRays + 1;
+				elseif rayLength > 170 then
+					bigIndoorRays = bigIndoorRays + 1;
+				else
+					indoorRays = indoorRays + 1;
+				end
+			end
+			
+			if outdoorRays >= rayThreshold then
+				return false;
+			else
+				return true;
+			end
+		else
+			print("ERROR: HEATSystem was asked to check a point for indoorness, but was not given a point!");
+		end
+	end
 end
 
 function ThreadedUpdate(self)

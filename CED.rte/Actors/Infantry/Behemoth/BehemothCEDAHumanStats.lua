@@ -7,7 +7,7 @@ function Create(self)
 	self.CEDAHumanDecelerationFactor = 0.2;
 	self.CEDAHumanWalkMultiplier = 0.9;
 	self.CEDAHumanSprintMultiplier = 2.0;
-	self.CEDAHumanSprintingRotAngleOffset = -0.09;
+	self.CEDAHumanSprintingRotAngleOffset = -0.2;
 
 	self.CompliSoundActorTerrainSoundDefaultVolumeOverride = 1.3;
 	self.CompliSoundActorTerrainSoundPitchOverride = 0.7;

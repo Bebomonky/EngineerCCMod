@@ -1,0 +1,10 @@
+COD:MW: papa90 empty magout
+COD:MW: papa90 grabmag
+COD:MW: papa90 empty magin and hitmag
+
+COD:MW: mike14 raise first charge
+BF1: Mauser1917Trench Reload Empty WeaponCharge
+
+COD:MW: papa90 reload end
+
+COD:MW: smgolf45 hammer plr, both ads and not
