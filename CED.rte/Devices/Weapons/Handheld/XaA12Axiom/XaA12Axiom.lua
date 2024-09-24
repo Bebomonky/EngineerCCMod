@@ -90,6 +90,10 @@ function ThreadedUpdate(self)
 				end
 				
 				if self.XaA12AxiomChargingTimer:IsPastSimMS(self.XaA12AxiomChargingHoldTime + self.XaA12AxiomChargingChargeTime) then
+					-- Super roundabout dual wielding fire fix - it won't choose the other weapon to fire if it "fires itself"
+					if self.parent then
+						self.parent:GetController():SetState(Controller.WEAPON_FIRE, true);
+					end
 					self:Activate();
 					self.HEATAngVelOverride = 0;
 					self.XaA12AxiomActivated = false;
@@ -119,6 +123,12 @@ function ThreadedUpdate(self)
 			end
 			self.XaA12AxiomChargingTimer:Reset();
 		end
+	end
+	
+	if self.FiredFrame then
+		self.Frame = 3;
+	else -- If we are reloading or have a persistent frame in the HEATSystem, this script comes before it, so the below 0 will be overwritten correctly.
+		self.Frame = 0;
 	end
 
 	if self.parent and IsActor(self.parent) then

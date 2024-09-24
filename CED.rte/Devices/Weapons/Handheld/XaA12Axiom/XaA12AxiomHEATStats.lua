@@ -121,7 +121,7 @@ function Create(self)
 	self.HEATTotalEmptyReloadTimeOverride = nil;
 	
 	-- Casing object to spawn on phases with spawnCasing.
-	self.HEATCasing = CreateMOSParticle("CompliSound Small Casing", "0CompliSoundEmporium.rte");
+	self.HEATCasing = CreateMOSParticle("CED Plasma Casing", "CED.rte");
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
@@ -169,7 +169,7 @@ function Create(self)
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
 	reloadPhase.reloadSupportOffsetTarget = Vector(-2, -2)
 	-- Rotation to set in this phase.
-	reloadPhase.rotationTarget = 40;
+	reloadPhase.rotationTarget = 10;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
 	reloadPhase.angVel = 2;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
@@ -179,9 +179,9 @@ function Create(self)
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
-	reloadPhase.startFrame = 2;
+	reloadPhase.startFrame = 0;
 	-- End frame of the auto animation.
-	reloadPhase.endFrame = 3;
+	reloadPhase.endFrame = 2;
 	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
 	reloadPhase.setEndFrameAsPersistent = true;
 	-- Easing function to use. You could define your own here if you really wanted.
@@ -201,18 +201,57 @@ function Create(self)
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay - self.HEATCurrentReloadPhaseData.prepareDelay / 2) then
-			self.HEATCurrentReloadPhaseData.rotationTarget = 50;
-		end		
+	
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
+	
+		for i = 1, self.HEATFullMagazineRoundCount do
+			local casing
+			casing = self.HEATCasing:Clone();
+			casing.Pos = self.EjectionPos;
+			casing.Vel = self.Vel + Vector(self.HEATCasingVelocity.X * self.FlipFactor * RangeRand(0.2, 3), self.HEATCasingVelocity.Y * RangeRand(1, 1.2)):RadRotate(self.RotAngle);
+			casing.RotAngle = self.RotAngle;
+			casing.HFlipped = self.HFlipped;
+			MovableMan:AddParticle(casing);
+		end	
+	
 		if self.XaA12AxiomShotCounter >= 5 then
-			self.XaA12AxiomHeatReleaseHeavySound:Play(self.Pos);
+			self.XaA12AxiomHeatReleaseHeavySound:Play(self.Pos);	
+			
+			self.XaA12AxiomHeavySmokeDataTable = {};
+			self.XaA12AxiomHeavySmokeDataTable.Position = self.Pos;
+			self.XaA12AxiomHeavySmokeDataTable.Source = self;
+			self.XaA12AxiomHeavySmokeDataTable.RadAngle = self.HFlipped and (self.RotAngle + math.pi/4) or self.RotAngle - math.pi/4;
+			self.XaA12AxiomHeavySmokeDataTable.Power = 50;
+			self.XaA12AxiomHeavySmokeDataTable.Spread = 60;
+			self.XaA12AxiomHeavySmokeDataTable.SmokeMult = 1.0;
+			self.XaA12AxiomHeavySmokeDataTable.ExploMult = 0.3;
+			self.XaA12AxiomHeavySmokeDataTable.WidthSpread = 3;
+			self.XaA12AxiomHeavySmokeDataTable.VelocityMult = 0.01;
+			self.XaA12AxiomHeavySmokeDataTable.LingerMult = 2.0;
+			self.XaA12AxiomHeavySmokeDataTable.AirResistanceMult = 1.8;
+			self.XaA12AxiomHeavySmokeDataTable.GravMult = 0.3;	
+			self.HEATParticleUtility:CreateDirectionalSmokeEffect(self.XaA12AxiomHeavySmokeDataTable);		
 		end
 		
 		if self.XaA12AxiomShotCounter >= 2 then
 			self.XaA12AxiomHeatReleaseLightSound:Play(self.Pos);
+			
+			self.XaA12AxiomLightSmokeDataTable = {};
+			self.XaA12AxiomLightSmokeDataTable.Position = self.Pos;
+			self.XaA12AxiomLightSmokeDataTable.Source = self;
+			self.XaA12AxiomLightSmokeDataTable.RadAngle = self.HFlipped and (self.RotAngle + math.pi/4) or self.RotAngle - math.pi/4;
+			self.XaA12AxiomLightSmokeDataTable.Power = 25;
+			self.XaA12AxiomLightSmokeDataTable.Spread = 60;
+			self.XaA12AxiomLightSmokeDataTable.SmokeMult = 1.0;
+			self.XaA12AxiomLightSmokeDataTable.ExploMult = 0.0;
+			self.XaA12AxiomLightSmokeDataTable.WidthSpread = 3;
+			self.XaA12AxiomLightSmokeDataTable.VelocityMult = 0.01;
+			self.XaA12AxiomLightSmokeDataTable.LingerMult = 2.0;
+			self.XaA12AxiomLightSmokeDataTable.AirResistanceMult = 1.8;
+			self.XaA12AxiomLightSmokeDataTable.GravMult = 0.3;	
+			self.HEATParticleUtility:CreateDirectionalSmokeEffect(self.XaA12AxiomLightSmokeDataTable);			
 		end
 		
 		self.XaA12AxiomShotCounter = 0;
@@ -240,13 +279,13 @@ function Create(self)
 	reloadPhase.reloadStanceOffsetTarget = Vector(-3, 2);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-15, 10)
-	reloadPhase.rotationTarget = -25;
+	reloadPhase.rotationTarget = -10;
 	reloadPhase.angVel = -1;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 3;
-	reloadPhase.endFrame = 3;
+	reloadPhase.startFrame = 2;
+	reloadPhase.endFrame = 2;
 	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -265,7 +304,14 @@ function Create(self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 1);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+		local spentSpeedloader;
+		spentSpeedloader = CreateMOSRotating("Spent Speedloader MOSRotating CED Xarix A-12 Axiom", "CED.rte");
+		spentSpeedloader.Pos = self.Pos + Vector(-1 * self.FlipFactor, -1):RadRotate(self.RotAngle);
+		spentSpeedloader.Vel = self.Vel + Vector(2.5 * self.FlipFactor, -1):RadRotate(self.RotAngle);
+		spentSpeedloader.RotAngle = self.RotAngle;
+		spentSpeedloader.AngularVel = math.random(-15, 15);
+		spentSpeedloader.HFlipped = self.HFlipped;
+		MovableMan:AddParticle(spentSpeedloader);
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -290,8 +336,8 @@ function Create(self)
 	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
-	reloadPhase.autoAnimateFrames = false;
-	reloadPhase.startFrame = 4;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 2;
 	reloadPhase.endFrame = 0;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
