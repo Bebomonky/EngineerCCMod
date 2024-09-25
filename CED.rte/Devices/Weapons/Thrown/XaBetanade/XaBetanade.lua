@@ -149,7 +149,7 @@ function Update(self)
 			self.Timer:Reset();
 			self.maxBounceDelayTimer:Reset();
 		end
-	elseif self:IsAttached() and ToActor(self:GetRootParent()):GetController():IsState(Controller.PRIMARY_ACTION) then
+	elseif self:IsActivated() then
 		self.Frame = 1;
 		self.pinPullSound:Play(self.Pos);
 		local pin = CreateMOSRotating("Pin CED Xarix Betanade", "CED.rte");
