@@ -5,3 +5,5 @@ SW: SW01_Destruction_Explosions_Modular_ThermalImploder_Corebass_Close_VAR_02 0 
 Insurgency: m67_pullpin
 
 Insurgency: Sandstorm: exp_flashbang_core_close_01, exp_flashbang_core_indoor_close_01
+
+Warframe: CrpRubanRifleProjectileExplosionA
