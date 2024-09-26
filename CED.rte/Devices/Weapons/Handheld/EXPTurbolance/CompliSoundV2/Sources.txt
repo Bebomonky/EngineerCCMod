@@ -1,0 +1,11 @@
+BF4: HiFi_Minigun_Wave, Noise_Close_Minigun_Wave, Minigun_Jam_Wave
+
+Fallout4: NPC_Robot_Sentry_Bot_Overheat_Ambient_01_LPM
+
+Synthetik: sound_UI_Heat_Bar_Overheat
+
+SW: SW01_Destruction_Explosions_Modular_Medium_Reflection_Default_VAR_03 0 0 0
+
+Insurgency: Sandstorm: heavy_weapon_overheat_loop
+
+CP2077: w_tail_shotgun_power_igla_ext_open
