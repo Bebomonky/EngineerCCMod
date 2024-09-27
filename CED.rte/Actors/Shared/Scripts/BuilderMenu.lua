@@ -126,7 +126,6 @@ function BuilderBasic(self)
 	local itemFund = false
 
 	local function drawMenu()
-		local buttons = {}
 		for i = 1, #self.Category do
 			local tab = self.Category[i]
 			local name = tab[1]
@@ -190,6 +189,7 @@ function BuilderBasic(self)
 						tooltip_bar:SetVisible(false)
 					end
 
+					local buttons = {}
 					for i = 1, #mainTab.BuildList do
 						local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
 						local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
@@ -236,8 +236,12 @@ function BuilderBasic(self)
 									tooltip_bar:SetTitle(button.Buildable.DisplayName)
 
 									textWidth = FrameMan:CalculateTextWidth(button.Buildable.DisplayName .. " ", true)
-									textWidth_price = FrameMan:CalculateTextWidth(tostring(button.Buildable.Cost), true)
-									oz_width = FrameMan:CalculateTextWidth("oz", true)
+									if button.Buildable.Cost > 0 then
+										textWidth_price = FrameMan:CalculateTextWidth(tostring(button.Buildable.Cost), true)
+										oz_width = FrameMan:CalculateTextWidth("oz", true)
+									else
+										textWidth_price = FrameMan:CalculateTextWidth("FREE", true)
+									end
 									textPos = offset + Vector(textWidth, 0) + Vector(tooltip_bar:GetPosX() + 10, tooltip_bar:GetPosY() + 25)
 									tooltip_bar.Displaying = true
 								end
@@ -254,13 +258,20 @@ function BuilderBasic(self)
 								DisplayNumber(self, screen,
 								itemFund and "Green" or "Red",
 								textPos + Vector(4, 0),
-								tostring(button.Buildable.Cost))
+								button.Buildable.Cost > 0 and tostring(button.Buildable.Cost) or "FREE")
 
-								PrimitiveMan:DrawTextPrimitive(screen, textPos + Vector(4 + textWidth_price, 0), "oz", true, 0)
-								PrimitiveMan:DrawTextPrimitive(screen,
-								textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
-								true,
-								0)
+								if button.Buildable.Cost > 0 then
+									PrimitiveMan:DrawTextPrimitive(screen, textPos + Vector(4 + textWidth_price, 0), "oz", true, 0)
+									PrimitiveMan:DrawTextPrimitive(screen,
+									textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
+									true,
+									0)
+								else
+									PrimitiveMan:DrawTextPrimitive(screen,
+									textPos + Vector(4 + textWidth_price, 0), ")",
+									true,
+									0)
+								end
 								if button.IsResearched == true then
 									button:OutlineColor(itemFund and 117 or 13)
 
@@ -347,7 +358,9 @@ function BuilderBasic(self)
 												buildablePreset.Team = entity.Team
 												buildablePreset.Pos = renderPos
 												MovableMan:AddParticle(buildablePreset)
-												self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(entity.Team) - button.Buildable.Cost, entity.Team)
+												if button.Buildable.Cost > 0 then
+													self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(entity.Team) - button.Buildable.Cost, entity.Team)
+												end
 												self.ConfirmSound:Play(-1)
 												self.SelectDelayTime:Reset()
 												print("Just placed the following: " .. button.Buildable.DisplayName);
@@ -409,20 +422,13 @@ function BuilderBasic(self)
 									--Adds 1
 									scroll = math.min(totalRows - rows, scroll + 1)
 								end
-
-								--This whole fucking thing is just itself then recreates itself, and it's within itself. xd
-								for i = 1, #mainTab.BuildList do
+								for i = 1, #buttons do
+									local button = buttons[i]
 									local row = math.floor((i - 1) / rows) + 1
 									local isVisible = row >= scroll + 1 and row < scroll + 1 + rows
-									for ii, button in pairs(self.Main.Box:GetChildren()) do
-										if i == ii then
-											--Epic copy and paste
-											local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
-											local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
-											button:SetPos(x, y - scroll * posMultiplier)
-											button:SetVisible(isVisible)
-										end
-									end
+									local y = 40 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
+									button:SetPos(button:GetPosX(), y - scroll * posMultiplier)
+									button:SetVisible(isVisible)
 								end
 							end
 						end
