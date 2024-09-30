@@ -120,10 +120,10 @@ function Create(self)
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
 	-- Make sure not to set these two variables lower than the actual time that will be taken or it will end the reload prematurely
 	-- and break things.
-	self.HEATTotalFullReloadTimeOverride = 9000;
+	self.HEATTotalFullReloadTimeOverride = 11000;
 	-- Override for the ReloadTime when reloading from empty.
 	-- Autocalculated using all phases if nil here. Relevant only for the progress bar.
-	self.HEATTotalEmptyReloadTimeOverride = 9000;
+	self.HEATTotalEmptyReloadTimeOverride = 11000;
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = CreateMOSParticle("CompliSound Medium Casing Long", "0CompliSoundEmporium.rte");
@@ -172,7 +172,7 @@ function Create(self)
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(3, 3)
+	reloadPhase.reloadSupportOffsetTarget = Vector(0, -4)
 	-- Rotation to set in this phase.
 	reloadPhase.rotationTarget = 35;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
@@ -207,7 +207,7 @@ function Create(self)
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 2) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 8);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 3);
 			self.HEATCurrentReloadPhaseData.rotationTarget = 70;
 		end
 		
@@ -231,7 +231,7 @@ function Create(self)
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
-		
+	
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -387,7 +387,7 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 930;
 	reloadPhase.afterSound = CreateSoundContainer("Belt In CED CED-EXP Turbolance", "CED.rte");
 	reloadPhase.afterDelay = 600;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 1);
+	reloadPhase.reloadStanceOffsetTarget = Vector(-1, 4);
 	reloadPhase.reloadSupportOffsetSpeed = 10;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-1, -1)
 	reloadPhase.rotationTarget = 70;
@@ -404,11 +404,11 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, 8);
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, 4);
 	end
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, 2);
 		end
 		
 		if not self.EXPTurbolanceOverheated then
@@ -519,7 +519,9 @@ function Create(self)
 
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+		if self.HEATForceEndReload then
+			self.EXPTurbolanceOverheated = false;
+		end
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -537,10 +539,10 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 750;
 	reloadPhase.afterSound = nil;
 	reloadPhase.afterDelay = 750;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadStanceOffsetTarget = Vector(1, -1);
 	reloadPhase.reloadSupportOffsetSpeed = 1;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-5, -1)
-	reloadPhase.rotationTarget = 55;
+	reloadPhase.rotationTarget = 0;
 	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
@@ -548,7 +550,7 @@ function Create(self)
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
 	reloadPhase.setEndFrameAsPersistent = false;
-	reloadPhase.easingFunction = self.HEATEaseOutCubic;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = 1;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
@@ -557,9 +559,28 @@ function Create(self)
 
 	end
 	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
+		self.HEATCurrentReloadPhaseData.rotationTarget = math.deg(math.sin(self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay) * math.pi * 6)) * 0.3;
+		self.HEATCurrentReloadPhaseData.rotationTarget = 10 + self.HEATCurrentReloadPhaseData.rotationTarget * self.HEATEaseOutCubic(self.HEATReloadTimer.ElapsedSimTimeMS / (self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay))
+
+		if self.EXPTurbolanceHeatFXTimer:IsPastSimMS(200) then
+			self.EXPTurbolanceHeatFXTimer:Reset();
+			for i = 1, 2 do
+				local particle = CreateMOSParticle("Tiny Smoke Ball 1", "Base.rte");
+				particle.Lifetime = math.random(250, 600);
+				particle.Vel = self.Vel + Vector(math.random(-100, 100)/100, -1);
+				particle.Pos = self.Pos;
+				MovableMan:AddParticle(particle);
+			end
+			
+			for i = 1, 1 do
+				local particle = CreateMOSParticle("Small Smoke Ball 1", "Base.rte");
+				particle.Lifetime = math.random(250, 600);
+				particle.Vel = self.Vel + Vector(math.random(-100, 100)/100, -1);
+				particle.Pos = self.Pos;
+				MovableMan:AddParticle(particle);
+			end	
 		end
+
 		if self:IsReloading() then
 			self.HEATReloadPhaseOverride = 1;
 		end
