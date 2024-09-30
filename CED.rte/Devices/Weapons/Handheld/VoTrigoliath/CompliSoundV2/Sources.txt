@@ -1,0 +1,5 @@
+CP2077: w_gun_shotgun_power_igla_fire_double, w_tail_shotgun_power_igla_int 1
+BF4: Explosion_CoreBassClose_Wave 0 4 0
+COD:MW: weap_hdromeo_fire_plr_mech_ads_01, weap_shotgun_fire_plr_atmo_ext3_01, weap_juliet_prefire_mech_03, weap_sniper3_fire_plr_atmo_ext1_05, weap_sniper_fire_plr_atmo_int2_01
+Warframe: GrineerHandShotgunShotA
+Titanfall 2: wpn_mastiff_1p_wpnfire_mechtail_6ch_v1_03 1
