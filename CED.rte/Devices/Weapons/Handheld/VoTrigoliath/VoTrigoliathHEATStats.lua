@@ -123,7 +123,7 @@ function Create(self)
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
-	self.HEATCasingVelocity = Vector(-3, -1);
+	self.HEATCasingVelocity = Vector(-0.5, -0.1);
 	
 	-- MOSRotating object to spawn on phases with removesMag.
 	self.HEATFakeMagazineMOSRotating = nil;
@@ -161,13 +161,13 @@ function Create(self)
 	-- Time after finishing the phase before the reload is progressed.
 	reloadPhase.afterDelay = 400;
 	-- Absolute StanceOffset to set when in this phase.
-	reloadPhase.reloadStanceOffsetTarget = Vector(-1, -1);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 10;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(2, 2)
+	reloadPhase.reloadSupportOffsetTarget = Vector(1, -3)
 	-- Rotation to set in this phase.
-	reloadPhase.rotationTarget = 20;
+	reloadPhase.rotationTarget = 2;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
 	reloadPhase.angVel = 0;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
@@ -195,7 +195,7 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, -3);
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
@@ -203,7 +203,7 @@ function Create(self)
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(5, -3);
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -229,7 +229,7 @@ function Create(self)
 	reloadPhase.afterDelay = 700;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 6;
-	reloadPhase.reloadSupportOffsetTarget = Vector(2, 2)
+	reloadPhase.reloadSupportOffsetTarget = Vector(2, -4)
 	reloadPhase.rotationTarget = 20;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
@@ -244,12 +244,18 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, -4);
 	end
 	reloadPhase.constantCallback = function (self)
-
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 3) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-8, 10);
+		end
 	end
 	reloadPhase.finishCallback = function (self)
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, -2);
+	
 		for i = 1, self.VoTrigoliathCasingsToRemove do
 			local casing;
 			casing = self.HEATCasing:Clone();
@@ -282,10 +288,10 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 180;
 	reloadPhase.afterSound = CreateSoundContainer("Round In CED Vossberg Trigoliath", "CED.rte");
 	reloadPhase.afterDelay = 380;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 6);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 5)
-	reloadPhase.rotationTarget = 15;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-1, -4)
+	reloadPhase.rotationTarget = -15;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 1;
 	reloadPhase.verticalAnim = -1;
@@ -299,6 +305,8 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = true;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, -4);
+		
 		self.HEATReloadSupportOffsetTarget.Y = 5;
 	end
 	reloadPhase.constantCallback = function (self)
@@ -309,7 +317,7 @@ function Create(self)
 		end
 	end
 	reloadPhase.finishCallback = function (self)
-
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, -3);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 
@@ -332,7 +340,7 @@ function Create(self)
 	reloadPhase.afterDelay = 600;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 7;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-2, 2)
+	reloadPhase.reloadSupportOffsetTarget = Vector(5, -3)
 	reloadPhase.rotationTarget = -5;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
@@ -347,16 +355,19 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(5, -3);
 	end
 	reloadPhase.constantCallback = function (self)
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, 2);
+		end
 		if self.VoTrigoliathSwitchedAmmo then
 			self.VoTrigoliathSwitchedAmmo = false;
 			self.HEATReloadPhaseOverride = 1;
 		end
 	end
 	reloadPhase.finishCallback = function (self)
-	
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, -3);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 
@@ -374,14 +385,14 @@ function Create(self)
 	self.useHEATRecoil = true;
 	
 	-- Strength of the horizontal "kick" animation when firing.
-	self.HEATRecoilHorizontalAnim = 5;
+	self.HEATRecoilHorizontalAnim = 8;
 	-- Strength of the rotational "kick" animation when firing.
-	self.HEATRecoilAngAnim = 10;
+	self.HEATRecoilAngAnim = 14;
 	-- Variative multiplier for the rotational kick animation. A value of "0.1" here would give you anywhere from x0.95 to x1.05 the AngAnim.
 	self.HEATRecoilAngVariation = 0.3;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 29
+	self.HEATRecoilStrength = 35
 	-- Some sort of mathemagical strength value to affect the recoil.
 	self.HEATRecoilPowStrength = 0.2
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.

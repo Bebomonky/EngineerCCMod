@@ -16,7 +16,7 @@ function Create(self)
 	self.VoTrigoliathMultiFireHoldTime = 200;
 	self.VoTrigoliathMultiFireTimer = Timer();
 	
-	self.VoTrigoliathMultiFireReloadableCooldown = 500;
+	self.VoTrigoliathMultiFireReloadableCooldown = 700;
 	
 	self.VoTrigoliathSpawnProjectileFunction = function (self, extraParticleForMultifire)
 		self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + 1;
@@ -181,7 +181,7 @@ function ThreadedUpdate(self)
 						self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 4;
 						self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.5;
 					else
-						self.HEATRecoilStrength = 29;
+						self.HEATRecoilStrength = 35;
 						self.HEATRecoilDamping = 0.6;
 						self.HEATRecoilMax = 4;
 						self.HEATDelayedFireTimeMS = 110;
