@@ -52,7 +52,7 @@ function Create(self)
 	self.useHEATFiringAnimation = true;
 	
 	-- Final frame of the firing animation. Start frame is always 0.
-	self.HEATFiringAnimationEndFrame = 4;
+	self.HEATFiringAnimationEndFrame = 3;
 	-- Whether to set the PersistentFrame to the above EndFrame on the final shot of a magazine.
 	-- Note that this can happily be overriden later by your callbacks.
 	self.HEATLockBackOnEmpty = false;
@@ -130,7 +130,7 @@ function Create(self)
 	-- MOSRotating object to spawn on phases with removesMag.
 	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Khrabarovsk 11p35-rifle", "CED.rte");
 	-- Position to spawn the object at.  Don't include FlipFactor.
-	self.HEATFakeMagazineOffset = Vector(-1, 5);
+	self.HEATFakeMagazineOffset = Vector(2, 3);
 	-- Velocity with which to spawn the object.  Don't include FlipFactor.
 	self.HEATFakeMagazineVelocity = Vector(0.5, 0.5);
 	-- AngularVel to spawn the object with.  Don't include FlipFactor.
@@ -163,19 +163,19 @@ function Create(self)
 	-- Time after finishing the phase before the reload is progressed.
 	reloadPhase.afterDelay = 250;
 	-- Absolute StanceOffset to set when in this phase.
-	reloadPhase.reloadStanceOffsetTarget = Vector(2, 1);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(-3, 4)
+	reloadPhase.reloadSupportOffsetTarget = Vector(9, -1)
 	-- Rotation to set in this phase.
 	reloadPhase.rotationTarget = -10;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
-	reloadPhase.angVel = 2;
+	reloadPhase.angVel = 0;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
-	reloadPhase.horizontalAnim = 0;
+	reloadPhase.horizontalAnim = -1;
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
-	reloadPhase.verticalAnim = 1;
+	reloadPhase.verticalAnim = -1;
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = true;
 	-- Start frame of the auto animation.
@@ -201,15 +201,15 @@ function Create(self)
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 4) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
-			self.HEATCurrentReloadPhaseData.rotationTarget = 45;
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(5, -3);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(5, -1);
 		end		
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 6);
-		
+
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -231,13 +231,13 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 100;
 	reloadPhase.afterSound = CreateSoundContainer("Mag Out CED Khrabarovsk 11p35-rifle", "CED.rte");
 	reloadPhase.afterDelay = 500;
-	reloadPhase.reloadStanceOffsetTarget = Vector(2, -4);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-9, 5)
+	reloadPhase.reloadSupportOffsetTarget = Vector(1, 5)
 	reloadPhase.rotationTarget = 15;
-	reloadPhase.angVel = -2;
+	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
-	reloadPhase.verticalAnim = -1;
+	reloadPhase.verticalAnim = 1;
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 0;
 	reloadPhase.endFrame = 0;
@@ -256,11 +256,9 @@ function Create(self)
 		end
 	
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
-			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
-		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, -1);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 8);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 7);
 		end
 	end
 	reloadPhase.finishCallback = function (self)
@@ -287,8 +285,8 @@ function Create(self)
 	reloadPhase.afterDelay = 300;
 	reloadPhase.reloadStanceOffsetTarget = Vector(2, -4);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-9, 5)
-	reloadPhase.rotationTarget = 15;
+	reloadPhase.reloadSupportOffsetTarget = Vector(4, 6.5)
+	reloadPhase.rotationTarget = 35;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = -1;
@@ -309,12 +307,10 @@ function Create(self)
 			self.Frame = 4;
 		end	
 	
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
-			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
-		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 4);
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, 3);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 8);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, 4);
 		end
 	end
 	reloadPhase.finishCallback = function (self)
@@ -339,9 +335,9 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 250;
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk 11p35-rifle", "CED.rte");
 	reloadPhase.afterDelay = 200;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 3;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-5, -1)
+	reloadPhase.reloadSupportOffsetTarget = Vector(6, -5)
 	reloadPhase.rotationTarget = -15;
 	reloadPhase.angVel = 15;
 	reloadPhase.horizontalAnim = 0;
@@ -360,16 +356,215 @@ function Create(self)
 	end
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
-			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
-			self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(0, 0);
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 1);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(6, 1);
 		end		
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(-1, -1);
+		self.HEATForceEndReload = true;
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
+	end
+	
+	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
+	
+	i = i + 1;
+	reloadPhase = {};
+	reloadPhase.Name = "GLOpen";
+	reloadPhase.removesMag = false;
+	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.prepareSound = nil
+	reloadPhase.prepareDelay = 100;
+	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.afterSound = CreateSoundContainer("GL Open CED Khrabarovsk 11p35-rifle", "CED.rte");
+	reloadPhase.afterDelay = 200;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetTarget = Vector(7, 3)
+	reloadPhase.rotationTarget = 15;
+	reloadPhase.angVel = 0;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = 0;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 7;
+	reloadPhase.setEndFrameAsPersistent = true;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
+	reloadPhase.enterPhaseCallback = function (self)
+		
+	end
+	reloadPhase.constantCallback = function (self)
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 1);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(6, 1);
+		end		
+	end
+	reloadPhase.finishCallback = function (self)
+
+	end
+	reloadPhase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
+	
+	i = i + 1;
+	reloadPhase = {};
+	reloadPhase.Name = "GLShellOut";
+	reloadPhase.removesMag = false;
+	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.prepareSound = nil
+	reloadPhase.prepareDelay = 50;
+	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.afterSound = CreateSoundContainer("GL Shell Out CED Khrabarovsk 11p35-rifle", "CED.rte");
+	reloadPhase.afterDelay = 300;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetTarget = Vector(7, 3)
+	reloadPhase.rotationTarget = 10;
+	reloadPhase.angVel = 0;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = 0;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 7;
+	reloadPhase.endFrame = 7;
+	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
+	reloadPhase.enterPhaseCallback = function (self)
+		
+	end
+	reloadPhase.constantCallback = function (self)
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-7, 1);
+		end		
+	end
+	reloadPhase.finishCallback = function (self)
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 3);
+		
+		
+		if self.Kh11p35GLToSpawnCasing then
+			self.Kh11p35GLToSpawnCasing = false;
+			local casing;
+			casing = CreateMOSRotating("GL Shell CED Khrabarovsk 11p35-rifle", "CED.rte");
+			casing.Pos = self.Pos + Vector(7, 2):RadRotate(self.RotAngle);
+			casing.Vel = self.Vel + Vector(-2, 0):RadRotate(self.RotAngle);
+			casing.AngularVel = 1 * self.FlipFactor;
+			casing.RotAngle = self.RotAngle;
+			casing.HFlipped = self.HFlipped;
+			MovableMan:AddParticle(casing);
+		end
+	end
+	reloadPhase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
+	
+	i = i + 1;
+	reloadPhase = {};
+	reloadPhase.Name = "GLShellIn";
+	reloadPhase.removesMag = false;
+	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.prepareSound = nil
+	reloadPhase.prepareDelay = 700;
+	reloadPhase.prepareSoundLength = 0;
+	reloadPhase.afterSound = CreateSoundContainer("GL Shell In CED Khrabarovsk 11p35-rifle", "CED.rte");
+	reloadPhase.afterDelay = 150;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetTarget = Vector(3, 3)
+	reloadPhase.rotationTarget = -5;
+	reloadPhase.angVel = 0;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = 0;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 7;
+	reloadPhase.endFrame = 7;
+	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
+	reloadPhase.enterPhaseCallback = function (self)
+		
+	end
+	reloadPhase.constantCallback = function (self)
+	
+	end
+	reloadPhase.finishCallback = function (self)
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(7, 3);
+	end
+	reloadPhase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.HEATReloadPhases[i] = reloadPhase;
+	
+	------------------------------------------------------------------------------		
+	
+	i = i + 1;
+	reloadPhase = {};
+	reloadPhase.Name = "GLClose";
+	reloadPhase.removesMag = false;
+	reloadPhase.addsMag = false;
+	reloadPhase.autoProgressIfFinishedButInterrupted = false;
+	reloadPhase.prepareSound = CreateSoundContainer("GL Close Prepare CED Khrabarovsk 11p35-rifle", "CED.rte");
+	reloadPhase.prepareDelay = 150;
+	reloadPhase.prepareSoundLength = 80;
+	reloadPhase.afterSound = CreateSoundContainer("GL Close CED Khrabarovsk 11p35-rifle", "CED.rte");
+	reloadPhase.afterDelay = 200;
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
+	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetTarget = Vector(7, 3)
+	reloadPhase.rotationTarget = 0;
+	reloadPhase.angVel = 0;
+	reloadPhase.horizontalAnim = 0;
+	reloadPhase.verticalAnim = 0;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 7;
+	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.endIfNotEmptyReload = false;
+	reloadPhase.shotgunReloadLoop = false;
+	reloadPhase.spawnCasing = false;
+	reloadPhase.enterPhaseCallback = function (self)
+		
+	end
+	reloadPhase.constantCallback = function (self)
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(4, 1);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(6, 1);
+		end		
+	end
+	reloadPhase.finishCallback = function (self)
+
+	end
+	reloadPhase.exitPhaseCallback = function (self)
+		self.Kh11p35GLLoaded = true;
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
