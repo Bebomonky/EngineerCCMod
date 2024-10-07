@@ -1,0 +1,3 @@
+COD:MW: akilo47 fire plr hardlimited +5, fire mech plr ads, ar4 atmo ext, ar(1) atmo ext, aalpha12 prefire
+Insurgency: Sandstorm: AKM Core Loop
+CP2077: w_tail_rifle_power_copperhead_int
