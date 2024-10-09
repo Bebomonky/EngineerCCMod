@@ -204,6 +204,10 @@ function Create(self)
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(5, -3);
+		
+		if self.VoTrigoliathCasingsToRemove <= 0 then
+			self.HEATReloadPhaseOverride = 3;
+		end
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -306,7 +310,6 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, -4);
-		
 		self.HEATReloadSupportOffsetTarget.Y = 5;
 	end
 	reloadPhase.constantCallback = function (self)

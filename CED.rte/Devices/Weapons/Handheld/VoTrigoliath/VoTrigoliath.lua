@@ -10,6 +10,7 @@ function Create(self)
 	self.VoTrigoliathMultiFireReflectionIndoorsSound = CreateSoundContainer("Multi Fire Reflection Indoors CED Vossberg Trigoliath", "CED.rte");
 	
 	self.VoTrigoliathSlugsLoaded = false;
+	self.VoTrigoliathMessageShownForOneReload = true;
 	
 	self.VoTrigoliathCasingsToRemove = 0;
 	
@@ -105,7 +106,7 @@ function OnFire(self)
 				self.VoTrigoliathMultiFireReflectionOutdoorsSound:Play(self.Pos);
 			end
 		end
-		self.HEATAmmoCounter = 0;
+		self.HEATAmmoCounter = 1; -- HEATSystem will decrement to 0 later
 		if self.Magazine then
 			self.Magazine.RoundCount = 0;
 		end
@@ -130,6 +131,8 @@ function ThreadedUpdate(self)
 	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
 		if not self.HEATDelayedFire then
 			if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+				self.VoTrigoliathMessageShownForOneReload = false;
+				
 				self.BaseReloadTime = 9999999;
 				self.VoTrigoliathSwitchedAmmo = true;
 				if self.VoTrigoliathSlugsLoaded then
@@ -202,6 +205,17 @@ function ThreadedUpdate(self)
 				end
 			end
 		end
+		
+		if self.VoTrigoliathMessageShownForOneReload == false and self:IsReloading() then
+			local text = "Loading buckshot...";
+			if self.VoTrigoliathSlugsLoaded then
+				text = "Loading slug...";
+			end
+			local ctrl = self.parent:GetController();
+			local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player);
+			PrimitiveMan:DrawTextPrimitive(screen, self.Pos + Vector(10, -15), text, true, 1);
+		elseif self:DoneReloading() then
+			self.VoTrigoliathMessageShownForOneReload = true;
+		end		
 	end
-	
 end
