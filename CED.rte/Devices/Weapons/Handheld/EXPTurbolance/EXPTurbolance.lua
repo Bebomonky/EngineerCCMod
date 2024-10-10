@@ -22,6 +22,12 @@ function Create(self)
 	self.EXPTurbolanceHeatDissipation = 10;
 	
 	self.EXPTurbolanceHeatFXTimer = Timer();
+
+	self.drawPos = Vector()
+
+	self.EXPTurbolanceBlinkTimer = Timer()
+	self.EXPTurbolanceToBlink = false
+	self.EXPTurbolanceBlinkRange = 70
 end
 
 function OnFire(self)
@@ -47,7 +53,6 @@ function OnFire(self)
 		if self.RoundInMagCount > 0 then
 			self:Deactivate();
 			self.EXPTurbolanceOverheated = true;
-			self.EXPTurbolanceHeat = 0;
 			self.EXPTurbolanceJamSound:Play(self.Pos);
 			self.HEATNonReloadStaging = true;
 			
@@ -172,6 +177,36 @@ function ThreadedUpdate(self)
 	end
 
 	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
+		self.drawPos = Vector(self.HEATParent.AboveHUDPos.X, self.HEATParent.AboveHUDPos.Y)
+
+		local ctrl = self.HEATParent:GetController()
+		local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
+		local heat_pos = self.drawPos - Vector(10, 5)
+		local ammo_pos = heat_pos - Vector(-20, 0)
+		local box_y = -5
+		local box_x = -20
+
+		if self.EXPTurbolanceOverheated then
+			self.EXPTurbolanceHeat = math.max(0, self.EXPTurbolanceHeat - TimerMan.DeltaTimeSecs * self.EXPTurbolanceHeatDissipation);
+		end
+
+		local heat = math.floor(self.EXPTurbolanceHeat)
+		if self.EXPTurbolanceHeat > 0 then
+			if self.EXPTurbolanceHeat >= self.EXPTurbolanceBlinkRange then
+				if self.EXPTurbolanceBlinkTimer:IsPastSimMS(250) then
+					self.EXPTurbolanceToBlink = not self.EXPTurbolanceToBlink
+					self.EXPTurbolanceBlinkTimer:Reset()
+				end
+			else
+				self.EXPTurbolanceToBlink = false
+				self.EXPTurbolanceBlinkTimer:Reset()
+			end
+			PrimitiveMan:DrawPrimitives(100 - heat,
+			{BoxFillPrimitive(screen, ammo_pos - Vector(-box_x - 1, box_y - 1), ammo_pos + Vector(box_x + heat / 4, -box_y + 2), 245),
+			BoxFillPrimitive(screen, ammo_pos - Vector(-box_x, box_y), ammo_pos + Vector(box_x + heat / 4, -box_y + 1),
+			self.EXPTurbolanceHeat >= self.EXPTurbolanceBlinkRange and (self.EXPTurbolanceToBlink and 77 or 13) or 149)})
+		end
+
 		if not self:IsReloading() and not self.HEATNonReloadStaging and not self.HEATDelayedFire and not self:IsActivated() then
 			if UInputMan:KeyPressed(CEDSettings.WeaponAbilityPrimary) then
 				if self.EXPTurbolanceHeat > 0 then
