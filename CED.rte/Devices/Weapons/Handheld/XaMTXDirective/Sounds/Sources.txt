@@ -1,0 +1,8 @@
+CP2077: pulsar magout, magin, handlepull, handlerelease, dian magin, magout
+CP2077: smart_lock_aim, ui_focus_mode_scanning_tag_on off
+
+Warframe: GrnFortressMineWarning
+
+Titanfall 2: wpn_proximitymine_1p_armedwarning_1ch_v1_01
+
+COD:MW: weap_mpapa7_deadtrigger_plr_01
