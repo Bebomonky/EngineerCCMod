@@ -11,7 +11,7 @@ CEDMasterList.Technology = {};
 -------  FORTIFICATIONS  -------
 CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
 								  ["Description"] = [[
-Desc: Builds the CED Logo
+Builds the CED Logo
 What it does: Yes
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -30,7 +30,7 @@ Yay!]],
 CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
 								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
-Desc: Builds the Plink Turret
+Builds the Plink Turret
 What it does: Yes
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -48,7 +48,7 @@ Yay!]],
 -------  ACTORS  -------
 CEDMasterList.Actors.Behemoth = {["DisplayName"] = "Behemoth",
 								  ["Description"] = [[
-Desc: Consumes Combat Engineer and
+Consumes Combat Engineer and
 transforms into a behemoth!
 Requirement: 1 Combat Engineer
 Yay!]],
@@ -63,7 +63,7 @@ Yay!]],
 -------  GUNS  -------
 CEDMasterList.Guns.XarixVidara = {["DisplayName"] = "Xarix Vidara",
 								  ["Description"] = [[
-Desc: Creates a gun
+Creates a gun
 and pops out the machine!
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -77,10 +77,10 @@ Yay!]],
 
 
 -------  BUILDINGS  -------
-CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo-coagulator",
+CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo\ncoagulator",
 								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
-Desc: Builds the Atmo-coagulator
+Builds the Atmo-coagulator
 What it does: Yes
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -95,9 +95,9 @@ Yay!]],
 								  ["Cost"] = 100,
 								  ["SnapToGround"] = true};
 								  
-CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Supercomputer",
+CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Super\ncomputer",
 								  ["Description"] = [[
-Desc: Builds the Supercomputer
+Builds the Supercomputer
 What it does: Yes
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -112,10 +112,10 @@ Yay!]],
 								  ["Cost"] = 500,
 								  ["SnapToGround"] = true};
 
-CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "Xarix-Nanofab",
+CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "Xarix\nNanofab",
 								  ["ResearchName"] = "Xarix Start 1",
 								  ["Description"] = [[
-Desc: Builds the Xarix-Nanofab
+Builds the Xarix-Nanofab
 What it does: Yes
 Yay!]],
 								  ["TooltipSize"] = Vector(150, 75),
@@ -136,7 +136,7 @@ Yay!]],
 CEDMasterList.Technology.PlinkTurret = {["DisplayName"] = "Research\nPlink Turret",
 								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
-Desc: Researches the Plink Turret
+Researches the Plink Turret
 What it does: Researches
 Yay!]],
 								  ["Delay"] = 1000,
@@ -147,7 +147,7 @@ Yay!]],
 CEDMasterList.Technology.Atmo_coagulator = {["DisplayName"] = "Research\nAtmo-coagulator",
 								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
-Desc: Researches the
+Researches the
 Atmo-coagulator
 What it does: Researches
 Yay!]],
@@ -159,7 +159,7 @@ Yay!]],
 CEDMasterList.Technology.XarixNanofab = {["DisplayName"] = "Research\nXarix-Nanofab",
 								  ["ResearchName"] = "Xarix Start 1",
 								  ["Description"] = [[
-Desc: Researches the
+Researches the
 Xarix-Nanofab
 What it does: Researches
 Yay!]],
