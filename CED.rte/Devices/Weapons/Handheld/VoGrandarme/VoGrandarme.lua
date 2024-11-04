@@ -34,31 +34,27 @@ function OnFire(self)
 end
 					
 function OnAttach(self, newParent)
-	self.parent = newParent:GetRootParent();
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
 end
 
 function OnDetach(self)
 	self.parent = nil;
+	self.parentController = nil;
 end
 
 function ThreadedUpdate(self)
 	self.VoGrandarmeSlowROFOnSound.Pos = self.Pos;
 	self.VoGrandarmeSlowROFOffSound.Pos = self.Pos;
 
-	if self.parent and IsActor(self.parent) then
-		if ToActor(self.parent):IsPlayerControlled() then
-			self.HEATRecoilMax = 12;
-		else
-			self.HEATRecoilMax = 3;
-		end
-	end
-
 	if not self:IsActivated() then
 		self.VoGrandarmeFirstShot = true;
 	end
 
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
-		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+	if self.parent then
+		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 			if self.VoGrandarmeSlowROFMode then
 				self.VoGrandarmeSlowROFOffSound:Play(self.Pos);
 				self.VoGrandarmeSlowROFMode = false;
@@ -83,5 +79,11 @@ function ThreadedUpdate(self)
 				self.HEATRecoilMax = 3;
 			end
 		end
+	
+		if self.parent:IsPlayerControlled() then
+			self.HEATRecoilMax = 12;
+		else
+			self.HEATRecoilMax = 3;
+		end	
 	end
 end

@@ -67,10 +67,21 @@ function OnFire(self)
 	self.KhMOSKARBulletFired = true;
 end
 
-function Update(self)
-	
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
-		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+function OnAttach(self, newParent)
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
+end
+
+function OnDetach(self)
+	self.parent = nil;
+	self.parentController = nil;
+end
+
+function ThreadedUpdate(self)
+	if self.parent then
+		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
 			if self.KhMOSKAToLoadRBullet then
 				self.KhMOSKAToLoadRBullet = false;
 				self.HEATDelayedFireTimeMS = 50;
@@ -128,42 +139,38 @@ function Update(self)
 				end
 			end
 		end
-	end
-	
-	local ctrl;
-	local screen;
-	if self.HEATParent then
-		ctrl = self.HEATParent:GetController();
-		screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player);
-		if self.KhMOSKAToLoadRBullet then
-			if self.KhMOSKARBulletLoaded then
-				if not self:IsReloading() then
-					local stringToDraw = "R"
-				
-					if self.Activity:GetTeamFunds(self.HEATParent.Team) < self.KhMOSKARBulletCost then
-						self:Deactivate();
-						stringToDraw = "noOz!"
+		
+		if self.parent:IsPlayerControlled() then
+			local screen = ActivityMan:GetActivity():ScreenOfPlayer(self.parentController.Player);
+			if self.KhMOSKAToLoadRBullet then
+				if self.KhMOSKARBulletLoaded then
+					if not self:IsReloading() then
+						local stringToDraw = "R"
+					
+						if self.Activity:GetTeamFunds(self.HEATParent.Team) < self.KhMOSKARBulletCost then
+							self:Deactivate();
+							stringToDraw = "noOz!"
+						end
+					
+						if not (self.HEATParent.Jetpack and self.HEATParent.Jetpack:IsEmitting()) then
+							-- Thanks JustAlex for this snippet
+							local yPos = self.parentController:IsState(Controller.PIE_MENU_ACTIVE) and 15 or 6
+							PrimitiveMan:DrawTextPrimitive(
+								screen,
+								self.HEATParent.AboveHUDPos + Vector(3, yPos),
+								stringToDraw,
+								true,
+								0)
+						end
 					end
-				
-					if not (self.HEATParent.Jetpack and self.HEATParent.Jetpack:IsEmitting()) then
-						-- Thanks JustAlex for this snippet
-						local yPos = ctrl:IsState(Controller.PIE_MENU_ACTIVE) and 15 or 6
-						PrimitiveMan:DrawTextPrimitive(
-							screen,
-							self.HEATParent.AboveHUDPos + Vector(3, yPos),
-							stringToDraw,
-							true,
-							0)
-					end
+				elseif self:IsReloading() then
+					PrimitiveMan:DrawTextPrimitive(screen, self.Pos + Vector(10, -10), "Loading R-Bullet...", true, 1);
 				end
-			elseif self:IsReloading() then
-				PrimitiveMan:DrawTextPrimitive(screen, self.Pos + Vector(10, -10), "Loading R-Bullet...", true, 1);
 			end
 		end
 	end
-
+	
 	if self.KhMOSKAReloadDelayTimer:IsPastSimMS(self.KhMOSKAReloadDelay) then
 		self.Reloadable = true;
 	end	
-	
 end

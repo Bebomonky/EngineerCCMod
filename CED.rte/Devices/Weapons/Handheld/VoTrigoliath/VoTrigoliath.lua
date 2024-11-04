@@ -116,11 +116,13 @@ end
 function OnAttach(self, newParent)
 	if IsAHuman(newParent:GetRootParent()) then
 		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
 	end
 end
 
 function OnDetach(self)
 	self.parent = nil;
+	self.parentController = nil;
 end
 
 function OnReload(self)
@@ -128,9 +130,9 @@ function OnReload(self)
 end
 
 function ThreadedUpdate(self)
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
+	if self.parent then
 		if not self.HEATDelayedFire then
-			if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+			if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
 				self.VoTrigoliathMessageShownForOneReload = false;
 				
 				self.BaseReloadTime = 9999999;
@@ -144,10 +146,8 @@ function ThreadedUpdate(self)
 				self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
 				self.HEATAmmoCounter = 0;
 			end
-		end
-	end
+		end	
 	
-	if self.parent then
 		if (self.parent.EquippedItem and self.parent.EquippedItem.UniqueID == self.UniqueID and not self.parent.EquippedBGItem) or (self.parent.EquippedBGItem and self.parent.EquippedBGItem.UniqueID == self.UniqueID and not self.parent.EquippedItem) then
 			local fire = self.RoundInMagCount > 0 and self:IsActivated();
 			self:Deactivate();

@@ -27,10 +27,22 @@ function OnFire(self)
 	end
 end
 
+function OnAttach(self, newParent)
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
+end
+
+function OnDetach(self)
+	self.parent = nil;
+	self.parentController = nil;
+end
+
 function ThreadedUpdate(self)
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
+	if self.parent then
 		if not self:IsReloading() and not self.HEATNonReloadStaging and not self.HEATDelayedFire then
-			if UInputMan:KeyPressed(CEDSettings.WeaponAbilityPrimary) then
+			if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 				if self.KhGS7SlamFireMode == false then
 					self.FullAuto = true;
 					self.RateOfFire = 600;

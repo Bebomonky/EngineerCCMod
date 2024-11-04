@@ -23,10 +23,21 @@ function OnFire(self)
 	MovableMan:AddParticle(casing);
 end
 					
+function OnAttach(self, newParent)
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
+end
+
+function OnDetach(self)
+	self.parent = nil;
+	self.parentController = nil;
+end
 
 function ThreadedUpdate(self)
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
-		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+	if self.parent then
+		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
 			self.KhJS50ScopeClickSound:Play(self.Pos);
 			self.KhJS50CurrentSharpLengthSetting = (self.KhJS50CurrentSharpLengthSetting + 1) % #self.KhJS50SharpLengthSettings + 1;
 			self.SharpLength = self.KhJS50SharpLengthSettings[self.KhJS50CurrentSharpLengthSetting];

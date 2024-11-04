@@ -133,11 +133,17 @@ function OnFire(self)
 end
 					
 function OnAttach(self, newParent)
-	self.parent = newParent:GetRootParent();
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
 end
 
 function OnDetach(self)
 	self.parent = nil;
+	self.parentController = nil;
+	self.EXPTurbolanceSpinLoopSound:Stop(-1);
+	self.EXPTurbolanceOverheatLoopSound.Volume = 0; -- Don't outright stop this because we can't tell if we're being dropped or put in inventory
 end
 
 function ThreadedUpdate(self)
@@ -176,10 +182,10 @@ function ThreadedUpdate(self)
 		self.EXPTurbolanceShotCounter = 0;
 	end
 
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
-		self.drawPos = Vector(self.HEATParent.AboveHUDPos.X, self.HEATParent.AboveHUDPos.Y)
+	if self.parent and self.parent:IsPlayerControlled() then
+		self.drawPos = Vector(self.parent.AboveHUDPos.X, self.parent.AboveHUDPos.Y)
 
-		local ctrl = self.HEATParent:GetController()
+		local ctrl = self.parent:GetController()
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
 		local heat_pos = self.drawPos - Vector(10, 5)
 		local ammo_pos = heat_pos - Vector(-20, 0)
@@ -208,7 +214,7 @@ function ThreadedUpdate(self)
 		end
 
 		if not self:IsReloading() and not self.HEATNonReloadStaging and not self.HEATDelayedFire and not self:IsActivated() then
-			if UInputMan:KeyPressed(CEDSettings.WeaponAbilityPrimary) then
+			if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 				if self.EXPTurbolanceHeat > 0 then
 					self.EXPTurbolanceActiveCooling = true;
 					self.HEATNonReloadStaging = true;
@@ -261,5 +267,9 @@ function ThreadedUpdate(self)
 			MovableMan:AddParticle(particle);
 		end	
 	end
+end
 
+function Destroy(self)
+	self.EXPTurbolanceSpinLoopSound:Stop(-1);
+	self.EXPTurbolanceOverheatLoopSound:Stop(-1);
 end

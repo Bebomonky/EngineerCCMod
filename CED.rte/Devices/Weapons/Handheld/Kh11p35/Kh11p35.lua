@@ -64,11 +64,15 @@ function OnFire(self)
 end
 					
 function OnAttach(self, newParent)
-	self.parent = newParent:GetRootParent();
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
 end
 
 function OnDetach(self)
 	self.parent = nil;
+	self.parentController = nil;
 end
 
 function ThreadedUpdate(self)
@@ -86,8 +90,8 @@ function ThreadedUpdate(self)
 		end
 	end
 
-	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
-		if UInputMan:KeyPressed(CEDSettings.WeaponAbilitySecondary) then
+	if self.parent then
+		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
 			if self.Kh11p35SingleMode then
 				self.Kh11p35SelectFullSound:Play(self.Pos);
 				self.Kh11p35SingleMode = false;
@@ -98,7 +102,7 @@ function ThreadedUpdate(self)
 				self.FullAuto = false;
 			end
 		end
-		if self.Magazine and UInputMan:KeyPressed(CEDSettings.WeaponAbilityPrimary) then
+		if self.Magazine and self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 			if self.Kh11p35GLMode then
 				self.Kh11p35FromGLSound:Play(self.Pos);
 				self.Kh11p35GLMode = false;
