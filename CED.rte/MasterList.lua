@@ -27,7 +27,7 @@ Yay!]],
 								  ["SnapToGround"] = false};
 
 -------  TURRETS  -------
-CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "Plink Turret",
+CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "  Plink\nTurret",
 								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
 Builds the Plink Turret
@@ -77,7 +77,7 @@ Yay!]],
 
 
 -------  BUILDINGS  -------
-CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "Atmo\ncoagulator",
+CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "     Atmo\ncoagulator",
 								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
 Builds the Atmo-coagulator
@@ -95,7 +95,7 @@ Yay!]],
 								  ["Cost"] = 100,
 								  ["SnapToGround"] = true};
 								  
-CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "Super\ncomputer",
+CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "   Super\ncomputer",
 								  ["Description"] = [[
 Builds the Supercomputer
 What it does: Yes
@@ -112,7 +112,7 @@ Yay!]],
 								  ["Cost"] = 500,
 								  ["SnapToGround"] = true};
 
-CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "Xarix\nNanofab",
+CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "   Xarix\nNanofab",
 								  ["ResearchName"] = "Xarix Start 1",
 								  ["Description"] = [[
 Builds the Xarix-Nanofab

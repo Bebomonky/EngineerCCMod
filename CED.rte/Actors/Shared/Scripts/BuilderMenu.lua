@@ -43,14 +43,17 @@ function BuilderMenu(self)
 
 	self.cancelButton = self.Menu:CreateGUI("BUTTON", self.builderBox);
 	self.cancelButton.Height = 32;
-	self.cancelButton:SetPos(5, self.cancelButton:GetParent():GetHeight() - self.cancelButton.Height);
 	self.cancelButton:SetSize(26, 26);
 	self.cancelButton:SetText("Remove\n  Build");
-	self.cancelButton:SetTextPos(0, 1);
+	self.cancelButton:SetTextPos(1, 1);
 	self.cancelButton:Color(146);
 	self.cancelButton:OutlineColor(144);
 	self.cancelButton:OutlineThickness(2);
 	self.cancelButton.isRemoving = false;
+
+	local height = self.cancelButton:GetHeight();
+	self.builderBox:SetSize(260, height + 160);
+	self.cancelButton:SetPos(5, self.builderBox:GetHeight() - self.cancelButton.Height);
 
 	self.cancelButton.Think = function()
 		self.cancelButton:OutlineColor(self.cancelButton:IsHovered() and 117 or 144);
@@ -81,7 +84,7 @@ function BuilderMenu(self)
 							local size = (Vector(self.renderBox.Width, self.renderBox.Height) / 2);
 							self.renderPos = mo.Pos;
 							PrimitiveMan:DrawPrimitives(50, {
-								BoxFillPrimitive(screen, self.renderPos + self.renderBox.Corner, self.renderPos + size, 13),
+								BoxFillPrimitive(self.cancelButton:GetScreen(), self.renderPos + self.renderBox.Corner, self.renderPos + size, 13),
 							});
 
 							if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
@@ -105,20 +108,17 @@ function BuilderMenu(self)
 		end
 	end
 
-	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX", self.builderBox);
-	self.tooltip:SetTitle("");
-	self.tooltip:SetPos(self.tooltip:GetParent():GetWidth() + 10, 25);
-	self.tooltip:SetSize(100, 75);
+	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX")
+	self.tooltip:SetPos(self.builderBox:GetWidth() + 20, 25);
 	self.tooltip:Color(93);
 	self.tooltip:OutlineColor(245);
 	self.tooltip:OutlineThickness(1);
-	self.tooltip:SetVisible(false); --Set to false to prevent flicker
 	self.tooltip.Displaying = false;
 
 	self.tooltipDesc = self.Menu:CreateGUI("LABEL", self.tooltip);
-	self.tooltipDesc:SetPos(45, (self.tooltip:GetHeight() * 0.5) - 20);
 	self.tooltipDesc:SetSmallText(true);
-	self.tooltipDesc:SetContentAlignment(1);
+	self.tooltipDesc:SetContentAlignment(5);
+	self.tooltipDesc:SetHide(true);
 
 	self.tooltip.Think = function()
 		self.tooltip:SetVisible(false);
@@ -135,8 +135,6 @@ function BuilderMenu(self)
 		local buildableList = tab[2];
 		local tabTemplate = tab[3];
 
-		--local x = self.builderBox:GetPos().X + ((i - 1) % categoryRows) * 65;
-		--local y = self.builderBox:GetPos().Y - (math.floor((i - 1) / categoryRows) + 1) * 35;
 		local x = 7 + ((i - 1) * 65)
 
 		local tab = self.builderBox:Add("BUTTON");
@@ -238,8 +236,8 @@ function Create(self)
 			self.CEDAvailableBuildables.Buildings,
 			{
 				Offset = Vector(0, 40),
-				DistOffset = Vector(85, 85),
-				Rows = 3,
+				DistOffset = Vector(50, 60),
+				Rows = 5,
 			}
 		},
 		{
@@ -262,7 +260,7 @@ function Create(self)
 
 		self.menuData[name] = tabTemplate;
 		self.menuData[name].TotalRows = 0;
-		self.menuData[name].MaxRows = 0;
+		self.menuData[name].MaxRows = 2;
 		self.menuData[name].Scroll = 0;
 		self.menuData[name].Buttons = {};
 
@@ -284,9 +282,6 @@ function Create(self)
 	function self:Populate(menu, scroll)
 
 		local rows = 3;
-		local maxHeight = 295;
-		local currentHeight = 40;
-		local height = 40;
 
 		self.renderBox = nil;
 		self.renderPos = Vector();
@@ -316,17 +311,19 @@ function Create(self)
 		for i, menuButton in ipairs(menu.Buttons) do
 			local pos = menu.Offset;
 			local row = math.floor((i - 1) / perRow);
+			local isVisible = row >= menu.Scroll and row < menu.Scroll + menu.MaxRows;
 			local j = ((i - 1) % perRow);
 			pos = pos + Vector(j * (menu.DistOffset.X or 0), row * (menu.DistOffset.Y or 0));
 
 			local button = self.buttonBox:Add("BUTTON");
+			button:SetVisible(isVisible);
 			button.Buildable = menuButton.Buildable;
 			button.Selected = false;
 			button.HasThickness = true;
 			button:SetPos(pos.X + 8, pos.Y);
-			button:SetSize(50, 45);
+			button:SetSize(40, 45);
 			button:SetText(button.Buildable.DisplayName);
-			button:SetTextPos(0, 9);
+			button:SetTextPos(0, 14);
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
@@ -356,10 +353,11 @@ function Create(self)
 					itemFund = self.Activity:GetTeamFunds(self.Team) >= button.Buildable.Cost;
 					self.tooltip:SetVisible(true);
 
-					local title = button.Buildable.DisplayName:gsub("\n", "");
+					local title = button.Buildable.DisplayName:gsub("\n", ""):gsub(" ", "");
 					if self.tooltip.Displaying == false then
 						local size = button.Buildable.TooltipSize;
 						self.tooltip:SetSize(size.X, size.Y);
+						self.tooltipDesc:SetSize(size.X, size.Y);
 						self.tooltip:SetTitle(title);
 
 						textWidth = FrameMan:CalculateTextWidth(title .. " ", true);
@@ -401,6 +399,8 @@ function Create(self)
 						button:OutlineColor(13);
 						button:Color(249);
 					end
+
+					self.tooltip:Update();
 				else
 					if button.IsResearched == true then
 						button:OutlineColor(144);
@@ -492,7 +492,7 @@ function Create(self)
 							end
 						end
 					end
-				end	-- CursorInside
+				end	-- IsHovered
 				if self.cancelButton.isRemoving then
 					button.Selected = false;
 				end
@@ -517,28 +517,20 @@ function Create(self)
 					end
 				end
 			end
-
-			currentHeight = pos.Y + menu.DistOffset.Y;
-			height = math.min(maxHeight, currentHeight);
 		end -- for
 
 		menu.Scroll = scroll or 0;
 		menu.TotalRows = math.ceil(#menu.Buttons / menu.Rows);
 
 		self.builderBox.Think = function()
-			self.builderBox:SetSize(260, height + self.cancelButton:GetHeight());
 			self.buttonBox:SetSize(self.builderBox:GetWidth(), self.builderBox:GetHeight());
-			self.cancelButton:SetPos(5, self.builderBox:GetHeight() - self.cancelButton.Height);
-
-			if height == maxHeight then
+			if self.Menu.Controller then
 				local go_up = self.Menu.Controller:IsState(Controller.SCROLL_UP);
 				local go_down = self.Menu.Controller:IsState(Controller.SCROLL_DOWN);
 
 				if go_up then
-					--Subtracts 1
 					menu.Scroll = math.max(0, menu.Scroll - 1);
 				elseif go_down then
-					--Adds 1
 					menu.Scroll = math.min(menu.TotalRows - menu.MaxRows, menu.Scroll + 1);
 				end
 				for i, button in pairs(self.buttonBox:GetChildren()) do
@@ -547,7 +539,7 @@ function Create(self)
 					local isVisible = row >= menu.Scroll and row < menu.Scroll + menu.MaxRows;
 					local j = (i - 1) % menu.Rows;
 					pos = pos + Vector(j * (menu.DistOffset.X or 0), row * (menu.DistOffset.Y or 0));
-					button:SetPos(pos.X, pos.Y - menu.Scroll * menu.DistOffset.Y);
+					button:SetPos(pos.X + 8, pos.Y - menu.Scroll * menu.DistOffset.Y);
 					button:SetVisible(isVisible);
 				end
 			end
