@@ -3,6 +3,7 @@ require("Mods.Extensions.ExtensionMan")
 function Create(self)
 	self.Menu = require("Mods.Extensions.imenu.core");
 	self.Menu:Initialize();
+	self.menuCreated = false;
 
 	self.sounds = {
 		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
@@ -111,19 +112,24 @@ function ResearchMenu(self)
 	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX")
 	self.researchBox:SetTitle("");
 	self.researchBox:SetPos(10, 25);
-	self.researchBox:SetSize(260, 50);
+	self.researchBox:SetSize(400, 300);
 	self.researchBox:Color(146);
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
 	local tabs = {};
 	local i = 1;
+	local totalWidth = 0;
+	local width = 50;
+	local height = 40;
+	local spacing = 65;
 	for name, faction in pairs(self.CEDAvailableTechnology) do
-		local x = 7 + ((i - 1) * 65);
+		local totalWidth = (i * width) + spacing * 3;
+		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
 		local tab = self.researchBox:Add("BUTTON");
 		tab:SetName("Category " .. i);
-		tab:SetPos(x, 0);
-		tab:SetSize(25, 25);
-		tab:SetText("");
+		tab:SetPos(x + (i - 1) * (width + spacing), 10);
+		tab:SetSize(width, height);
+		tab:SetText(name);
 		tab:Color(146);
 		tab:OutlineColor(144);
 		tab:OutlineThickness(2);
