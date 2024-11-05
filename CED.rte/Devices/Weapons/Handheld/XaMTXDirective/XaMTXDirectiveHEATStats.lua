@@ -52,7 +52,7 @@ function Create(self)
 	self.useHEATFiringAnimation = true;
 	
 	-- Final frame of the firing animation. Start frame is always 0.
-	self.HEATFiringAnimationEndFrame = 3;
+	self.HEATFiringAnimationEndFrame = 2;
 	-- Whether to set the PersistentFrame to the above EndFrame on the final shot of a magazine.
 	-- Note that this can happily be overriden later by your callbacks.
 	self.HEATLockBackOnEmpty = false;
@@ -130,11 +130,11 @@ function Create(self)
 	-- MOSRotating object to spawn on phases with removesMag.
 	self.HEATFakeMagazineMOSRotating = CreateMOSRotating("Fake Magazine MOSRotating CED Xarix MTX Directive", "CED.rte");
 	-- Position to spawn the object at.  Don't include FlipFactor.
-	self.HEATFakeMagazineOffset = Vector(2, 3);
+	self.HEATFakeMagazineOffset = Vector(1, 2);
 	-- Velocity with which to spawn the object.  Don't include FlipFactor.
-	self.HEATFakeMagazineVelocity = Vector(0.5, 0.5);
+	self.HEATFakeMagazineVelocity = Vector(0, 0.5);
 	-- AngularVel to spawn the object with.  Don't include FlipFactor.
-	self.HEATFakeMagazineAngularVel = -1;
+	self.HEATFakeMagazineAngularVel = -0.1;
 	
 	self.HEATReloadPhases = {};
 	
@@ -167,7 +167,7 @@ function Create(self)
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(0, 4)
+	reloadPhase.reloadSupportOffsetTarget = Vector(3, 2)
 	-- Rotation to set in this phase.
 	reloadPhase.rotationTarget = 0;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
@@ -175,7 +175,7 @@ function Create(self)
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
 	reloadPhase.horizontalAnim = 0;
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
-	reloadPhase.verticalAnim = 1;
+	reloadPhase.verticalAnim = 0;
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
@@ -201,14 +201,15 @@ function Create(self)
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 4) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
-			self.HEATCurrentReloadPhaseData.rotationTarget = 10;
-		end		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, -1);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 0);
+		end
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 6);
+
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -229,12 +230,12 @@ function Create(self)
 	reloadPhase.prepareDelay = 500;
 	reloadPhase.prepareSoundLength = 500;
 	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Xarix MTX Directive", "CED.rte");
-	reloadPhase.afterDelay = 630;
+	reloadPhase.afterDelay = 300;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 2);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 8)
-	reloadPhase.rotationTarget = 20;
-	reloadPhase.angVel = -2;
+	reloadPhase.reloadSupportOffsetTarget = Vector(0, 5)
+	reloadPhase.rotationTarget = -5;
+	reloadPhase.angVel = 3;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = -1;
 	reloadPhase.autoAnimateFrames = false;
@@ -250,10 +251,14 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 4);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 4);
+		end		
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 2);
+
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -274,16 +279,16 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 0;
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Xarix MTX Directive", "CED.rte");
 	reloadPhase.afterDelay = 140;
-	reloadPhase.reloadStanceOffsetTarget = Vector(4, -2);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(2, -1)
-	reloadPhase.rotationTarget = 15;
-	reloadPhase.angVel = -2;
+	reloadPhase.reloadSupportOffsetTarget = Vector(3, 2)
+	reloadPhase.rotationTarget = 0;
+	reloadPhase.angVel = -1;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 0;
-	reloadPhase.endFrame = 3;
+	reloadPhase.endFrame = 2;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -320,13 +325,13 @@ function Create(self)
 	reloadPhase.afterDelay = 250;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -1)
-	reloadPhase.rotationTarget = 5;
-	reloadPhase.angVel = 5;
+	reloadPhase.reloadSupportOffsetTarget = Vector(4, 3)
+	reloadPhase.rotationTarget = 0;
+	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 3;
+	reloadPhase.startFrame = 2;
 	reloadPhase.endFrame = 0;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
@@ -359,7 +364,7 @@ function Create(self)
 	self.useHEATRecoil = true;
 	
 	-- Strength of the horizontal "kick" animation when firing.
-	self.HEATRecoilHorizontalAnim = 3;
+	self.HEATRecoilHorizontalAnim = 1;
 	-- Strength of the rotational "kick" animation when firing.
 	self.HEATRecoilAngAnim = 1;
 	-- Variative multiplier for the rotational kick animation. A value of "0.1" here would give you anywhere from x0.95 to x1.05 the AngAnim.
