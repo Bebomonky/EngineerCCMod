@@ -7,6 +7,9 @@ CEDMasterList.Guns = {};
 CEDMasterList.Buildings = {};
 CEDMasterList.Utility = {};
 CEDMasterList.Technology = {};
+CEDMasterList.Technology.Xarix = {};
+CEDMasterList.Technology.Khrabarovsk = {};
+CEDMasterList.Technology.Vossberg = {};
 
 -------  FORTIFICATIONS  -------
 CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
@@ -133,37 +136,27 @@ Yay!]],
 -------  UTILITY  -------
 
 -------  TECHNOLOGY  -------
-CEDMasterList.Technology.PlinkTurret = {["DisplayName"] = "Research\nPlink Turret",
-								  ["ResearchName"] = "Defensive Combat",
-								  ["Description"] = [[
-Researches the Plink Turret
-What it does: Researches
-Yay!]],
-								  ["Delay"] = 1000,
+	-------  XARIX  -------
+CEDMasterList.Technology.Xarix.XarixADoctra = {["DisplayName"] = "Xarix A Doctra",
+								  ["Description"] = "Xarix-brand defensive pistol. Unassuming. Does more damage against robotic enemies.",
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaDoctra/XaDoctraBuyIcon.png",
 								  ["TooltipSize"] = Vector(150, 75),
+								  ["ResearchTime"] = 1000;
 								  ["Cost"] = 1000,
-}
-
-CEDMasterList.Technology.Atmo_coagulator = {["DisplayName"] = "Research\nAtmo-coagulator",
-								  ["ResearchName"] = "Economics",
-								  ["Description"] = [[
-Researches the
-Atmo-coagulator
-What it does: Researches
-Yay!]],
-								  ["Delay"] = 1000,
+};
+	-------  KHRABAROVSK  -------
+CEDMasterList.Technology.Khrabarovsk.SPr40 = {["DisplayName"] = "Khrabarovsk SPr-40",
+								  ["Description"] = "Khrabarovsk-brand revolver. Double-action. Hold and release the fire button to use a more precise single-action mode..",
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhSPr40/KhSPr40.png",
 								  ["TooltipSize"] = Vector(150, 75),
-								  ["Cost"] = 500,
-}
-
-CEDMasterList.Technology.XarixNanofab = {["DisplayName"] = "Research\nXarix-Nanofab",
-								  ["ResearchName"] = "Xarix Start 1",
-								  ["Description"] = [[
-Researches the
-Xarix-Nanofab
-What it does: Researches
-Yay!]],
-								  ["Delay"] = 1000,
+								  ["ResearchTime"] = 1000;
+								  ["Cost"] = 1000,
+};
+	-------  VOSSBERG  -------
+CEDMasterList.Technology.Vossberg.Hammerhead = {["DisplayName"] = "Vossberg Hammerhead",
+								  ["Description"] = "Vossberg-brand handcannon. High-caliber, high-octane.",
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoHammerhead/VoHammerhead.png",
 								  ["TooltipSize"] = Vector(150, 75),
-								  ["Cost"] = 500,
-}
+								  ["ResearchTime"] = 1000;
+								  ["Cost"] = 1000,
+};
