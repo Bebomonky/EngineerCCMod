@@ -115,10 +115,10 @@ function Create(self)
 	-- Autocalculated using endsIfNotEmptyReload if nil here. Relevant only for the progress bar.
 	-- Make sure not to set these two variables lower than the actual time that will be taken or it will end the reload prematurely
 	-- and break things.
-	self.HEATTotalFullReloadTimeOverride = 8000;
+	self.HEATTotalFullReloadTimeOverride = nil;
 	-- Override for the ReloadTime when reloading from empty.
 	-- Autocalculated using all phases if nil here. Relevant only for the progress bar.
-	self.HEATTotalEmptyReloadTimeOverride = 8000;
+	self.HEATTotalEmptyReloadTimeOverride = nil;
 	
 	-- Casing object to spawn on phases with spawnCasing.
 	self.HEATCasing = CreateMOSParticle("CED Plasma Casing", "CED.rte");
