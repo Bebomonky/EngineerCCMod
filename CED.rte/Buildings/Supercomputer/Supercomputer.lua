@@ -108,6 +108,40 @@ function DisplayNumber(self, screen, color, pos, text)
 	end
 end
 
+local function CC_TooltipSkin(gui)
+	gui:Color(93);
+	gui:OutlineColor(70);
+	gui:OutlineThickness(1);
+	local w = gui:GetWidth();
+	local h = gui:GetHeight();
+	local outlines = {
+		{Vector(w + 2, 0), Vector(0, h + 2), false, 21},
+		{Vector(0, h + 2), Vector(w + 2, 0), false, 21},
+		{Vector(0, 0), Vector(0, h), true, 21},
+		{Vector(0, 0), Vector(w, 0), true, 21},
+		{Vector(w, 1), Vector(0, h - 1), true, 59},
+		{Vector(1, h), Vector(w - 1, 0), true, 59},
+	};
+
+	for i = 1, #outlines do
+		local pos = outlines[i][1];
+		local size = outlines[i][2];
+		local drawAfterParent = outlines[i][3];
+		local color = outlines[i][4];
+		local outline = gui:Add("COLLECTIONBOX");
+		outline:SetTitle("");
+		outline:SetPos(pos.X, pos.Y);
+		outline:SetSize(size.X, size.Y)
+		outline:Color(color);
+		outline:DrawAfterParent(drawAfterParent);
+		outline:OutlineThickness(0);
+		outline.Think = function()
+			outline:SetPos(pos.X, pos.Y);
+			outline:SetSize(size.X, size.Y)
+		end
+	end
+end
+
 function ResearchMenu(self)
 	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX")
 	self.researchBox:SetTitle("");
@@ -116,13 +150,29 @@ function ResearchMenu(self)
 	self.researchBox:Color(146);
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
+	local screen = self.researchBox:GetScreen();
+
+	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
+	self.tooltip:SetHide(true);
+	self.tooltip:SetTitle("");
+	self.tooltip.Displaying = false;
+	self.tooltip.Timer = Timer();
+	self.tooltip.Timer:SetSimTimeLimitMS(100);
+	CC_TooltipSkin(self.tooltip);
+	self.tooltip.Think = function()
+		if not self.tooltip.Displaying then
+			self.tooltip:SetHide(true);
+			self.tooltip.Timer:Reset();
+		end
+	end
+
 	local tabs = {};
 	local i = 1;
 	local totalWidth = 0;
 	local width = 50;
 	local height = 40;
 	local spacing = 65;
-	for name, faction in pairs(self.CEDAvailableTechnology) do
+	for name, faction in SortedPairs(self.CEDAvailableTechnology) do
 		local totalWidth = (i * width) + spacing * 3;
 		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
 		local tab = self.researchBox:Add("BUTTON");
@@ -177,6 +227,30 @@ function ResearchMenu(self)
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
+			button.Researched = false;
+			--! TEMPORARY, WILL BE REPLACED WITH BUY ICONS
+			local itemPreset = _G["Create" .. button.Item.ItemClassName](button.Item.ItemPresetName, button.Item.ItemTechName);
+			local width = ToMOSprite(itemPreset):GetSpriteWidth();
+			local height = ToMOSprite(itemPreset):GetSpriteHeight();
+			button:SetSize(width, height);
+			itemPreset = nil; --No longer need it since we just wanted the sprite size
+			button.Think = function()
+				local world_pos = button:GetPos();
+				if button:IsHovered() then
+					if self.tooltip.Displaying == false then
+						local x = (pos.X + button:GetWidth()) + 125;
+						local y = pos.Y + 75;
+						self.tooltip:SetPos(x, y);
+					end
+					if self.tooltip.Timer:IsPastSimTimeLimit() then
+						self.tooltip:SetHide(false);
+					end
+					self.tooltip.Displaying = true;
+				else
+					self.tooltip.Displaying = false;
+				end
+				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, button.Item.IconPath, 0);
+			end
 			table.insert(self.menuData[name].Buttons, button);
 		end
 	end
@@ -470,6 +544,7 @@ function ThreadedUpdate(self)
 
 	if self.Menu:Update() then
 		self.researchBox:Update();
+		self.tooltip:Update();
 		self.Menu:DrawCursor();
 	end
 

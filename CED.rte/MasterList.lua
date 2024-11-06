@@ -31,7 +31,6 @@ Yay!]],
 
 -------  TURRETS  -------
 CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "  Plink\nTurret",
-								  ["ResearchName"] = "Defensive Combat",
 								  ["Description"] = [[
 Builds the Plink Turret
 What it does: Yes
@@ -81,7 +80,6 @@ Yay!]],
 
 -------  BUILDINGS  -------
 CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "     Atmo\ncoagulator",
-								  ["ResearchName"] = "Economics",
 								  ["Description"] = [[
 Builds the Atmo-coagulator
 What it does: Yes
@@ -116,7 +114,6 @@ Yay!]],
 								  ["SnapToGround"] = true};
 
 CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "   Xarix\nNanofab",
-								  ["ResearchName"] = "Xarix Start 1",
 								  ["Description"] = [[
 Builds the Xarix-Nanofab
 What it does: Yes
@@ -138,25 +135,40 @@ Yay!]],
 -------  TECHNOLOGY  -------
 	-------  XARIX  -------
 CEDMasterList.Technology.Xarix.XarixADoctra = {["DisplayName"] = "Xarix A Doctra",
+								  ["RequiredTech"] = "None",
 								  ["Description"] = "Xarix-brand defensive pistol. Unassuming. Does more damage against robotic enemies.",
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaDoctra/XaDoctraBuyIcon.png",
 								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaDoctra/XaDoctraBuyIcon.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["ItemPresetName"] = "Xarix A Doctra",
+								  ["ItemClassName"] = "HDFirearm",
+								  ["ItemTechName"] = "CED",
 								  ["ResearchTime"] = 1000;
 								  ["Cost"] = 1000,
 };
 	-------  KHRABAROVSK  -------
 CEDMasterList.Technology.Khrabarovsk.SPr40 = {["DisplayName"] = "Khrabarovsk SPr-40",
+								  ["RequiredTech"] = "None",
 								  ["Description"] = "Khrabarovsk-brand revolver. Double-action. Hold and release the fire button to use a more precise single-action mode..",
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhSPr40/KhSPr40.png",
 								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhSPr40/KhSPr40000.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["ItemPresetName"] = "Khrabarovsk SPr-40",
+								  ["ItemClassName"] = "HDFirearm",
+								  ["ItemTechName"] = "CED",
 								  ["ResearchTime"] = 1000;
 								  ["Cost"] = 1000,
 };
 	-------  VOSSBERG  -------
 CEDMasterList.Technology.Vossberg.Hammerhead = {["DisplayName"] = "Vossberg Hammerhead",
+["RequiredTech"] = "None",
 								  ["Description"] = "Vossberg-brand handcannon. High-caliber, high-octane.",
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoHammerhead/VoHammerhead.png",
 								  ["TooltipSize"] = Vector(150, 75),
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoHammerhead/VoHammerhead000.png",
+								  ["IconPos"] = Vector(0, -5),
+								  ["ItemPresetName"] = "Vossberg Hammerhead",
+								  ["ItemClassName"] = "HDFirearm",
+								  ["ItemTechName"] = "CED",
 								  ["ResearchTime"] = 1000;
 								  ["Cost"] = 1000,
 };
