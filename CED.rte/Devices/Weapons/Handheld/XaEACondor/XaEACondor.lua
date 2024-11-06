@@ -5,7 +5,8 @@ function Create(self)
 
 	self.XaEACondorCharging = false;
 	self.XaEACondorChargeTimer = Timer();
-	self.XaEACondorChargeTime = 3440;
+	self.XaEACondorChargeTime = 3420;
+	self.XaEACondorMidChargeShakeDone = false;
 	
 	self.XaEACondorFireReloadableCooldown = 1200;
 	
@@ -18,7 +19,7 @@ function Create(self)
 	self.XaEACondorVerticalSmokeDataTable.VelocityMult = 0.1;
 	self.XaEACondorVerticalSmokeDataTable.LingerMult = 2.0;
 	self.XaEACondorVerticalSmokeDataTable.AirResistanceMult = 1.4;
-	self.XaEACondorVerticalSmokeDataTable.GravMult = 1.0;		
+	self.XaEACondorVerticalSmokeDataTable.GravMult = 0.2;		
 end
 
 function OnFire(self)
@@ -82,11 +83,16 @@ function ThreadedUpdate(self)
 	
 	if self.XaEACondorCharging then
 		self.HEATAngVelOverride = math.random(-3, 3) * (1 - self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime);
-		CameraMan:AddScreenShake(1.35 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
+		CameraMan:AddScreenShake(1.15 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
 		if self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorChargeTime) then
 			self:Activate();
 			self.XaEACondorCharging = false;
+			self.XaEACondorMidChargeShakeDone = false;
 			self.XaEACondorChargeTimer:Reset();
+		elseif self.XaEACondorChargeTimer:IsPastSimMS(2400) and not self.XaEACondorMidChargeShakeDone then
+			-- Sound-timed shake
+			self.XaEACondorMidChargeShakeDone = true;
+			CameraMan:AddScreenShake(6, self.Pos);
 		end
 	elseif not self.Reloadable and self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorFireReloadableCooldown) then
 		self.Reloadable = true;

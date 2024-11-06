@@ -10,5 +10,8 @@ Wpn_TitanSniper_1p_WpnFire_Level1_6ch_v1_02 1
 Wpn_TitanSniper_1p_trail_lvl6_2ch_v1_01
 Wpn_MegaTurret_Laser_Fire_Sine_2ch_v2_09
 Wpn_EPG_1P_Core_LR_2ch_v1_02
+Wpn_EPG_3P_Explo_Close_v1_02
 
 Warframe: CrpBFGVanadalShot
+
+CP2077: w_tail_sniper_tech_nekomata_ext_wide
