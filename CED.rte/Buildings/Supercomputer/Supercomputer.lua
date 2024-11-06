@@ -1,4 +1,5 @@
-require("Mods.Extensions.ExtensionMan")
+require("Mods.Extensions.ExtensionMan");
+require("MasterList");
 
 function Create(self)
 	self.Menu = require("Mods.Extensions.imenu.core");
@@ -47,8 +48,8 @@ function Create(self)
 		};
 	};
 
-	for name, faction in pairs(self.CEDAvailableTechnology) do
-		self.menuData[name] = {
+	for techID, faction in pairs(CEDMasterList.Technology) do
+		self.menuData[techID] = {
 			Buttons = {}
 		};
 	end
@@ -172,14 +173,14 @@ function ResearchMenu(self)
 	local width = 50;
 	local height = 40;
 	local spacing = 65;
-	for name, faction in SortedPairs(self.CEDAvailableTechnology) do
+	for techID, faction in SortedPairs(CEDMasterList.Technology) do
 		local totalWidth = (i * width) + spacing * 3;
 		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
 		local tab = self.researchBox:Add("BUTTON");
 		tab:SetName("Category " .. i);
 		tab:SetPos(x + (i - 1) * (width + spacing), 10);
 		tab:SetSize(width, height);
-		tab:SetText(name);
+		tab:SetText(techID);
 		tab:Color(146);
 		tab:OutlineColor(144);
 		tab:OutlineThickness(2);
@@ -206,29 +207,26 @@ function ResearchMenu(self)
 					btn.Selected = false;
 				end
 				tab.Selected = true;
-				self:MenuChange(self.menuData[name], false);
+				self:MenuChange(self.menuData[techID], false);
 			end
 		end
 		table.insert(tabs, tab);
 		i = i + 1;
 
-		for i = 1, #faction do
-			local item = faction[i];
+		for itemID, item in SortedPairs(faction) do
 			local pos = Vector();
-			local row = math.floor((i - 1) / 6);
-			local j = ((i - 1) % 6);
-			pos = pos + Vector(j * 25, row * 25);
 			local button = self.researchBox:Add("BUTTON");
 			button.Faction = faction;
 			button:SetVisible(false);
 			button:SetPos(pos.X + 100, pos.Y + 50);
 			button:SetSize(40, 25);
-			button:SetText(item.DisplayName);
+			button:SetText("");
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
 			button.Researched = false;
 			--! TEMPORARY, WILL BE REPLACED WITH BUY ICONS
+			button.Item = item;
 			local itemPreset = _G["Create" .. button.Item.ItemClassName](button.Item.ItemPresetName, button.Item.ItemTechName);
 			local width = ToMOSprite(itemPreset):GetSpriteWidth();
 			local height = ToMOSprite(itemPreset):GetSpriteHeight();
@@ -251,7 +249,7 @@ function ResearchMenu(self)
 				end
 				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, button.Item.IconPath, 0);
 			end
-			table.insert(self.menuData[name].Buttons, button);
+			table.insert(self.menuData[techID].Buttons, button);
 		end
 	end
 
