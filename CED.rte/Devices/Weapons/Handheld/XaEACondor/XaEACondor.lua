@@ -48,6 +48,9 @@ function OnFire(self)
 	self.HEATParticleUtility:CreateDirectionalSmokeEffect(self.XaEACondorVerticalSmokeDataTable);
 	
 	self.Reloadable = false;
+	
+	self.HEATPersistentFrame = 5;
+	self.Frame = 5;
 end
 
 function OnAttach(self, newParent)

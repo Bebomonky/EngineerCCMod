@@ -124,7 +124,7 @@ function Create(self)
 	-- Position to spawn the casing at. Basically EjectionOffset. If nil here, will indeed use EjectionOffset. Don't include FlipFactor.
 	self.HEATCasingOffset = nil;
 	-- Velocity with which to spawn the casing.  Don't include FlipFactor.
-	self.HEATCasingVelocity = Vector(-3, -7);
+	self.HEATCasingVelocity = Vector(1, 2);
 	
 	-- MOSRotating object to spawn on phases with removesMag.
 	self.HEATFakeMagazineMOSRotating = nil;
@@ -162,13 +162,13 @@ function Create(self)
 	-- Time after finishing the phase before the reload is progressed.
 	reloadPhase.afterDelay = 550;
 	-- Absolute StanceOffset to set when in this phase.
-	reloadPhase.reloadStanceOffsetTarget = Vector(2, 1);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	-- Speed at which SupportOffset moves when in this phase.
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	-- Absolute SupportOffset to set when in this phase. Note that low Speed can make this not be reached within the phase's lifetime.
-	reloadPhase.reloadSupportOffsetTarget = Vector(0, 4)
+	reloadPhase.reloadSupportOffsetTarget = Vector(3, 3)
 	-- Rotation to set in this phase.
-	reloadPhase.rotationTarget = 0;
+	reloadPhase.rotationTarget = 5;
 	-- Strength of the rotational "kick" animation to do when this phase is finished.
 	reloadPhase.angVel = 2;
 	-- Strength of the horizontal "kick" animation to do when this phase is finished.
@@ -178,9 +178,9 @@ function Create(self)
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
 	reloadPhase.autoAnimateFrames = false;
 	-- Start frame of the auto animation.
-	reloadPhase.startFrame = 0;
+	reloadPhase.startFrame = 5;
 	-- End frame of the auto animation.
-	reloadPhase.endFrame = 0;
+	reloadPhase.endFrame = 5;
 	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
 	reloadPhase.setEndFrameAsPersistent = false;
 	-- Easing function to use. You could define your own here if you really wanted.
@@ -199,15 +199,16 @@ function Create(self)
 		
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
-	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 4) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 4);
-			self.HEATCurrentReloadPhaseData.rotationTarget = 10;
-		end		
+	reloadPhase.constantCallback = function (self)	
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 3) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-9, 5);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 4);
+		end
 	end
 	-- Callback once this phase is finished.
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 6);
+
 	end
 	-- Callback just before exiting the phase and deleting current phase data.
 	reloadPhase.exitPhaseCallback = function (self)
@@ -229,16 +230,16 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 1700;
 	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Xarix EA Condor", "CED.rte");
 	reloadPhase.afterDelay = 500;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 2);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 8)
-	reloadPhase.rotationTarget = 20;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-9, 5)
+	reloadPhase.rotationTarget = 5;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = -1;
 	reloadPhase.autoAnimateFrames = false;
-	reloadPhase.startFrame = 0;
-	reloadPhase.endFrame = 0;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 5;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -249,10 +250,14 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 3);
+		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 5);
+		end
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 2);
+
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -273,17 +278,17 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 350;
 	reloadPhase.afterSound = CreateSoundContainer("Actuate Back CED Xarix EA Condor", "CED.rte");
 	reloadPhase.afterDelay = 175;
-	reloadPhase.reloadStanceOffsetTarget = Vector(4, -2);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(2, -1)
-	reloadPhase.rotationTarget = 15;
-	reloadPhase.angVel = -2;
+	reloadPhase.reloadSupportOffsetTarget = Vector(5, 4)
+	reloadPhase.rotationTarget = 0;
+	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
-	reloadPhase.verticalAnim = 0;
+	reloadPhase.verticalAnim = -1;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 0;
-	reloadPhase.endFrame = 3;
-	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 4;
+	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
 	reloadPhase.endIfNotEmptyReload = false;
@@ -319,15 +324,15 @@ function Create(self)
 	reloadPhase.afterDelay = 400;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -1)
-	reloadPhase.rotationTarget = 5;
-	reloadPhase.angVel = 15;
-	reloadPhase.horizontalAnim = 0;
+	reloadPhase.reloadSupportOffsetTarget = Vector(-1, 3)
+	reloadPhase.rotationTarget = 0;
+	reloadPhase.angVel = -5;
+	reloadPhase.horizontalAnim = -5;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 3;
+	reloadPhase.startFrame = 4;
 	reloadPhase.endFrame = 0;
-	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = 3;
 	reloadPhase.endIfNotEmptyReload = false;
@@ -337,7 +342,9 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-		
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, -2);
+		end
 	end
 	reloadPhase.finishCallback = function (self)
 		
