@@ -1,17 +1,26 @@
 require("Mods.Extensions.ExtensionMan")
 
 function Create(self)
-	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"))
-	self.Menu:Initialize()
+	self.Menu = require("Mods.Extensions.imenu.core");
+	self.Menu:Initialize();
+	self.menuCreated = false;
 
-	self.MenuFunc = {}
-	self.MenuFunc[1] = SupercomputerTechMenu
-	self.Main = {}
+	self.sounds = {
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Error = CreateSoundContainer("Error", "Base.rte"),
+	};
 
-	self.ConfirmSound = CreateSoundContainer("Base.rte/Confirm")
-	self.ErrorSound = CreateSoundContainer("Base.rte/Error")
+	self.Activity = ActivityMan:GetActivity();
 
-	self.Activity = ActivityMan:GetActivity()
+	self.saveLoadHandler = require("Activities/Utility/SaveLoadHandler");
+	self.saveLoadHandler:Initialize(false);
+
+	if self:StringValueExists("CEDSupercomputerResearch") then
+		self.Researches = self.saveLoadHandler:DeserializeTable(self:GetStringValue("CEDSupercomputerResearch"), "CEDSupercomputerResearch");
+		self:RemoveStringValue("CEDSupercomputerResearch");
+	else
+		self.Researches = {};
+	end
 	
 	-- SaveLoadHandler could help with this here, but this is unique per-team so this also works Just Fine
 	for mo in MovableMan.Particles do
@@ -32,6 +41,40 @@ function Create(self)
 		MovableMan:AddParticle(self.technologyController);
 	end
 
+	self.menuData = {
+		Main = {
+			Buttons = {}
+		};
+	};
+
+	for name, faction in pairs(self.CEDAvailableTechnology) do
+		self.menuData[name] = {
+			Buttons = {}
+		};
+	end
+
+	self.menuHistory = {};
+
+	function self:MenuChange(newMenu, addToHistory)
+		if addToHistory == nil or addToHistory == true then
+			table.insert(self.menuHistory, self.MenuCurrent);
+		end
+
+		--Set all previous buttons visibility to false
+		if self.MenuCurrent then
+			for i, button in ipairs(self.MenuCurrent.Buttons) do
+				button:SetVisible(false);
+			end
+		end
+
+		self.MenuCurrent = newMenu;
+
+		--Set all new buttons visibility to true
+		for i, button in ipairs(newMenu.Buttons) do
+			button:SetVisible(true);
+		end
+	end
+	--[[
 	self.TechProgress = {}
 
 	self.ActivePBar = 0
@@ -53,16 +96,98 @@ function Create(self)
 	end
 
 	self.ActiveResearch = false
+	]]
 end
 
 function DisplayNumber(self, screen, color, pos, text)
 	for i = 1, string.len(text) do
-		local digit = string.sub(text, i, i)
-		PrimitiveMan:DrawBitmapPrimitive(pos + Vector((3 + 1) * (i - 1) + 1, 5),
-		"CED.rte/Effects/Font/" .. color .. "/Numbers/" .. digit .. ".png", 0)
+		local digit = string.sub(text, i, i);
+		PrimitiveMan:DrawBitmapPrimitive(screen, pos + Vector((3 + 1) * (i - 1) + 1, 5),
+		"CED.rte/Effects/Font/" .. color .. "/Numbers/" .. digit .. ".png",
+		0);
 	end
 end
 
+function ResearchMenu(self)
+	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX")
+	self.researchBox:SetTitle("");
+	self.researchBox:SetPos(10, 25);
+	self.researchBox:SetSize(400, 300);
+	self.researchBox:Color(146);
+	self.researchBox:OutlineColor(71);
+	self.researchBox:OutlineThickness(2);
+	local tabs = {};
+	local i = 1;
+	local totalWidth = 0;
+	local width = 50;
+	local height = 40;
+	local spacing = 65;
+	for name, faction in pairs(self.CEDAvailableTechnology) do
+		local totalWidth = (i * width) + spacing * 3;
+		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
+		local tab = self.researchBox:Add("BUTTON");
+		tab:SetName("Category " .. i);
+		tab:SetPos(x + (i - 1) * (width + spacing), 10);
+		tab:SetSize(width, height);
+		tab:SetText(name);
+		tab:Color(146);
+		tab:OutlineColor(144);
+		tab:OutlineThickness(2);
+		tab.Faction = faction;
+		tab.Selected = false;
+
+		tab.Think = function()
+			tab:OutlineColor(tab:IsHovered() and 117 or 144);
+
+			if tab.Selected then
+				tab:OutlineColor(252);
+			end
+		end
+
+		tab.OnPress = function(key)
+			if key == Controller.PRIMARY_ACTION then
+				if table.IsEmpty(tab.Faction) then
+					print("Table is empty!");
+					self.sounds.Error:Play(-1);
+					return
+				end
+
+				for _, btn in ipairs(tabs) do
+					btn.Selected = false;
+				end
+				tab.Selected = true;
+				self:MenuChange(self.menuData[name], false);
+			end
+		end
+		table.insert(tabs, tab);
+		i = i + 1;
+
+		for i = 1, #faction do
+			local item = faction[i];
+			local pos = Vector();
+			local row = math.floor((i - 1) / 6);
+			local j = ((i - 1) % 6);
+			pos = pos + Vector(j * 25, row * 25);
+			local button = self.researchBox:Add("BUTTON");
+			button.Faction = faction;
+			button:SetVisible(false);
+			button:SetPos(pos.X + 100, pos.Y + 50);
+			button:SetSize(40, 25);
+			button:SetText(item.DisplayName);
+			button:Color(146);
+			button:OutlineColor(144);
+			button:OutlineThickness(2);
+			table.insert(self.menuData[name].Buttons, button);
+		end
+	end
+
+	if self.MenuCurrent then
+		self:MenuChange(self.MenuCurrent, false);
+	end
+
+	return true;
+end
+--[[
 function SupercomputerTechMenu(self)
 	self.Main.Box = self.Menu:CreateGUI("CollectionBox")
 	self.Main.Box:SetTitle("")
@@ -326,8 +451,29 @@ function SupercomputerTechMenu(self)
 
 	drawMenu()
 end
+]]
 
 function ThreadedUpdate(self)
+	if self:IsPlayerControlled() then
+		local hideMenu = false;
+		for _, input in pairs({Controller.SECONDARY_ACTION, Controller.ACTOR_NEXT_PREP, Controller.ACTOR_PREV_PREP}) do
+			if self:GetController():IsState(input) then
+				hideMenu = true;
+			end
+		end
+		if hideMenu == false and self.Menu:ToOpen(self, Controller.CIM_DISABLED) then
+			if not self.menuCreated then
+				self.menuCreated = ResearchMenu(self);
+			end
+		end
+	end
+
+	if self.Menu:Update() then
+		self.researchBox:Update();
+		self.Menu:DrawCursor();
+	end
+
+	--[[
 	if self:IsPlayerControlled() then
 		if not self.Menu.Open then
 			self.Main = {};
@@ -380,8 +526,13 @@ function ThreadedUpdate(self)
 			self.Menu:DrawCursor(self.Menu.Screen)
 		end
 	end
+	]]
 end
 
 function Destroy(self)
-	self.Menu:Remove()
+	self.Menu:Remove();
+end
+
+function OnSave(self)
+	self:SetStringValue("CEDSupercomputerResearch", self.saveLoadHandler:SerializeTable(self.Researches));
 end
