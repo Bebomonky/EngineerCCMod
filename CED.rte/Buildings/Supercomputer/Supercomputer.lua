@@ -48,10 +48,16 @@ function Create(self)
 		};
 	};
 
+	local i = 1;
 	for techID, faction in pairs(CEDMasterList.Technology) do
 		self.menuData[techID] = {
+			Items = {},
 			Buttons = {}
 		};
+
+		for itemID, item in SortedPairs(faction) do
+			table.insert(self.menuData[techID].Items, item);
+		end
 	end
 
 	self.menuHistory = {};
@@ -138,7 +144,6 @@ local function CC_TooltipSkin(gui)
 		outline:OutlineThickness(0);
 		outline.Think = function()
 			outline:SetPos(pos.X, pos.Y);
-			outline:SetSize(size.X, size.Y)
 		end
 	end
 end
@@ -152,6 +157,19 @@ function ResearchMenu(self)
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
 	local screen = self.researchBox:GetScreen();
+	self.researchBox.Think = function()
+		for i, button in pairs(self.researchBox:GetChildren()) do
+			if button:GetName() == "Category" then
+				if button.Selected then
+					for ii, node in pairs(button.Nodes) do
+						if node.RequiredTech == "None" then
+							PrimitiveMan:DrawLinePrimitive(screen, node:GetRelativePos(), button:GetRelativePos(), 120);
+						end
+					end
+				end
+			end
+		end
+	end
 
 	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.tooltip:SetHide(true);
@@ -176,58 +194,56 @@ function ResearchMenu(self)
 	for techID, faction in SortedPairs(CEDMasterList.Technology) do
 		local totalWidth = (i * width) + spacing * 3;
 		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
-		local tab = self.researchBox:Add("BUTTON");
-		tab:SetName("Category " .. i);
-		tab:SetPos(x + (i - 1) * (width + spacing), 10);
-		tab:SetSize(width, height);
-		tab:SetText(techID);
-		tab:Color(146);
-		tab:OutlineColor(144);
-		tab:OutlineThickness(2);
-		tab.Faction = faction;
-		tab.Selected = false;
+		local category = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
+		category:SetPos(x + (i - 1) * (width + spacing), 10);
+		category:SetSize(width, height);
+		category:SetText(techID);
+		category:Color(146);
+		category:OutlineColor(144);
+		category:OutlineThickness(2);
+		category.Selected = false;
+		category.Nodes = {};
+		category.Think = function()
+			category:OutlineColor(category:IsHovered() and 117 or 144);
 
-		tab.Think = function()
-			tab:OutlineColor(tab:IsHovered() and 117 or 144);
-
-			if tab.Selected then
-				tab:OutlineColor(252);
+			if category.Selected then
+				category:OutlineColor(252);
 			end
 		end
 
-		tab.OnPress = function(key)
+		category.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
-				if table.IsEmpty(tab.Faction) then
+				if table.IsEmpty(faction) then
 					print("Table is empty!");
 					self.sounds.Error:Play(-1);
-					return
+					return;
 				end
 
 				for _, btn in ipairs(tabs) do
 					btn.Selected = false;
 				end
-				tab.Selected = true;
+				category.Selected = true;
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
-		table.insert(tabs, tab);
+		table.insert(tabs, category);
 		i = i + 1;
 
-		for itemID, item in SortedPairs(faction) do
+		for i = 1, #self.menuData[techID].Items do
+			local item = self.menuData[techID].Items[i];
 			local pos = Vector();
-			local button = self.researchBox:Add("BUTTON");
-			button.Faction = faction;
+			local button = self.Menu:CreateGUI("BUTTON", self.researchBox, "Node");
 			button:SetVisible(false);
-			button:SetPos(pos.X + 100, pos.Y + 50);
+			button:SetPos(pos.X + 100, pos.Y + 100);
 			button:SetSize(40, 25);
 			button:SetText("");
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
 			button.Researched = false;
+			button.RequiredTech = item.RequiredTech;
 			--! TEMPORARY, WILL BE REPLACED WITH BUY ICONS
-			button.Item = item;
-			local itemPreset = _G["Create" .. button.Item.ItemClassName](button.Item.ItemPresetName, button.Item.ItemTechName);
+			local itemPreset = _G["Create" .. item.ItemClassName](item.ItemPresetName, item.ItemTechName);
 			local width = ToMOSprite(itemPreset):GetSpriteWidth();
 			local height = ToMOSprite(itemPreset):GetSpriteHeight();
 			button:SetSize(width, height);
@@ -247,8 +263,9 @@ function ResearchMenu(self)
 				else
 					self.tooltip.Displaying = false;
 				end
-				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, button.Item.IconPath, 0);
+				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
 			end
+			table.insert(category.Nodes, button);
 			table.insert(self.menuData[techID].Buttons, button);
 		end
 	end
