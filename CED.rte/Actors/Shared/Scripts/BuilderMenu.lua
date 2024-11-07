@@ -331,7 +331,7 @@ function Create(self)
 
 			button.Think = function()
 				local offset = CameraMan:GetOffset(screen);
-				local world_pos = button:GetPos();
+				local world_pos = button:GetAbsolutePos();
 				local hasFund = self.Activity:GetTeamFunds(self.Team) >= button.Buildable.Cost;
 				button.IsResearched = menuButton.IsResearched;
 
@@ -369,7 +369,7 @@ function Create(self)
 						end
 						self.tooltip.Displaying = true;
 					end
-					textPos = offset + Vector(textWidth, 0) + Vector(self.tooltip:GetPos().X + 10, self.tooltip:GetPos().Y + 25);
+					textPos = offset + Vector(textWidth, 0) + Vector(self.tooltip:GetAbsolutePos().X + 10, self.tooltip:GetAbsolutePos().Y + 25);
 
 					PrimitiveMan:DrawTextPrimitive(screen, textPos, "(", true, 0);
 					DisplayNumber(self, screen,

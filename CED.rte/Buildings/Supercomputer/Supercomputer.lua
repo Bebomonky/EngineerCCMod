@@ -233,7 +233,7 @@ function ResearchMenu(self)
 			button:SetSize(width, height);
 			itemPreset = nil; --No longer need it since we just wanted the sprite size
 			button.Think = function()
-				local world_pos = button:GetPos();
+				local world_pos = button:GetAbsolutePos();
 				if button:IsHovered() then
 					if self.tooltip.Displaying == false then
 						local x = (pos.X + button:GetWidth()) + 125;
