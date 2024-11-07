@@ -120,10 +120,7 @@ function DisplayNumber(self, screen, color, pos, text)
 	end
 end
 
-local function CC_TooltipSkin(gui)
-	gui:Color(93);
-	gui:OutlineColor(70);
-	gui:OutlineThickness(1);
+function CC_TooltipSkin(gui, new)
 	local w = gui:GetWidth();
 	local h = gui:GetHeight();
 	local outlines = {
@@ -134,21 +131,32 @@ local function CC_TooltipSkin(gui)
 		{Vector(w, 1), Vector(0, h - 1), true, 59},
 		{Vector(1, h), Vector(w - 1, 0), true, 59},
 	};
-
-	for i = 1, #outlines do
-		local pos = outlines[i][1];
-		local size = outlines[i][2];
-		local drawAfterParent = outlines[i][3];
-		local color = outlines[i][4];
-		local outline = gui:Add("COLLECTIONBOX");
-		outline:SetTitle("");
-		outline:SetPos(pos.X, pos.Y);
-		outline:SetSize(size.X, size.Y)
-		outline:Color(color);
-		outline:DrawAfterParent(drawAfterParent);
-		outline:OutlineThickness(0);
-		outline.Think = function()
-			outline:SetPos(pos.X, pos.Y);
+	if new then
+		gui:Color(93);
+		gui:OutlineColor(70);
+		gui:OutlineThickness(1);
+		for i = 1, #outlines do
+			local pos = outlines[i][1];
+			local size = outlines[i][2];
+			local drawAfterParent = outlines[i][3];
+			local color = outlines[i][4];
+			local panel = gui:Add("COLLECTIONBOX");
+			panel:SetTitle("");
+			panel:SetName("Outline");
+			panel:SetPos(pos.X, pos.Y);
+			panel:SetSize(size.X, size.Y);
+			panel:Color(color);
+			panel:DrawAfterParent(drawAfterParent);
+			panel:OutlineThickness(0);
+		end
+	else
+		for i, panel in pairs(gui:GetChildren()) do
+			if panel:GetName() == "Outline" then
+				local pos = outlines[i][1];
+				local size = outlines[i][2];
+				panel:SetPos(pos.X, pos.Y);
+				panel:SetSize(size.X, size.Y);
+			end
 		end
 	end
 end
@@ -162,8 +170,6 @@ function ResearchMenu(self)
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
 	local screen = self.researchBox:GetScreen();
-	self.researchBox.Think = function()
-	end
 
 	--This is literally so it just draws behind everything except the researchBox
 	local nodeBox = self.researchBox:Add("COLLECTIONBOX");
@@ -176,18 +182,22 @@ function ResearchMenu(self)
 	end
 
 	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
-	self.tooltip:SetHide(true);
 	self.tooltip:SetTitle("");
 	self.tooltip.Displaying = false;
-	self.tooltip.Timer = Timer();
-	self.tooltip.Timer:SetSimTimeLimitMS(100);
-	CC_TooltipSkin(self.tooltip);
+	CC_TooltipSkin(self.tooltip, true);
 	self.tooltip.Think = function()
-		if not self.tooltip.Displaying then
-			self.tooltip:SetHide(true);
-			self.tooltip.Timer:Reset();
-		end
+		self.tooltip:SetHide(true);
 	end
+
+	self.tooltipTitle = self.Menu:CreateGUI("LABEL", self.tooltip);
+	self.tooltipTitle:SetPos(0, 0);
+	self.tooltipTitle:SetSmallText(true);
+	self.tooltipTitle:SetHide(true);
+
+	self.tooltipDesc = self.Menu:CreateGUI("LABEL", self.tooltip);
+	self.tooltipDesc:SetSmallText(true);
+	self.tooltipDesc:SetContentAlignment(5);
+	self.tooltipDesc:SetHide(true);
 
 	local tabs = {};
 	local i = 1;
@@ -238,10 +248,9 @@ function ResearchMenu(self)
 
 		for i = 1, #self.menuData[techID].Items do
 			local item = self.menuData[techID].Items[i];
-			local pos = Vector();
 			local button = self.Menu:CreateGUI("BUTTON", self.researchBox, "Node");
 			button:SetVisible(false);
-			button:SetPos(pos.X + 100, pos.Y + 100);
+			button:SetPos(item.Pos.X, item.Pos.Y);
 			button:SetSize(40, 25);
 			button:SetText("");
 			button:Color(146);
@@ -257,16 +266,47 @@ function ResearchMenu(self)
 			itemPreset = nil; --No longer need it since we just wanted the sprite size
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
+				button:OutlineColor(button:IsHovered() and 117 or 144);
 				if button:IsHovered() then
+					self.tooltip:SetHide(false);
 					if self.tooltip.Displaying == false then
-						local x = (pos.X + button:GetWidth()) + 125;
-						local y = pos.Y + 75;
-						self.tooltip:SetPos(x, y);
+						local title = item.DisplayName;
+						local pos = Vector((item.Pos.X + button:GetWidth()), item.Pos.Y);
+						local size = item.TooltipSize;
+
+						self.tooltip:SetPos(pos.X + 15, pos.Y + 24);
+						self.tooltip:SetSize(size.X, size.Y);
+
+						self.tooltipTitle:SetText(title);
+						self.tooltipTitle:SetPos(3, 3);
+						self.tooltipDesc:SetSize(size.X, size.Y);
+						local desc = "";
+						local words = {};
+						for word in string.gmatch(item.Description, "%S+") do
+							table.insert(words, word);
+						end
+						local line = "";
+						for i = 1, #words do
+							local word = words[i];
+							local newLine = line .. (line ~= "" and " " or "") .. word;
+							local descWidth = FrameMan:CalculateTextWidth(newLine, true) + 5;
+							if descWidth > size.X then
+								if line ~= "" then
+									desc = desc .. line .. "\n";
+								end
+								line = word;
+							else
+								line = newLine;
+							end
+						end
+						if line ~= "" then
+							desc = desc .. line;
+						end
+						self.tooltipDesc:SetText(desc);
+						self.tooltipDesc:SetPos(3, 3);
+						CC_TooltipSkin(self.tooltip, false);
+						self.tooltip.Displaying = true;
 					end
-					if self.tooltip.Timer:IsPastSimTimeLimit() then
-						self.tooltip:SetHide(false);
-					end
-					self.tooltip.Displaying = true;
 				else
 					self.tooltip.Displaying = false;
 				end
@@ -566,7 +606,9 @@ function ThreadedUpdate(self)
 
 	if self.Menu:Update() then
 		self.researchBox:Update();
-		self.tooltip:Update();
+		if self.tooltip:GetHide() == false then
+			self.tooltip:Update();
+		end
 		self.Menu:DrawCursor();
 	end
 
