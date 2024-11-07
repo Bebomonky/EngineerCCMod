@@ -60,9 +60,9 @@ function Create(self)
 		end
 	end
 
-	self.menuData["Xarix"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/XarixTree.png.png";
+	self.menuData["Xarix"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/XarixTree.png";
 	self.menuData["Khrabarovsk"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/KhrabarovskTree.png";
-	self.menuData["Vossberg"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/VossbergTree.png.png";
+	self.menuData["Vossberg"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/VossbergTree.png";
 
 	self.menuHistory = {};
 	self.MenuCurrent = self.menuData["Khrabarovsk"];
