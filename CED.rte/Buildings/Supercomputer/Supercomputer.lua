@@ -60,7 +60,12 @@ function Create(self)
 		end
 	end
 
+	self.menuData["Xarix"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/XarixTree.png.png";
+	self.menuData["Khrabarovsk"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/KhrabarovskTree.png";
+	self.menuData["Vossberg"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/VossbergTree.png.png";
+
 	self.menuHistory = {};
+	self.MenuCurrent = self.menuData["Khrabarovsk"];
 
 	function self:MenuChange(newMenu, addToHistory)
 		if addToHistory == nil or addToHistory == true then
@@ -158,16 +163,15 @@ function ResearchMenu(self)
 	self.researchBox:OutlineThickness(2);
 	local screen = self.researchBox:GetScreen();
 	self.researchBox.Think = function()
-		for i, button in pairs(self.researchBox:GetChildren()) do
-			if button:GetName() == "Category" then
-				if button.Selected then
-					for ii, node in pairs(button.Nodes) do
-						if node.RequiredTech == "None" then
-							PrimitiveMan:DrawLinePrimitive(screen, node:GetRelativePos(), button:GetRelativePos(), 120);
-						end
-					end
-				end
-			end
+	end
+
+	--This is literally so it just draws behind everything except the researchBox
+	local nodeBox = self.researchBox:Add("COLLECTIONBOX");
+	nodeBox:SetHide(true);
+	nodeBox.Think = function()
+		local world_pos = self.researchBox:GetAbsolutePos() + self.researchBox:GetSize() * 0.5;
+		if self.MenuCurrent.Bitmap then
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, self.MenuCurrent.Bitmap, 0);
 		end
 	end
 
@@ -194,24 +198,27 @@ function ResearchMenu(self)
 	for techID, faction in SortedPairs(CEDMasterList.Technology) do
 		local totalWidth = (i * width) + spacing * 3;
 		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
-		local category = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
-		category:SetPos(x + (i - 1) * (width + spacing), 10);
-		category:SetSize(width, height);
-		category:SetText(techID);
-		category:Color(146);
-		category:OutlineColor(144);
-		category:OutlineThickness(2);
-		category.Selected = false;
-		category.Nodes = {};
-		category.Think = function()
-			category:OutlineColor(category:IsHovered() and 117 or 144);
+		local tab = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
+		tab:SetPos(x + (i - 1) * (width + spacing), 10);
+		tab:SetSize(width, height);
+		tab:SetText(techID);
+		tab:Color(146);
+		tab:OutlineColor(144);
+		tab:OutlineThickness(2);
+		tab.Selected = false;
+		if self.MenuCurrent == self.menuData[techID] then
+			tab.Selected = true;
+		end
+		tab.Nodes = {};
+		tab.Think = function()
+			tab:OutlineColor(tab:IsHovered() and 117 or 144);
 
-			if category.Selected then
-				category:OutlineColor(252);
+			if tab.Selected then
+				tab:OutlineColor(252);
 			end
 		end
 
-		category.OnPress = function(key)
+		tab.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
 				if table.IsEmpty(faction) then
 					print("Table is empty!");
@@ -222,11 +229,11 @@ function ResearchMenu(self)
 				for _, btn in ipairs(tabs) do
 					btn.Selected = false;
 				end
-				category.Selected = true;
+				tab.Selected = true;
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
-		table.insert(tabs, category);
+		table.insert(tabs, tab);
 		i = i + 1;
 
 		for i = 1, #self.menuData[techID].Items do
@@ -265,7 +272,7 @@ function ResearchMenu(self)
 				end
 				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
 			end
-			table.insert(category.Nodes, button);
+			table.insert(tab.Nodes, button);
 			table.insert(self.menuData[techID].Buttons, button);
 		end
 	end
