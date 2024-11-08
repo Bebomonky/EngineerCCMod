@@ -1,17 +1,19 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.VoHammerheadFireVelocity = 140;
+	self.VoHammerheadFireSpread = 1 / 2;
+
 	self.VoHammerheadPlayerRateOfFire = 320;
 	self.VoHammerheadAIRateOfFire = 145;
 end
 
 function OnFire(self)
-
-	local velocity = 140;
+	local spread = math.random(-self.VoHammerheadFireSpread, self.VoHammerheadFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Vossberg Hammerhead Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.VoHammerheadFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
@@ -20,7 +22,7 @@ function OnFire(self)
 	for i = 1, 1 do
 		local shot = CreateMOPixel("Bullet CED Vossberg Hammerhead", "CED.rte");
 		shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.VoHammerheadFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

@@ -1,11 +1,16 @@
 require("/CEDSettings");
 
+function Create(self)
+	self.BASDHFireVelocity = 100;
+	self.BASDHFireSpread = 3 / 2;
+end
+
 function OnFire(self)
-	local velocity = 100;
+	local spread = math.random(-self.BASDHFireSpread, self.BASDHFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED CED-BAS DH Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.BASDHFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

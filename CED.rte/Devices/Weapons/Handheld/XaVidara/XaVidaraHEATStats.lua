@@ -315,12 +315,12 @@ function Create(self)
 	-- Strength of the horizontal "kick" animation when firing.
 	self.HEATRecoilHorizontalAnim = 4;
 	-- Strength of the rotational "kick" animation when firing.
-	self.HEATRecoilAngAnim = 4;
+	self.HEATRecoilAngAnim = 1;
 	-- Variative multiplier for the rotational kick animation. A value of "0.1" here would give you anywhere from x0.95 to x1.05 the AngAnim.
 	self.HEATRecoilAngVariation = 0.3;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 20
+	self.HEATRecoilStrength = 5
 	-- Some sort of mathemagical strength value to affect the recoil.
 	self.HEATRecoilPowStrength = 0.2
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.

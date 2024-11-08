@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.EXPTurbolanceFireVelocity = 130;
+	self.EXPTurbolanceFireSpread = 5 / 2;
+
 	self.EXPTurbolanceShotStartSound = CreateSoundContainer("Shot Start CED CED-EXP Turbolance", "CED.rte");
 	self.EXPTurbolanceShotEndSound = CreateSoundContainer("Shot End CED CED-EXP Turbolance", "CED.rte");
 	
@@ -112,11 +115,11 @@ function OnFire(self)
 		end
 	end
 	
-	local velocity = 130;
+	local spread =  math.random(-self.EXPTurbolanceFireSpread, self.EXPTurbolanceFireSpread);
 	
 	local shot = CreateMOPixel("Bullet CED CED-EXP Turbolance Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, math.random(-5, 5)):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.EXPTurbolanceFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

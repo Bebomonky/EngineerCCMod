@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.XaEACondorFireVelocity = 10; -- Doesn't really matter
+	self.XaEACondorFireSpread = 0 / 2; -- It's a laser
+
 	self.XaEACondorChargeUpSound = CreateSoundContainer("Charge Up CED Xarix EA Condor", "CED.rte");
 
 	self.XaEACondorCharging = false;
@@ -24,12 +27,12 @@ end
 
 function OnFire(self)
 	CameraMan:AddScreenShake(30, self.Pos);
-
-	local velocity = 10;
+	
+	local spread = math.random(-self.XaEACondorFireSpread, self.XaEACondorFireSpread);
 
 	local shot = CreateMOSRotating("Beam Particle CED Xarix EA Condor", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.XaEACondorFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.HFlipped = self.HFlipped;
 	shot.RotAngle = self.RotAngle;
 	shot.Team = self.Team;
@@ -86,7 +89,7 @@ function ThreadedUpdate(self)
 	
 	if self.XaEACondorCharging then
 		self.HEATAngVelOverride = math.random(-3, 3) * (1 - self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime);
-		CameraMan:AddScreenShake(1.15 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
+		CameraMan:AddScreenShake(1.05 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
 		if self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorChargeTime) then
 			self:Activate();
 			self.XaEACondorCharging = false;
@@ -95,7 +98,7 @@ function ThreadedUpdate(self)
 		elseif self.XaEACondorChargeTimer:IsPastSimMS(2400) and not self.XaEACondorMidChargeShakeDone then
 			-- Sound-timed shake
 			self.XaEACondorMidChargeShakeDone = true;
-			CameraMan:AddScreenShake(6, self.Pos);
+			CameraMan:AddScreenShake(3, self.Pos);
 		end
 	elseif not self.Reloadable and self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorFireReloadableCooldown) then
 		self.Reloadable = true;

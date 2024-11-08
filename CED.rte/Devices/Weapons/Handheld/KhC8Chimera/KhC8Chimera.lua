@@ -1,9 +1,10 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.KhC8ChimeraFireVelocity = 160;
+	self.KhC8ChimeraFireSpread = 5 / 2;
 
 	self.KhC8ChimeraMechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk C8 Chimera", "CED.rte");
-	
 	
 	self.KhC8ChimeraWalkBeltSound = CreateSoundContainer("Walk Belt CED Khrabarovsk C8 Chimera", "CED.rte");
 	self.KhC8ChimeraDeploySound = CreateSoundContainer("Deploy CED Khrabarovsk C8 Chimera", "CED.rte");
@@ -20,7 +21,7 @@ function Create(self)
 	self.KhC8ChimeraDeployTime = 1000;
 	
 	self.KhC8ChimeraAIFairnessTimer = Timer();
-	self.KhC8ChimeraAIFairnessTime = 1000;
+	self.KhC8ChimeraAIFairnessTime = 2000;
 	self.KhC8ChimeraAIFairnessEnabled = false;
 	
 	self.KhC8ChimeraOriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y);
@@ -28,6 +29,26 @@ end
 
 function OnFire(self)
 	self.KhC8ChimeraMechEndSound:Play(self.Pos);
+	
+	local spread = math.random(-self.KhC8ChimeraFireSpread, self.KhC8ChimeraFireSpread);
+	
+	local shot = CreateMOPixel("Bullet CED Khrabarovsk C8 Chimera Scripted", "CED.rte");
+	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.KhC8ChimeraFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+	shot.Team = self.Team;
+	shot.IgnoresTeamHits = true;
+	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+	MovableMan:AddParticle(shot);
+	
+	for i = 1, 1 do
+		local shot = CreateMOPixel("Bullet CED Khrabarovsk C8 Chimera", "CED.rte");
+		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.KhC8ChimeraFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+		shot.Team = self.Team;
+		shot.IgnoresTeamHits = true;
+		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+		MovableMan:AddParticle(shot);
+	end
 
 	-- Use our HEATStats to spawn a casing every time we fire.
 	local casing
@@ -40,13 +61,15 @@ function OnFire(self)
 end
 					
 function OnAttach(self, newParent)
-	if IsActor(newParent:GetRootParent()) then
-		self.parent = ToActor(newParent:GetRootParent());
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
 	end
 end
 
 function OnDetach(self)
 	self.parent = nil;
+	self.parentController = nil;
 	self.HUDVisible = true;
 end
 
@@ -56,9 +79,8 @@ function ThreadedUpdate(self)
 	self.KhC8ChimeraUndeploySound.Pos = self.Pos;
 
 	if self.parent then
-		local controller = self.parent:GetController();
-		local isMoving = (controller:IsState(Controller.MOVE_LEFT) == true or controller:IsState(Controller.MOVE_RIGHT) == true);
-		local isNotCrouching = (controller:IsState(Controller.BODY_PRONE) == false) and (controller:IsState(Controller.BODY_WALKCROUCH) == false);
+		local isMoving = (self.parentController:IsState(Controller.MOVE_LEFT) == true or self.parentController:IsState(Controller.MOVE_RIGHT) == true);
+		local isNotCrouching = (self.parentController:IsState(Controller.BODY_PRONE) == false) and (self.parentController:IsState(Controller.BODY_WALKCROUCH) == false);
 		-- I tried a lot to get this neater, but without an if statement it goes weird and returns nil for no reason... very strange
 		local invalidStance;
 		if isMoving or isNotCrouching then
@@ -83,7 +105,7 @@ function ThreadedUpdate(self)
 				self.KhC8ChimeraDeployTimer:Reset();
 
 				self.HUDVisible = false;
-				controller:SetState(Controller.AIM_SHARP, false)
+				self.parentController:SetState(Controller.AIM_SHARP, false)
 				self.HEATOriginalSharpLength = 0;
 				
 				self.HEATRotationTargetOverride = 70 - aimAngle;
@@ -118,6 +140,7 @@ function ThreadedUpdate(self)
 				self.HEATAngVelOverride = 0;
 				if not self.KhC8ChimeraDeployed then
 					self.KhC8ChimeraDeployed = true;
+					self.KhC8ChimeraAIFairnessEnabled = false;
 					self.HEATAngVelOverride = 5;
 				end
 				self.HEATRotationTargetOverride = nil;
@@ -152,7 +175,7 @@ function ThreadedUpdate(self)
 							else
 								self.KhC8ChimeraAIFairnessEnabled = true;
 							end
-							self.KhC8ChimeraAIFairnessTime = math.random(1000, 2000)
+							self.KhC8ChimeraAIFairnessTime = math.random(1000, 3000)
 							self.KhC8ChimeraAIFairnessTimer:Reset();
 						end
 					end
@@ -160,6 +183,7 @@ function ThreadedUpdate(self)
 					if self.KhC8ChimeraInvalidlyDeployed then
 						self.KhC8ChimeraDeployTimer:Reset();
 						self.KhC8ChimeraDeploySoundPlayed = false;
+						self.KhC8ChimeraAIFairnessEnabled = false;
 						self.KhC8ChimeraInvalidlyDeployed = false;
 					end
 				end
@@ -167,7 +191,6 @@ function ThreadedUpdate(self)
 				if not isPlayerControlled then
 					self.HEATRecoilMax = 0; -- they just can't deal with it...
 				end
-				
 			elseif self.KhC8ChimeraDeployTimer:IsPastSimMS(self.KhC8ChimeraDeployTime / 3) then
 				self.HEATRotationSpeed = 5;
 				
@@ -177,13 +200,9 @@ function ThreadedUpdate(self)
 				self.HEATRotationSpeed = 3;
 				self.HEATRotationTargetOverride = 20;
 			end
-			if self.KhC8ChimeraAIFairnessEnabled and not isPlayerControlled then
-				self:Deactivate();
-			end
+		end
+		if isPlayerControlled and not self.KhC8ChimeraDeployed then
+			self:Deactivate();
 		end
 	end
-	if not self.KhC8ChimeraDeployed then
-		self:Deactivate();
-	end
-	
 end

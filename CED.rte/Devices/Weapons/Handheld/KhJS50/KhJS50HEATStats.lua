@@ -36,25 +36,7 @@ function Create(self)
 	
 	-- Callback when firing.
 	self.HEATFireCallback = function (self)
-		local velocity = 140;
 
-		local shot = CreateMOPixel("Bullet CED Khrabarovsk JS50 Scripted", "CED.rte");
-		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Team = self.Team;
-		shot.IgnoresTeamHits = true;
-		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
-		MovableMan:AddParticle(shot);
-
-		for i = 1, 1 do
-			local shot = CreateMOPixel("Bullet CED Khrabarovsk JS50", "CED.rte");
-			shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
-			shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
-			shot.Team = self.Team;
-			shot.IgnoresTeamHits = true;
-			shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
-			MovableMan:AddParticle(shot);
-		end		
 	end
 	
 	-- Callback when a CC reload is finished, after variables are set.

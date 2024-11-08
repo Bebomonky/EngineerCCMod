@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.XaVidaraFireVelocity = 10; -- Doesn't really matter
+	self.XaVidaraFireSpread = 0 / 2; -- It's a laser
+	self.XaVidaraFireShotgunSpread = 15 / 2; -- Unless it isn't!!!
 
 	self.XaVidaraSwitchRifleSound = CreateSoundContainer("Switch Rifle CED Xarix Vidara", "CED.rte");
 	self.XaVidaraSwitchShotgunSound = CreateSoundContainer("Switch Shotgun CED Xarix Vidara", "CED.rte");
@@ -22,7 +25,11 @@ end
 
 function OnFire(self)
 	local actingRoundInMagCount = self.RoundInMagCount + 1; -- the game runs this function late, so ammo is already deducted
+	local actingSpread;
+	
 	if self.XaVidaraSpreadshotMode then
+		actingSpread = self.XaVidaraFireShotgunSpread;
+	
 		if actingRoundInMagCount < self.XaVidaraSpreadshotExtraAmmoToDeduct then
 			self.XaVidaraShotsToFire = self.XaVidaraShotsToFire + (actingRoundInMagCount - (self.XaVidaraSpreadshotExtraAmmoToDeduct + 1));
 		end
@@ -32,14 +39,16 @@ function OnFire(self)
 		self.XaVidaraShotgunShotSound:Play(self.Pos);
 	else
 		self.XaVidaraRifleShotSound:Play(self.Pos);
+		actingSpread = self.XaVidaraFireSpread;
 	end
 
-	local velocity = 100;
-
 	for i = 1, self.XaVidaraShotsToFire do
+		-- Conveniently, the only time this runs more than once is in shotgun mode, so single shots won't split due to randomizing spread each time (since it's just one randomization)
+		local spread = math.random(-actingSpread, actingSpread);
+	
 		local shot = CreateMOSRotating("Laser Particle CED Xarix Vidara", "CED.rte");
 		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.XaVidaraFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 		shot.HFlipped = self.HFlipped;
 		shot.RotAngle = self.RotAngle + math.rad(math.random(-self.XaVidaraSpread, self.XaVidaraSpread))
 		shot.Team = self.Team;
@@ -72,7 +81,7 @@ function ThreadedUpdate(self)
 				self.XaVidaraShotsToFire = 1;
 				self.XaVidaraWoundDamageMultiplier = 1;
 				self.RateOfFire = 400;
-				self.HEATRecoilStrength = 20;
+				self.HEATRecoilStrength = 5;
 				self.HEATParticleUtilityFiringSmokeDataTable = {};
 				self.HEATParticleUtilityFiringSmokeDataTable.Power = 10;
 				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
@@ -90,7 +99,7 @@ function ThreadedUpdate(self)
 				self.XaVidaraShotsToFire = 4;
 				self.XaVidaraWoundDamageMultiplier = 0.7; -- hey, the description is accurate!
 				self.RateOfFire = 150;
-				self.HEATRecoilStrength = 50;
+				self.HEATRecoilStrength = 10;
 				self.HEATParticleUtilityFiringSmokeDataTable = {};
 				self.HEATParticleUtilityFiringSmokeDataTable.Power = 30;
 				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 30;

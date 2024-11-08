@@ -246,7 +246,7 @@ function Create(self)
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = CreateSoundContainer("Belt Out Prepare CED CED-EXP Turbolance", "CED.rte");
 	reloadPhase.prepareDelay = 770;
-	reloadPhase.prepareSoundLength = 770;
+	reloadPhase.prepareSoundLength = 570;
 	reloadPhase.afterSound = CreateSoundContainer("Belt Out CED CED-EXP Turbolance", "CED.rte");
 	reloadPhase.afterDelay = 200;
 	reloadPhase.reloadStanceOffsetTarget = Vector(1, 0);

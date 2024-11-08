@@ -1,7 +1,10 @@
 require("/CEDSettings");
 
-function Create(self)
+function Create(self)	
 	self.Activity = ActivityMan:GetActivity();
+	
+	self.XaMTXDirectiveFireVelocity = 80;
+	self.XaMTXDirectiveFireSpread = 10 / 2;	
 	
 	self.XaMTXDirectiveBlipSound = CreateSoundContainer("Blip CED Xarix MTX Directive", "CED.rte");
 	self.XaMTXDirectiveQuietLockSound = CreateSoundContainer("Quiet Lock CED Xarix MTX Directive", "CED.rte");
@@ -49,11 +52,11 @@ function Create(self)
 end
 
 function OnFire(self)
-	local velocity = 80;
+	local spread = math.random(-self.XaMTXDirectiveFireSpread, self.XaMTXDirectiveFireSpread);
 
 	local shot = CreateMOSRotating("Smart Plasma Shot CED Xarix MTX Directive", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.XaMTXDirectiveFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.RotAngle = self.RotAngle;
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;

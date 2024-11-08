@@ -2,6 +2,9 @@ require("/CEDSettings");
 
 function Create(self)
 	self.Activity = ActivityMan:GetActivity();
+	
+	self.Kh11p35FireVelocity = 140;
+	self.Kh11p35FireSpread = 3 / 2;
 
 	self.Kh11p35ToGLSound = CreateSoundContainer("To GL CED Khrabarovsk 11p35-rifle", "CED.rte");
 	self.Kh11p35FromGLSound = CreateSoundContainer("From GL CED Khrabarovsk 11p35-rifle", "CED.rte");
@@ -41,12 +44,12 @@ function OnFire(self)
 		if self.RoundInMagCount == 0 then
 			self.HEATCurrentReloadPhase = 1;
 		end
-
-		local velocity = 140;
+		
+		local spread = math.random(-self.Kh11p35FireSpread, self.Kh11p35FireSpread);
 
 		local shot = CreateMOPixel("Bullet CED Khrabarovsk 11p35-rifle Scripted", "CED.rte");
 		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.Kh11p35FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

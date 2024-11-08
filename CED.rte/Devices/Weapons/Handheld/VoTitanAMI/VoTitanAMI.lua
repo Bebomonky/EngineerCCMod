@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.VoTitanAMIFireVelocity = 180;
+	self.VoTitanAMIFireSpread = 0.35 / 2;
+
 	-- Timer to not insta-reload after firing.
 	self.VoTitanAMIReloadDelayTimer = Timer();
 	-- Delay for above timer.
@@ -8,14 +11,13 @@ function Create(self)
 end
 
 function OnFire(self)
-
 	CameraMan:AddScreenShake(30, self.Pos);
 
-	local velocity = 180;
+	local spread = math.random(-self.VoTitanAMIFireSpread, self.VoTitanAMIeFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Vossberg Titan AMI Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.VoTitanAMIFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
@@ -24,7 +26,7 @@ function OnFire(self)
 	for i = 1, 9 do
 		local shot = CreateMOPixel("Bullet CED Vossberg Titan AMI", "CED.rte");
 		shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.VoTitanAMIFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

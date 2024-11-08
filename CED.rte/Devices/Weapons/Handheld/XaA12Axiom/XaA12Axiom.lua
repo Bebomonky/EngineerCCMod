@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.XaA12AxiomFireVelocity = 110;
+	self.XaA12AxiomFireSpread = 0.5 / 2;
+
 	self.XaA12AxiomPreSound = CreateSoundContainer("Pre CED Xarix A-12 Axiom", "CED.rte");
 	self.XaA12AxiomChargeSound = CreateSoundContainer("Charge CED Xarix A-12 Axiom", "CED.rte");
 	
@@ -24,11 +27,11 @@ end
 function OnFire(self)
 	self.XaA12AxiomShotCounter = self.XaA12AxiomShotCounter + 1;
 	
-	local velocity = 110;
+	local spread = math.random(-self.XaA12AxiomFireSpread, self.XaA12AxiomFireSpread);
 
 	local shot = CreateMOPixel("Particle CED Xarix A-12 Axiom Plasma Shot", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.XaA12AxiomFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

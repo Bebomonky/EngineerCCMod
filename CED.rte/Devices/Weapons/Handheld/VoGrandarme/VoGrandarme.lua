@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.VoGrandarmeFireVelocity = 160;
+	self.VoGrandarmeFireSpread = 3.5 / 2;
+
 	self.VoGrandarmeSlowROFOnSound = CreateSoundContainer("Slow ROF On CED Vossberg Grandarme", "CED.rte");
 	self.VoGrandarmeSlowROFOffSound = CreateSoundContainer("Slow ROF Off CED Vossberg Grandarme", "CED.rte");
 
@@ -19,6 +22,26 @@ function OnFire(self)
 		self.VoGrandarmeShotSound:Play(self.Pos);
 	else
 		self.VoGrandarmeShotAutoSound:Play(self.Pos);
+	end
+	
+	local spread = math.random(-self.VoGrandarmeFireSpread, self.VoGrandarmeFireSpread);
+
+	local shot = CreateMOPixel("Bullet CED Vossberg Grandarme Scripted", "CED.rte");
+	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.VoGrandarmeFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+	shot.Team = self.Team;
+	shot.IgnoresTeamHits = true;
+	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+	MovableMan:AddParticle(shot);
+	
+	for i = 1, 1 do
+		local shot = CreateMOPixel("Bullet CED Vossberg Grandarme", "CED.rte");
+		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.VoGrandarmeFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+		shot.Team = self.Team;
+		shot.IgnoresTeamHits = true;
+		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+		MovableMan:AddParticle(shot);
 	end
 
 	-- Use our HEATStats to spawn a casing every time we fire.

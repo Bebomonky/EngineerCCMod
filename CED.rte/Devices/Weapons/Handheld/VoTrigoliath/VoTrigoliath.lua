@@ -1,6 +1,11 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.VoTrigoliathFireVelocity = 140;
+	self.VoTrigoliathFireSlugVelocity = 150;
+	self.VoTrigoliathFireSpread = 6 / 2;
+	self.VoTrigoliathFireSlugSpread = 0.5 / 2;
+
 	self.VoTrigoliathPreSound = CreateSoundContainer("Pre CED Vossberg Trigoliath", "CED.rte");
 	self.VoTrigoliathMultiFirePreSound = CreateSoundContainer("Multi Fire Pre CED Vossberg Trigoliath", "CED.rte");
 	
@@ -28,26 +33,20 @@ function Create(self)
 		end
 
 		if self.VoTrigoliathSlugsLoaded then
-			local velocity = 170;
-			local spread = 0;
-			
 			for i = 1, 3 + extraParticleForMultifire do
 				local shot = CreateMOPixel("Slug CED Vossberg Trigoliath", "CED.rte");
 				shot.Pos = self.MuzzlePos + topBarrelVector;
-				shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+				shot.Vel = self.Vel + Vector(self.VoTrigoliathActingVelocity * self.FlipFactor, self.VoTrigoliathActingSpread):RadRotate(self.RotAngle);
 				shot.Team = self.Team;
 				shot.IgnoresTeamHits = true;
 				shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
 				MovableMan:AddParticle(shot);
 			end
-		else
-			local velocity = 150;
-			local spread = 2;
-			
+		else		
 			for i = 1, 8 + extraParticleForMultifire do
 				local shot = CreateMOPixel("Pellet CED Vossberg Trigoliath", "CED.rte");
 				shot.Pos = self.MuzzlePos + topBarrelVector;
-				shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+				shot.Vel = self.Vel + Vector(self.VoTrigoliathActingVelocity * self.FlipFactor, self.VoTrigoliathActingSpread):RadRotate(self.RotAngle);
 				shot.Team = self.Team;
 				shot.IgnoresTeamHits = true;
 				shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
@@ -65,23 +64,23 @@ function OnFire(self)
 
 	-- Spawn our scripted particles here, since we only want to do it once even on multifire
 	if self.VoTrigoliathSlugsLoaded then
-		local velocity = 170;
-		local spread = 0;
+		self.VoTrigoliathActingVelocity = self.VoTrigoliathFireSlugVelocity;
+		self.VoTrigoliathActingSpread = math.random(-self.VoTrigoliathFireSpread, self.VoTrigoliathFireSlugSpread);
 	
 		local shot = CreateMOPixel("Slug CED Vossberg Trigoliath Scripted", "CED.rte");
 		shot.Pos = self.MuzzlePos + topBarrelVector;
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.VoTrigoliathActingVelocity * self.FlipFactor, self.VoTrigoliathActingSpread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
 		MovableMan:AddParticle(shot);
 	else
-		local velocity = 150;
-		local spread = 2;
+		self.VoTrigoliathActingVelocity = self.VoTrigoliathFireVelocity;
+		self.VoTrigoliathActingSpread = math.random(-self.VoTrigoliathFireSpread, self.VoTrigoliathFireSpread);
 	
 		local shot = CreateMOPixel("Pellet CED Vossberg Trigoliath Scripted", "CED.rte");
 		shot.Pos = self.MuzzlePos + topBarrelVector;
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.VoTrigoliathActingVelocity * self.FlipFactor, self.VoTrigoliathActingSpread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

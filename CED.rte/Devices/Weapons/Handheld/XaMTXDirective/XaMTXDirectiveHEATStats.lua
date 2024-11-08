@@ -231,7 +231,7 @@ function Create(self)
 	reloadPhase.prepareSoundLength = 500;
 	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Xarix MTX Directive", "CED.rte");
 	reloadPhase.afterDelay = 300;
-	reloadPhase.reloadStanceOffsetTarget = Vector(0, 2);
+	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(0, 5)
 	reloadPhase.rotationTarget = -5;

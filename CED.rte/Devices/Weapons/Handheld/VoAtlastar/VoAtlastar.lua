@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.VoAtlastarFireVelocity = 140;
+	self.VoAtlastarFireSpread = 6 / 2;
+
 	self.VoAtlastarFirstShotSound = CreateSoundContainer("First Shot CED Vossberg Atlastar", "CED.rte");
 	self.VoAtlastarPostFireSound = CreateSoundContainer("Post Fire CED Vossberg Atlastar", "CED.rte");
 	self.VoAtlastarBurstReflectionOutdoorsSound = CreateSoundContainer("Burst Reflection Outdoors CED Vossberg Atlastar", "CED.rte");
@@ -36,11 +39,11 @@ function OnFire(self)
 	
 	self.VoAtlastarBurstCounter = self.VoAtlastarBurstCounter + 1;
 
-	local velocity = 140;
+	local spread = math.random(-self.VoAtlastarFireSpread, self.VoAtlastarFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Vossberg Atlastar Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.VoAtlastarFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

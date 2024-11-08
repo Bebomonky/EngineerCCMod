@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.BASCGSRFireVelocity = 100;
+	self.BASCGSRFireSpread = 3 / 2;
+
 	self.BASCGSRMechLastSound = CreateSoundContainer("Mech Last CED CED-BAS CGSR", "CED.rte");
 	
 	self.BASCGSRLaserOnSound = CreateSoundContainer("Laser On CED CED-BAS CGSR", "CED.rte");
@@ -10,11 +13,11 @@ function Create(self)
 end
 
 function OnFire(self)
-	local velocity = 100;
+	local spread = math.random(-self.BASCGSRFireSpread, self.BASCGSRFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED CED-BAS CGSR Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.BASCGSRFireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

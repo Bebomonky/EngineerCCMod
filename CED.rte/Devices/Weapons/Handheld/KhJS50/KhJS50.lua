@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.KhJS50FireVelocity = 140;
+	self.KhJS50FireSpread = 0.5 / 2;
+
 	self.KhJS50ScopeClickSound = CreateSoundContainer("Scope Click CED Khrabarovsk JS50", "CED.rte");
 	
 	-- Table of SharpLengths to cycle through.
@@ -13,6 +16,26 @@ function Create(self)
 end
 
 function OnFire(self)
+	local spread = math.random(-self.KhJS50FireSpread, self.KhJS50FireSpread);
+
+	local shot = CreateMOPixel("Bullet CED Khrabarovsk JS50 Scripted", "CED.rte");
+	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.KhJS50FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+	shot.Team = self.Team;
+	shot.IgnoresTeamHits = true;
+	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+	MovableMan:AddParticle(shot);
+
+	for i = 1, 2 do
+		local shot = CreateMOPixel("Bullet CED Khrabarovsk JS50", "CED.rte");
+		shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.KhJS50FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+		shot.Team = self.Team;
+		shot.IgnoresTeamHits = true;
+		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+		MovableMan:AddParticle(shot);
+	end		
+
 	-- Use our HEATStats to spawn a casing every time we fire.
 	local casing
 	casing = self.HEATCasing:Clone();

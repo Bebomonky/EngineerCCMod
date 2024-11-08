@@ -6,6 +6,11 @@ require("/CEDSettings");
 function Create(self)
 	-- Activity.
 	self.Activity = ActivityMan:GetActivity();
+	
+	self.KhMOSKAFireVelocity = 130;
+	self.KhMOSKARBulletFireVelocity = 180;
+	self.KhMOSKAFireSpread = 0.5 / 2;	
+	
 	self.KhMOSKACasingEjectAddSound = CreateSoundContainer("Casing Eject Add CED Khrabarovsk MOSKA", "CED.rte");
 	self.KhMOSKARBulletAddSound = CreateSoundContainer("R Bullet Add CED Khrabarovsk MOSKA", "CED.rte");
 	
@@ -24,21 +29,21 @@ function Create(self)
 end
 
 function OnFire(self)
-	
-	local velocity = self.KhMOSKARBulletLoaded and 180 or 130;
+	local spread = math.random(-self.KhMOSKAFireSpread, self.KhMOSKAFireSpread);
+	local velocity = self.KhMOSKARBulletLoaded and self.KhMOSKARBulletFireVelocity or self.KhMOSKAFireVelocity;
 
 	local shot = CreateMOPixel("Bullet CED Khrabarovsk MOSKA Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
 	MovableMan:AddParticle(shot);
 
-	for i = 1, 2 do
+	for i = 1, 3 do
 		local shot = CreateMOPixel("Bullet CED Khrabarovsk MOSKA", "CED.rte");
 		shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 		shot.Team = self.Team;
 		shot.IgnoresTeamHits = true;
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
@@ -50,7 +55,7 @@ function OnFire(self)
 		for i = 1, 3 do
 			local shot = CreateMOPixel("Bullet CED Khrabarovsk MOSKA", "CED.rte");
 			shot.Pos = self.MuzzlePos + Vector(0.1*i*self.FlipFactor, 0):RadRotate(self.RotAngle);
-			shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+			shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 			shot.Team = self.Team;
 			shot.IgnoresTeamHits = true;
 			shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

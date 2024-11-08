@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.KhSPr40FireVelocity = 140;
+	self.KhSPr40FireSpread = 0.5 / 2;
+
 	self.KhSPr40HammerBackSound = CreateSoundContainer("Hammer Back CED Khrabarovsk SPr-40", "CED.rte");
 	self.KhSPr40PreSound = CreateSoundContainer("Pre CED Khrabarovsk SPr-40", "CED.rte");
 	self.KhSPr40SinglePreSound = CreateSoundContainer("Single Pre CED Khrabarovsk SPr-40", "CED.rte");
@@ -14,11 +17,11 @@ function Create(self)
 end
 
 function OnFire(self)
-	local velocity = 160;
+	local spread = math.random(-self.KhSPr40FireSpread, self.KhSPr40FireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Khrabarovsk SPr-40 Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.KhSPr40FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
