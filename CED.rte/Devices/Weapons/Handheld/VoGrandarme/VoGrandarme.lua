@@ -102,11 +102,5 @@ function ThreadedUpdate(self)
 				self.HEATRecoilMax = 3;
 			end
 		end
-	
-		if self.parent:IsPlayerControlled() then
-			self.HEATRecoilMax = 12;
-		else
-			self.HEATRecoilMax = 3;
-		end	
 	end
 end

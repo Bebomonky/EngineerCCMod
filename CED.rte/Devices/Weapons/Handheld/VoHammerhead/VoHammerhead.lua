@@ -3,9 +3,6 @@ require("/CEDSettings");
 function Create(self)
 	self.VoHammerheadFireVelocity = 140;
 	self.VoHammerheadFireSpread = 1 / 2;
-
-	self.VoHammerheadPlayerRateOfFire = 320;
-	self.VoHammerheadAIRateOfFire = 145;
 end
 
 function OnFire(self)
@@ -48,13 +45,5 @@ function OnDetach(self)
 end
 
 function ThreadedUpdate(self)
-	if self.parent and IsActor(self.parent) then
-		if ToActor(self.parent):IsPlayerControlled() then
-			self.RateOfFire = self.VoHammerheadPlayerRateOfFire;
-			self.HEATRecoilMax = 12;
-		else
-			self.RateOfFire = self.VoHammerheadAIRateOfFire;
-			self.HEATRecoilMax = 4;
-		end
-	end
+
 end

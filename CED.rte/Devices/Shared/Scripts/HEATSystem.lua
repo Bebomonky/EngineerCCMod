@@ -11,6 +11,9 @@ function Create(self)
 	-----------------
 	----------------- Utility
 	-----------------
+	
+	-- Identifier, so other scripts know we're a HEATSystem gun.
+	self:SetNumberValue("HEAT_Identifier", 1);
 
 	-- Actor holding us.
 	self.HEATParent = nil;
@@ -178,12 +181,19 @@ function Create(self)
 	
 	-----------------
 	----------------- Recoil
-	-----------------	
+	-----------------
+	
+	-- Later filled with total rotation.
+	self:SetNumberValue("HEAT_CurrentRecoil", 0);
 	
 	-- Mathemagical recoil variable. Shouldn't be messed with.
 	self.HEATRecoilAcc = 0
 	-- Mathemagical recoil variable. Shouldn't be messed with.
 	self.HEATRecoilStr = 0
+	
+	-- Factor to shift recoil angle, simulating AI counteracting the recoil. Eventually negates recoil,
+	-- but the recoil respect actor script won't realistically let it turn any gun into a laser beam.
+	self.HEATRecoilAIHomingFactor = 0;
 	
 	-----------------
 	----------------- Miscellaneous
@@ -234,7 +244,21 @@ function Create(self)
 	end
 end
 
+function OnAttach(self, newParent)
+	if IsAHuman(newParent:GetRootParent()) then
+		self.HEATParent = ToAHuman(newParent:GetRootParent());
+		self.HEATParentController = self.HEATParent:GetController();
+	end
+end
+
+function OnDetach(self)
+	self.HEATParent = nil;
+	self.HEATParentController = nil;
+end
+
 function ThreadedUpdate(self)
+	--PrimitiveMan:DrawLinePrimitive(self.MuzzlePos, self.MuzzlePos + Vector(300 * self.FlipFactor, 0):RadRotate(self.RotAngle), 133);
+
 	self.Frame = 0;
 	self.HEATRotationTarget = 0
 	
@@ -246,6 +270,11 @@ function ThreadedUpdate(self)
 		if actor and IsAHuman(actor) then
 			self.HEATParent = ToAHuman(actor);
 			self.HEATParentSet = true;
+			if self.useHEATRecoil then
+				if not self.HEATParent:HasScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua") then
+					self.HEATParent:AddScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua");
+				end
+			end
 		end
 	end
 	
@@ -328,11 +357,9 @@ function ThreadedUpdate(self)
 				end
 			end
 			
-			local ctrl;
 			local screen;
 			if self.HEATParent then
-				ctrl = self.HEATParent:GetController();
-				screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player);
+				screen = ActivityMan:GetActivity():ScreenOfPlayer(self.HEATParentController.Player);
 			end
 
 			self.HEATFireDelayTimer:Reset()
@@ -414,7 +441,7 @@ function ThreadedUpdate(self)
 				end
 				
 				if self.HEATParent then
-					if ctrl:IsState(Controller.WEAPON_FIRE) then
+					if self.HEATParentController:IsState(Controller.WEAPON_FIRE) then
 						self.HEATManualInterruptionAttempted = true;
 						if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then
 							PrimitiveMan:DrawTextPrimitive(screen, self.HEATParent.AboveHUDPos + Vector(0, 30), "Interrupting...", true, 1);
@@ -562,6 +589,7 @@ function ThreadedUpdate(self)
 		end
 	
 		if self:DoneReloading() == true then
+			self.HEATRecoilAIHomingFactor = 0;
 			self.HEATFireDelayTimer:Reset()
 			if self.HEATApplyAmmoCount then
 				self.Magazine.RoundCount = self.HEATAmmoCounter;
@@ -622,7 +650,16 @@ function ThreadedUpdate(self)
 		self.HEATHorizontalAnim = self.HEATRecoilHorizontalAnim;
 		self.HEATFiringAnimationTimer:Reset();
 	
-		self.HEATAngVel = self.HEATAngVel - RangeRand(1 - self.HEATRecoilAngVariation / 2, 1 + self.HEATRecoilAngVariation / 2) * self.HEATRecoilAngAnim
+		local actingRecoilAngAnim;
+	
+		if self.HEATParent and not self.HEATParent:IsPlayerControlled() then
+			self.HEATRecoilAIHomingFactor = math.min(1, self.HEATRecoilAIHomingFactor + 1 / math.ceil((self.HEATFullMagazineRoundCount)));
+			actingRecoilAngAnim = 0;
+		else
+			actingRecoilAngAnim = self.HEATRecoilAngAnim;
+		end
+	
+		self.HEATAngVel = self.HEATAngVel - RangeRand(1 - self.HEATRecoilAngVariation / 2, 1 + self.HEATRecoilAngVariation / 2) * actingRecoilAngAnim
 		
 		if self.HEATStageAfterEveryShot then
 			self.HEATNonReloadStaging = true;
@@ -697,14 +734,19 @@ function ThreadedUpdate(self)
 		end
 		
 		self.HEATFireCallback(self);
-		
+	end
+	
+	if self.HEATParent and self.HEATParent:IsPlayerControlled() then
+		self.HEATRecoilAIHomingFactor = 0;
+	elseif not self:IsActivated() then
+		self.HEATRecoilAIHomingFactor = math.max(0, self.HEATRecoilAIHomingFactor - TimerMan.DeltaTimeSecs / 50);
 	end
 	
 	if self.HEATDelayedFire and self.HEATDelayedFireTimer:IsPastSimMS(self.HEATDelayedFireTimeMS) then
 		self:Activate()
 		-- Super roundabout dual wielding fire fix - it won't choose the other weapon to fire if it "fires itself"
 		if self.HEATParent then
-			self.HEATParent:GetController():SetState(Controller.WEAPON_FIRE, true);
+			self.HEATParentController:SetState(Controller.WEAPON_FIRE, true);
 		end
 		self.HEATDelayedFire = false
 		self.HEATDelayedFirstShot = false;
@@ -722,12 +764,22 @@ function ThreadedUpdate(self)
 		self.HEATRotationTarget = self.HEATRotationTargetOverride or self.HEATRotationTarget;
 		self.HEATRotationTarget = self.HEATRotationTarget - (self.HEATAngVel * 4)
 		
-		if self.useHEATRecoil then		
-			if self.FiredFrame then
-				self.HEATRecoilStr = self.HEATRecoilStr + ((math.random(10, self.HEATRecoilRandomUpper * 10) / 10) * 0.5 * self.HEATRecoilStrength) + (self.HEATRecoilStr * 0.6 * self.HEATRecoilPowStrength)
-				self:SetNumberValue("recoilStrengthBase", self.HEATRecoilStrength * (1 + self.HEATRecoilPowStrength) / self.HEATRecoilDamping)
+		if self.useHEATRecoil then				
+			local crouching = self.HEATParentController:IsState(Controller.BODY_WALKCROUCH)
+			local proning = self.HEATParentController:IsState(Controller.BODY_PRONE)
+			
+			local actingRecoilStrength;
+			if proning then
+				actingRecoilStrength = self.HEATRecoilStrength * self.HEATRecoilProneMultiplier;
+			elseif crouching then
+				actingRecoilStrength = self.HEATRecoilStrength * self.HEATRecoilCrouchMultiplier;
+			else
+				actingRecoilStrength = self.HEATRecoilStrength;
 			end
-			self:SetNumberValue("recoilStrengthCurrent", self.HEATRecoilStr)
+		
+			if self.FiredFrame then
+				self.HEATRecoilStr = self.HEATRecoilStr + ((math.random(10, self.HEATRecoilRandomUpper * 10) / 10) * 0.5 * actingRecoilStrength) + (self.HEATRecoilStr * 0.6 * self.HEATRecoilPowStrength)
+			end
 			
 			self.HEATRecoilStr = math.floor(self.HEATRecoilStr / (1 + TimerMan.DeltaTimeSecs * 8.0 * self.HEATRecoilDamping) * 1000) / 1000
 			self.HEATRecoilAcc = (self.HEATRecoilAcc + self.HEATRecoilStr * TimerMan.DeltaTimeSecs) % (math.pi * 4)
@@ -740,7 +792,10 @@ function ThreadedUpdate(self)
 			
 			self.SharpLength = math.max(self.HEATOriginalSharpLength * self.HEATSharpLengthMinimumMult, math.max(self.HEATOriginalSharpLength - (self.HEATRecoilStr * 3 + math.abs(recoilFinal)), 0))
 			
-			self.HEATRotationTarget = self.HEATRotationTarget + recoilFinal -- apply the recoil	
+			local AIHomingFactorRecoilShift = self.HEATRecoilAIHomingFactor * (-recoilFinal);
+			
+			--print(AIHomingFactorRecoilShift)
+			self.HEATRotationTarget = self.HEATRotationTarget + recoilFinal + AIHomingFactorRecoilShift -- apply the recoil
 		end
 		
 		self.HEATRotation = (self.HEATRotation + self.HEATRotationTarget * TimerMan.DeltaTimeSecs * self.HEATRotationSpeed) / (1 + TimerMan.DeltaTimeSecs * self.HEATRotationSpeed)
@@ -752,6 +807,7 @@ function ThreadedUpdate(self)
 		local total = math.rad(self.HEATRotation) * self.FlipFactor
 		
 		self.InheritedRotAngleOffset = total * self.FlipFactor;
+		self:SetNumberValue("HEAT_CurrentRecoil", total);
 		-- self.RotAngle = self.RotAngle + total;
 		-- self:SetNumberValue("MagRotation", total);
 		

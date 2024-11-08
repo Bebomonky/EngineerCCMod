@@ -86,14 +86,29 @@ function ThreadedUpdate(self)
 	self.Kh11p35SelectFullSound.Pos = self.Pos;
 
 	local beingReloaded;
-	if self.parent and IsActor(self.parent) then
-		local controller = ToActor(self.parent):GetController();
-		if controller:IsState(Controller.WEAPON_RELOAD) then
-			beingReloaded = true;
-		end
-	end
 
 	if self.parent then
+		if self.parentController:IsState(Controller.WEAPON_RELOAD) then
+			beingReloaded = true;
+		end
+		
+		-- Switch AI away from the GL always
+		if self.Kh11p35GLMode and not self.parent:IsPlayerControlled() then
+			self.Kh11p35FromGLSound:Play(self.Pos);
+			self.Kh11p35GLMode = false;
+			self.HEATOriginalSharpLength = 175;
+			self.Reloadable = true;
+			
+			self.Magazine.RoundCount = self.Kh11p35SavedAmmo;
+			self.HEATAmmoCounter = self.Kh11p35SavedAmmo;
+			
+			if self.RoundInMagCount > 0 then
+				self.HEATEmptyReload = false;
+			end
+			
+			self.MuzzleOffset = Vector(15, 0);
+		end
+		
 		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
 			if self.Kh11p35SingleMode then
 				self.Kh11p35SelectFullSound:Play(self.Pos);

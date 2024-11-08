@@ -624,7 +624,10 @@ function Create(self)
 	self.HEATRecoilMax = 4;
 	-- Maximum low value for SharpLength as a multiplier.
 	self.HEATSharpLengthMinimumMult = 0.4;
-	
+	-- Multiplier for recoil strength when proning.
+	self.HEATRecoilProneMultiplier = 0.7;
+	-- Multiplier for recoil strength when crouching.
+	self.HEATRecoilCrouchMultiplier = 0.85;	
 	
 	-----------------
 	----------------- Delayed fire system

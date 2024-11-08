@@ -187,10 +187,6 @@ function ThreadedUpdate(self)
 						self.KhC8ChimeraInvalidlyDeployed = false;
 					end
 				end
-				
-				if not isPlayerControlled then
-					self.HEATRecoilMax = 0; -- they just can't deal with it...
-				end
 			elseif self.KhC8ChimeraDeployTimer:IsPastSimMS(self.KhC8ChimeraDeployTime / 3) then
 				self.HEATRotationSpeed = 5;
 				

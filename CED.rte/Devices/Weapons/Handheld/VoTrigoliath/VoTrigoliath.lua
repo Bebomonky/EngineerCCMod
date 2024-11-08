@@ -170,7 +170,7 @@ function ThreadedUpdate(self)
 					self.VoTrigoliathActivated = false;
 					self:Activate();
 					if self.VoTrigoliathMultiFire then
-						self.HEATRecoilStrength = 50;
+						self.HEATRecoilStrength = 60;
 						self.HEATRecoilDamping = 0.5;
 						self.HEATRecoilMax = 12;
 						self.HEATDelayedFireTimeMS = 140;
@@ -183,9 +183,9 @@ function ThreadedUpdate(self)
 						self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 4;
 						self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.5;
 					else
-						self.HEATRecoilStrength = 35;
+						self.HEATRecoilStrength = 50;
 						self.HEATRecoilDamping = 0.6;
-						self.HEATRecoilMax = 4;
+						self.HEATRecoilMax = 12;
 						self.HEATDelayedFireTimeMS = 110;
 						self.HEATPreSound = self.VoTrigoliathPreSound;
 						

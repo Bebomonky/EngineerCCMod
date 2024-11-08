@@ -88,12 +88,4 @@ function ThreadedUpdate(self)
 	if self.HEATDelayedFire then
 		self.HEATPersistentFrame = 1;
 	end
-
-	if self.parent and IsActor(self.parent) then
-		if ToActor(self.parent):IsPlayerControlled() then
-			self.HEATRecoilMax = 6;
-		else
-			self.HEATRecoilMax = 2;
-		end
-	end
 end

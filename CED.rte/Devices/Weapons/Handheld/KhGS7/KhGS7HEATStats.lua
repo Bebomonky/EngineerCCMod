@@ -455,7 +455,7 @@ function Create(self)
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 7;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-2, 2)
-	reloadPhase.rotationTarget = -5;
+	reloadPhase.rotationTarget = 0;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
@@ -517,7 +517,10 @@ function Create(self)
 	self.HEATRecoilMax = 4
 	-- Maximum low value for SharpLength as a multiplier.
 	self.HEATSharpLengthMinimumMult = 0.2;
-	
+	-- Multiplier for recoil strength when proning.
+	self.HEATRecoilProneMultiplier = 0.7;
+	-- Multiplier for recoil strength when crouching.
+	self.HEATRecoilCrouchMultiplier = 0.85;	
 	
 	-----------------
 	----------------- Delayed fire system

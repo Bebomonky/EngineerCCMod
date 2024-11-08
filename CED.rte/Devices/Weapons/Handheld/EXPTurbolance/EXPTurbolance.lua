@@ -167,14 +167,6 @@ function ThreadedUpdate(self)
 	end
 	
 	self.HEATPersistentFrame = self.EXPTurbolanceFrameOverride;
-
-	if self.parent and IsActor(self.parent) then
-		if ToActor(self.parent):IsPlayerControlled() then
-			self.HEATRecoilMax = 4;
-		else
-			self.HEATRecoilMax = 1;
-		end
-	end
 	
 	if self.EXPTurbolanceLooping and not self:IsActivated() then
 		self.EXPTurbolanceLooping = false;

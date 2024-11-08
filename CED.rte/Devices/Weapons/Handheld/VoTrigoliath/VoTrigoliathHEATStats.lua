@@ -395,7 +395,7 @@ function Create(self)
 	self.HEATRecoilAngVariation = 0.3;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 35
+	self.HEATRecoilStrength = 50
 	-- Some sort of mathemagical strength value to affect the recoil.
 	self.HEATRecoilPowStrength = 0.2
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.
@@ -404,10 +404,13 @@ function Create(self)
 	self.HEATRecoilDamping = 0.6
 	
 	-- Maximum rotation in degrees the recoil can cause.
-	self.HEATRecoilMax = 4
+	self.HEATRecoilMax = 12
 	-- Maximum low value for SharpLength as a multiplier.
 	self.HEATSharpLengthMinimumMult = 0.2;
-	
+	-- Multiplier for recoil strength when proning.
+	self.HEATRecoilProneMultiplier = 0.7;
+	-- Multiplier for recoil strength when crouching.
+	self.HEATRecoilCrouchMultiplier = 0.85;	
 	
 	-----------------
 	----------------- Delayed fire system
