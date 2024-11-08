@@ -1,0 +1,15 @@
+BF2042: BF02_Weapons_Handheld_ACW-R_Reload_Markers_01 7
+BF02_Weapons_Handheld_ACW-R_Reload_Markers_01 10
+BF02_Weapons_Handheld_ACW-R_Reload_Markers_01 13
+BF02_Weapons_Handheld_ACW-R_Reload_Markers_01 1
+
+COD:MW: wfoly_ar_sierra552_reload_empty_magout
+wfoly_ar_tango21_reload_empty_rotate
+wfoly_ar_sierra552_reload_empty_magin
+wfoly_ar_sierra552_reload_empty_maghit
+wfoly_ar_sierra552_raise_first_bolt_release
+wfoly_ar_sierra552_reload_end
+weap_sierra552_hammer_plr_03
+and others from the same guns
+
+Insurgency: Sandstorm: flashlight_laser_toggle_on_01, flashlight_laser_toggle_off_02

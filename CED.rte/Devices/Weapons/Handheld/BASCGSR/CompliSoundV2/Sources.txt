@@ -1,0 +1,3 @@
+COD:MW: weap_ar_sup_fire_plr_atmo_ext1_01, weap_sierra552_fire_plr_mech_01, weap_mike4_sup_plr_01, weap_ar_sup_fire_plr_atmo_int1_01
+
+BF2042: BF01_Weapons_Handheld_Shared_CoreBass_Default_Parametric_01 250 (and counting up)
