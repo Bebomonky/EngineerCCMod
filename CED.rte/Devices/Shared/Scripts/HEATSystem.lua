@@ -248,6 +248,9 @@ function OnAttach(self, newParent)
 	if IsAHuman(newParent:GetRootParent()) then
 		self.HEATParent = ToAHuman(newParent:GetRootParent());
 		self.HEATParentController = self.HEATParent:GetController();
+		if not self.HEATParent:HasScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua") then
+			self.HEATParent:AddScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua");
+		end
 	end
 end
 
@@ -257,26 +260,10 @@ function OnDetach(self)
 end
 
 function ThreadedUpdate(self)
-	--PrimitiveMan:DrawLinePrimitive(self.MuzzlePos, self.MuzzlePos + Vector(300 * self.FlipFactor, 0):RadRotate(self.RotAngle), 133);
+	PrimitiveMan:DrawLinePrimitive(self.MuzzlePos, self.MuzzlePos + Vector(300 * self.FlipFactor, 0):RadRotate(self.RotAngle), 133);
 
 	self.Frame = 0;
 	self.HEATRotationTarget = 0
-	
-	if self.ID == self.RootID then
-		self.HEATParent = nil;
-		self.HEATParentSet = false;
-	elseif self.HEATParentSet == false then
-		local actor = MovableMan:GetMOFromID(self.RootID);
-		if actor and IsAHuman(actor) then
-			self.HEATParent = ToAHuman(actor);
-			self.HEATParentSet = true;
-			if self.useHEATRecoil then
-				if not self.HEATParent:HasScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua") then
-					self.HEATParent:AddScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua");
-				end
-			end
-		end
-	end
 	
     -- Smoothing
     local min_value = -math.pi;
