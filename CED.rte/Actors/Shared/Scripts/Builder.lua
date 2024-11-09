@@ -11,7 +11,7 @@ end
 
 function ThreadedUpdate(self)
 
-	PrimitiveMan:DrawCirclePrimitive(self.Pos, self.CEDBuildRange, 13);
+	--PrimitiveMan:DrawCirclePrimitive(self.Pos, self.CEDBuildRange, 13);
 	
 	local foundAnyMO = false;
 	for mo in MovableMan:GetMOsInRadius(self.Pos, self.CEDBuildRange, self.Team) do

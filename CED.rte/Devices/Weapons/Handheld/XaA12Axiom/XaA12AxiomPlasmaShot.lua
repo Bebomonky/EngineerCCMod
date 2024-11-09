@@ -105,7 +105,7 @@ function Update(self)
 					hitEffect.Pos = hitPos;
 					hitEffect.RotAngle = offset.AbsRadAngle;
 					hitEffect.Team = self.Team;
-					hitEffect.Vel = -self.Vel:SetMagnitude(5);
+					hitEffect.Vel = Vector(-self.Vel.X, -self.Vel.Y):SetMagnitude(5);
 					MovableMan:AddParticle(hitEffect);
 					
 				end

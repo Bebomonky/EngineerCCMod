@@ -260,7 +260,7 @@ function OnDetach(self)
 end
 
 function ThreadedUpdate(self)
-	PrimitiveMan:DrawLinePrimitive(self.MuzzlePos, self.MuzzlePos + Vector(300 * self.FlipFactor, 0):RadRotate(self.RotAngle), 133);
+	--PrimitiveMan:DrawLinePrimitive(self.MuzzlePos, self.MuzzlePos + Vector(300 * self.FlipFactor, 0):RadRotate(self.RotAngle), 133);
 
 	self.Frame = 0;
 	self.HEATRotationTarget = 0
