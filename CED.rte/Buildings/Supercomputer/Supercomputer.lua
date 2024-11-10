@@ -9,6 +9,7 @@ function Create(self)
 	self.sounds = {
 		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
+		Click = CreateSoundContainer("Geiger Click", "Base.rte")
 	};
 
 	self.Activity = ActivityMan:GetActivity();
@@ -21,6 +22,13 @@ function Create(self)
 		self:RemoveStringValue("CEDSupercomputerResearch");
 	else
 		self.Researches = {};
+	end
+
+	if self:StringValueExists("CEDSupercomputerQueue") then
+		self.Queue = self.saveLoadHandler:DeserializeTable(self:GetStringValue("CEDSupercomputerQueue"), "CEDSupercomputerQueue");
+		self:RemoveStringValue("CEDSupercomputerQueue");
+	else
+		self.Queue = {};
 	end
 	
 	-- SaveLoadHandler could help with this here, but this is unique per-team so this also works Just Fine
@@ -42,13 +50,7 @@ function Create(self)
 		MovableMan:AddParticle(self.technologyController);
 	end
 
-	self.menuData = {
-		Main = {
-			Buttons = {}
-		};
-	};
-
-	local i = 1;
+	self.menuData = {};
 	for techID, faction in pairs(CEDMasterList.Technology) do
 		self.menuData[techID] = {
 			Items = {},
@@ -58,6 +60,12 @@ function Create(self)
 		for itemID, item in SortedPairs(faction) do
 			table.insert(self.menuData[techID].Items, item);
 		end
+
+		for i = 1, #self.menuData[techID].Items do
+			local item = self.menuData[techID].Items[i];
+			local isResearched = self.Researches[item.RequiredTech];
+			item.IsResearched = isResearched and true or false;
+		end
 	end
 
 	self.menuData["Xarix"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/XarixTree.png";
@@ -65,7 +73,7 @@ function Create(self)
 	self.menuData["Vossberg"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/VossbergTree.png";
 
 	self.menuHistory = {};
-	self.MenuCurrent = self.menuData["Khrabarovsk"];
+	self.MenuCurrent = nil;
 
 	function self:MenuChange(newMenu, addToHistory)
 		if addToHistory == nil or addToHistory == true then
@@ -86,29 +94,9 @@ function Create(self)
 			button:SetVisible(true);
 		end
 	end
-	--[[
-	self.TechProgress = {}
 
-	self.ActivePBar = 0
-	for i = 1, #self.CEDAvailableTechnology do
-		local tech = self.CEDAvailableTechnology[i]
-		self.TechProgress[i] =
-		{
-			Timer = Timer(),
-			SavedElapsedSimTimeMS = 0,
-			InProgress = false,
-			IsResearched = self.technologyController:NumberValueExists(tech.ResearchName) and true or false,
-			PBarActive = false,
-			PBarVisible = false,
-			PBarFraction = 0,
-			ButtonText = self.technologyController:NumberValueExists(tech.ResearchName) and tech.DisplayName:gsub("^%w+", "Researched!") or tech.DisplayName,
-			PBar = nil,
-			Button = nil
-		}
-	end
-
-	self.ActiveResearch = false
-	]]
+	self.researchFrame = -1; -- -1 blank | 0 Red | 1 Blue | 2 Yellow | 3 Gray
+	self.researchinProgress = false;
 end
 
 function DisplayNumber(self, screen, color, pos, text)
@@ -120,68 +108,121 @@ function DisplayNumber(self, screen, color, pos, text)
 	end
 end
 
-function CC_TooltipSkin(gui, new)
-	local w = gui:GetWidth();
-	local h = gui:GetHeight();
+function itemDescription(desc, size_x)
+	local newDesc = "";
+	local words = {};
+	for word in string.gmatch(desc, "%S+") do
+		table.insert(words, word);
+	end
+	local line = "";
+	for i = 1, #words do
+		local word = words[i];
+		local newLine = line .. (line ~= "" and " " or "") .. word;
+		local descWidth = FrameMan:CalculateTextWidth(newLine, true) + 5;
+		if descWidth > size_x then
+			if line ~= "" then
+				newDesc = newDesc .. line .. "\n";
+			end
+			line = word;
+		else
+			line = newLine;
+		end
+	end
+	if line ~= "" then
+		newDesc = newDesc .. line;
+	end
+	return newDesc;
+end
+
+function CC_TooltipSkin(parent, new)
+	new = new or false;
+	local w = parent:GetWidth();
+	local h = parent:GetHeight();
 	local outlines = {
-		{Vector(w + 2, 0), Vector(0, h + 2), false, 21},
-		{Vector(0, h + 2), Vector(w + 2, 0), false, 21},
-		{Vector(0, 0), Vector(0, h), true, 21},
-		{Vector(0, 0), Vector(w, 0), true, 21},
-		{Vector(w, 1), Vector(0, h - 1), true, 59},
-		{Vector(1, h), Vector(w - 1, 0), true, 59},
+		{Vector(w + 1, 0), Vector(1, h + 2), false, 21},
+		{Vector(0, h + 1), Vector(w + 2, 1), false, 21},
+		{Vector(0, 0), Vector(1, h), true, 21},
+		{Vector(0, 0), Vector(w, 1), true, 21},
+		{Vector(w - 1, 1), Vector(1, h - 1), true, 59},
+		{Vector(1, h - 1), Vector(w - 1, 1), true, 59},
 	};
 	if new then
-		gui:Color(93);
-		gui:OutlineColor(70);
-		gui:OutlineThickness(1);
+		parent:Color(93);
+		parent:OutlineColor(70);
+		parent:OutlineThickness(1);
 		for i = 1, #outlines do
-			local pos = outlines[i][1];
-			local size = outlines[i][2];
 			local drawAfterParent = outlines[i][3];
 			local color = outlines[i][4];
-			local panel = gui:Add("COLLECTIONBOX");
-			panel:SetTitle("");
-			panel:SetName("Outline");
+			local line = {};
+			line._name = "CC_TOOLTIPSKIN";
+			line._drawAfterParent = drawAfterParent;
+
+			function line:SetPos(x, y)
+				self._x, self._y = parent._x + x, parent._y + y;
+			end
+
+			function line:GetAbsolutePos()
+				return Vector(self._x, self._y) + CameraMan:GetOffset(parent._screen);
+			end
+
+			function line:SetSize(w, h)
+				self._w, self._h = w, h;
+			end
+
+			function line:GetSize()
+				return Vector(self._w, self._h);
+			end
+
+			function line:Update()
+				local world_pos = self:GetAbsolutePos();
+				local size = self:GetSize() - Vector(1, 1);
+				if math.min(size.X, size.Y) >= 0 then
+					PrimitiveMan:DrawLinePrimitive(parent._screen, world_pos, world_pos + size, color, 1);
+				end
+			end
+			table.insert(parent:GetChildren(), line);
+		end
+		return;
+	end
+
+	for i, panel in pairs(parent:GetChildren()) do
+		if panel._name == "CC_TOOLTIPSKIN" then
+			local pos = outlines[i][1];
+			local size = outlines[i][2];
 			panel:SetPos(pos.X, pos.Y);
 			panel:SetSize(size.X, size.Y);
-			panel:Color(color);
-			panel:DrawAfterParent(drawAfterParent);
-			panel:OutlineThickness(0);
-		end
-	else
-		for i, panel in pairs(gui:GetChildren()) do
-			if panel:GetName() == "Outline" then
-				local pos = outlines[i][1];
-				local size = outlines[i][2];
-				panel:SetPos(pos.X, pos.Y);
-				panel:SetSize(size.X, size.Y);
-			end
 		end
 	end
 end
 
 function ResearchMenu(self)
-	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX")
+	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.researchBox:SetTitle("");
 	self.researchBox:SetPos(10, 25);
 	self.researchBox:SetSize(400, 300);
 	self.researchBox:Color(146);
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
+	self.researchBox.LinePos = Vector(80, 0);
 	local screen = self.researchBox:GetScreen();
+
+	self.researchBox.Think = function()
+		local world_pos = self.researchBox:GetAbsolutePos() + self.researchBox.LinePos;
+		PrimitiveMan:DrawLinePrimitive(screen, world_pos, world_pos + Vector(0, self.researchBox:GetHeight()), 71, 2);
+	end
 
 	--This is literally so it just draws behind everything except the researchBox
 	local nodeBox = self.researchBox:Add("COLLECTIONBOX");
 	nodeBox:SetHide(true);
 	nodeBox.Think = function()
-		local world_pos = self.researchBox:GetAbsolutePos() + self.researchBox:GetSize() * 0.5;
-		if self.MenuCurrent.Bitmap then
+		if self.MenuCurrent and self.MenuCurrent.Bitmap then
+			local world_pos = (self.researchBox:GetAbsolutePos() + Vector(self.researchBox:GetWidth() + 80, self.researchBox:GetHeight()) * 0.5);
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, self.MenuCurrent.Bitmap, 0);
 		end
 	end
 
 	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
+	self.tooltip:SetHide(true);
 	self.tooltip:SetTitle("");
 	self.tooltip.Displaying = false;
 	CC_TooltipSkin(self.tooltip, true);
@@ -189,27 +230,68 @@ function ResearchMenu(self)
 		self.tooltip:SetHide(true);
 	end
 
+	self.infoBox = self.Menu:CreateGUI("COLLECTIONBOX");
+	self.infoBox:SetTitle("");
+	self.infoBox:SetPos(self.researchBox:GetWidth() + 20, 25);
+	self.infoBox:SetSize(150, 300);
+	self.infoBox:Color(146);
+	self.infoBox:OutlineColor(71);
+	self.infoBox:OutlineThickness(2);
+	self.infoBox.Think = function()
+		if self.researchFrame > -1 then
+			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
+		end
+	end
+
+	local researchButton = self.Menu:CreateGUI("BUTTON", self.infoBox);
+	researchButton:SetText("");
+	researchButton:SetPos(11, 258);
+	researchButton:SetSize(127, 25);
+	researchButton:SetHide(true);
+	researchButton:SetClickable(false);
+	researchButton.Think = function()
+		if self.researchFrame > -1 then
+			if self.researchinProgress then
+			
+			else
+				if researchButton:IsHovered() then
+					self.researchFrame = 2;
+				else
+					self.researchFrame = 3;
+				end
+			end
+		end
+	end
+
+	researchButton.OnPress = function(key)
+		if key == Controller.PRIMARY_ACTION then
+			self.sounds.Confirm:Play(-1);
+		end
+	end
+
 	self.tooltipTitle = self.Menu:CreateGUI("LABEL", self.tooltip);
-	self.tooltipTitle:SetPos(0, 0);
 	self.tooltipTitle:SetSmallText(true);
-	self.tooltipTitle:SetHide(true);
 
 	self.tooltipDesc = self.Menu:CreateGUI("LABEL", self.tooltip);
 	self.tooltipDesc:SetSmallText(true);
 	self.tooltipDesc:SetContentAlignment(5);
-	self.tooltipDesc:SetHide(true);
 
 	local tabs = {};
 	local i = 1;
 	local totalWidth = 0;
 	local width = 50;
 	local height = 40;
-	local spacing = 65;
+	local spacing = 30;
+	local totalWidth = (3 * width) + (spacing * (3 - 1));
+	local mainWidth = self.researchBox:GetWidth() + 80;
+	local emptySpace = mainWidth - totalWidth;
+	local padding = emptySpace / 2;
+
 	for techID, faction in SortedPairs(CEDMasterList.Technology) do
-		local totalWidth = (i * width) + spacing * 3;
-		local x = (self.researchBox:GetWidth() - totalWidth) / 2;
+		local x = padding + (i - 1) * (width + spacing);
 		local tab = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
-		tab:SetPos(x + (i - 1) * (width + spacing), 10);
+		tab:SetPos(x, 10);
 		tab:SetSize(width, height);
 		tab:SetText(techID);
 		tab:Color(146);
@@ -239,7 +321,9 @@ function ResearchMenu(self)
 				for _, btn in ipairs(tabs) do
 					btn.Selected = false;
 				end
+				self.researchFrame = -1;
 				tab.Selected = true;
+				self.sounds.Confirm:Play(-1);
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
@@ -280,35 +364,22 @@ function ResearchMenu(self)
 						self.tooltipTitle:SetText(title);
 						self.tooltipTitle:SetPos(3, 3);
 						self.tooltipDesc:SetSize(size.X, size.Y);
-						local desc = "";
-						local words = {};
-						for word in string.gmatch(item.Description, "%S+") do
-							table.insert(words, word);
-						end
-						local line = "";
-						for i = 1, #words do
-							local word = words[i];
-							local newLine = line .. (line ~= "" and " " or "") .. word;
-							local descWidth = FrameMan:CalculateTextWidth(newLine, true) + 5;
-							if descWidth > size.X then
-								if line ~= "" then
-									desc = desc .. line .. "\n";
-								end
-								line = word;
-							else
-								line = newLine;
-							end
-						end
-						if line ~= "" then
-							desc = desc .. line;
-						end
+						local desc = itemDescription(item.Description, size.X);
 						self.tooltipDesc:SetText(desc);
 						self.tooltipDesc:SetPos(3, 3);
-						CC_TooltipSkin(self.tooltip, false);
+						CC_TooltipSkin(self.tooltip);
 						self.tooltip.Displaying = true;
 					end
 				else
 					self.tooltip.Displaying = false;
+				end
+
+				button.OnPress = function(key)
+					if key == Controller.PRIMARY_ACTION then
+						self.researchFrame = 1;
+						researchButton:SetClickable(true);
+						self.sounds.Confirm:Play(-1);
+					end
 				end
 				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
 			end
@@ -323,271 +394,6 @@ function ResearchMenu(self)
 
 	return true;
 end
---[[
-function SupercomputerTechMenu(self)
-	self.Main.Box = self.Menu:CreateGUI("CollectionBox")
-	self.Main.Box:SetTitle("")
-	self.Main.Box:SetPos(10, 25)
-	self.Main.Box:SetSize(260, 50)
-	self.Main.Box:Color(146)
-	self.Main.Box:OutlineColor(71)
-	self.Main.Box:OutlineThickness(2)
-
-	local rows = 3
-	local maxHeight = 295
-	local height = 0
-	local posMultiplier = 85
-
-	local textWidth = 0
-	local textWidth_price = 0
-	local oz_width = 0
-	local textPos = Vector()
-	local itemFund = false
-
-	local function drawMenu()
-
-		local currentHeight = 40
-		height = math.max(height, currentHeight)
-
-		local scroll = 0
-		local totalRows = math.ceil(#self.CEDAvailableTechnology / rows)
-
-		local tooltip_bar = self.Menu:CreateGUI("CollectionBox", self.Main.Box)
-		tooltip_bar:SetTitle("")
-		tooltip_bar:SetPos(tooltip_bar:GetParent():GetWidth() + 10, 25)
-		tooltip_bar:SetSize(100, 75)
-		tooltip_bar:Color(146)
-		tooltip_bar:OutlineColor(71)
-		tooltip_bar:OutlineThickness(2)
-		tooltip_bar:SetVisible(false) --Set to false to prevent flicker
-	
-		local desc = self.Menu:CreateGUI("Label", tooltip_bar)
-		desc:SmallText(true)
-		desc:SetContentAlignment(1)
-		desc:SetPos(desc:GetPosX() + 10, desc:GetPosY() + 10)
-		desc:SetVisible(false)
-	
-		desc.Think = function(entity, screen)
-			desc:SetVisible(false)
-		end
-	
-		tooltip_bar.Think = function(entity, screen)
-			tooltip_bar:SetVisible(false)
-		end
-
-		local buttons = {}
-		for i = 1, #self.CEDAvailableTechnology do
-			local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
-			local y = 10 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
-
-			self.TechProgress[i].Button = self.Menu:CreateGUI("Button", self.Main.Box)
-			self.TechProgress[i].Button.Technology = self.CEDAvailableTechnology[i]
-			self.TechProgress[i].Button.InProgress = self.TechProgress[i].InProgress
-			self.TechProgress[i].Button:SetPos(x, y)
-			self.TechProgress[i].Button:SetSize(65, 65)
-			self.TechProgress[i].Button:SetText(self.TechProgress[i].ButtonText)
-			self.TechProgress[i].Button:TextPos(0, 10)
-			self.TechProgress[i].Button:Color(146)
-			self.TechProgress[i].Button:OutlineColor(144)
-			self.TechProgress[i].Button:OutlineThickness(2)
-
-			self.TechProgress[i].PBar = self.Menu:CreateGUI("ProgressBar", self.TechProgress[i].Button)
-			self.TechProgress[i].PBar.IsProgressBar = true
-			self.TechProgress[i].PBar:SetPos(14, 30)
-			self.TechProgress[i].PBar:SetSize(self.TechProgress[i].Button:GetWidth() - 8, 10)
-			self.TechProgress[i].PBar:BGColor(146)
-			self.TechProgress[i].PBar:FGColor(117)
-			self.TechProgress[i].PBar:OutlineColor(144)
-			self.TechProgress[i].PBar:DrawAfterParent(true)
-			self.TechProgress[i].PBar:SetVisible(self.TechProgress[i].PBarVisible)
-			self.TechProgress[i].PBar.Timer = Timer()
-			self.TechProgress[i].PBar.Timer.ElapsedSimTimeMS = self.TechProgress[i].SavedElapsedSimTimeMS
-			self.TechProgress[i].PBar.Active = self.TechProgress[i].PBarActive
-			self.TechProgress[i].PBar:SetFraction(self.TechProgress[i].PBarFraction)
-			self.TechProgress[i].PBar.Delay = self.TechProgress[i].Button.Technology.Delay
-
-			--This is the greatest isUpdated of all time
-			--This is to prevent a visual bug for the Progessbar when it doesn't show for the first time (while in progress)
-			local isUpdated = false
-			self.TechProgress[i].PBar.Think = function(entity, screen)
-				if not isUpdated then
-					self.TechProgress[i].PBar:SetFraction(self.TechProgress[i].PBarFraction)
-					isUpdated = true
-				end
-			end
-
-			self.TechProgress[i].Button.Think = function(entity, screen)
-				local offset = CameraMan:GetOffset(screen)
-				local hasFund = self.Activity:GetTeamFunds(entity.Team) >= self.TechProgress[i].Button.Technology.Cost
-
-				self.TechProgress[i].Button:Color(hasFund and 146 or 248)
-
-				if self.TechProgress[i].Button.IsHovered then
-					itemFund = self.Activity:GetTeamFunds(entity.Team) >= self.TechProgress[i].Button.Technology.Cost
-					tooltip_bar:SetVisible(true)
-					desc:SetVisible(true)
-					if tooltip_bar:GetTitle() ~= self.TechProgress[i].Button.Technology.DisplayName then
-						local size = self.TechProgress[i].Button.Technology.TooltipSize
-						tooltip_bar:SetSize(size.X, size.Y)
-						desc:SetSize(size.X, size.Y)
-						desc:SetText(self.TechProgress[i].Button.Technology.Description)
-						tooltip_bar:SetTitle(self.TechProgress[i].Button.Technology.ResearchName)
-
-						textWidth = FrameMan:CalculateTextWidth(self.TechProgress[i].Button.Technology.ResearchName .. " ", true)
-						textWidth_price = FrameMan:CalculateTextWidth(tostring(self.TechProgress[i].Button.Technology.Cost), true)
-						oz_width = FrameMan:CalculateTextWidth("oz", true)
-						textPos = offset + Vector(textWidth, 0) + Vector(tooltip_bar:GetPosX() + 10, tooltip_bar:GetPosY() + 25)
-					end
-
-					PrimitiveMan:DrawTextPrimitive(screen, textPos, "(", true, 0)
-					DisplayNumber(self, screen,
-					itemFund and "Green" or "Red",
-					textPos + Vector(4, 0),
-					tostring(self.TechProgress[i].Button.Technology.Cost))
-
-					PrimitiveMan:DrawTextPrimitive(screen, textPos + Vector(4 + textWidth_price, 0), "oz", true, 0)
-					PrimitiveMan:DrawTextPrimitive(screen,
-					textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
-					true,
-					0)
-
-					if self.TechProgress[i].IsResearched == true then
-						self.TechProgress[i].Button:Color(249)
-					else
-						self.TechProgress[i].Button:OutlineColor(itemFund and 117 or 13)
-
-						self.TechProgress[i].Button:Color(itemFund and 127 or 249)
-					end
-				else
-					if self.TechProgress[i].IsResearched == true then
-						self.TechProgress[i].Button:Color(249)
-					else
-						self.TechProgress[i].Button:OutlineColor(144)
-					end
-				end
-				if self.TechProgress[i].Button.InProgress then
-					self.TechProgress[i].SavedElapsedSimTimeMS = self.TechProgress[i].PBar.Timer.ElapsedSimTimeMS
-				end
-			end
-
-			self.TechProgress[i].Button.OnPress = function(key)
-				if key == Controller.PRIMARY_ACTION then
-					if self.ActiveResearch == true then
-						self.ErrorSound:Play(-1)
-					else
-						if itemFund then
-							if self.TechProgress[i].IsResearched == false and self.TechProgress[i].Button.InProgress == false then
-								self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(self.Team) - self.TechProgress[i].Button.Technology.Cost, self.Team)
-								self.ConfirmSound:Play(-1)
-								self.TechProgress[i].PBar:SetVisible(true)
-								self.TechProgress[i].PBar.Timer:Reset()
-								self.TechProgress[i].PBar.Active = true
-								self.ActivePBar = i
-								self.ActiveResearch = true
-								self.TechProgress[i].InProgress = true
-								self.TechProgress[i].PBarActive = true
-								self.TechProgress[i].PBarVisible = true
-								self.TechProgress[i].Button.InProgress = true
-							else
-								self.ErrorSound:Play(-1)
-							end
-						else
-							self.ErrorSound:Play(-1)
-						end
-					end
-				end
-			end
-
-			currentHeight = y + posMultiplier
-			height = math.min(maxHeight, currentHeight)
-		end
-
-		self.cancel_button = self.Menu:CreateGUI("Button", self.Main.Box)
-		self.cancel_button:SetPos(5, self.cancel_button:GetParent():GetHeight() - 20)
-		self.cancel_button:SetSize(26, 16)
-		self.cancel_button:SetText("Cancel\nResearch")
-		self.cancel_button:TextPos(1, -4)
-		self.cancel_button:Color(146)
-		self.cancel_button:OutlineColor(144)
-		self.cancel_button:OutlineThickness(2)
-
-		self.cancel_button.Think = function(entity, screen)
-			self.cancel_button:OutlineColor(self.cancel_button.IsHovered and 117 or 144)
-		end
-
-		self.cancel_button.OnPress = function(key)
-			if key == Controller.PRIMARY_ACTION then
-				for i = 1, #self.TechProgress do
-					local button = self.TechProgress[i].Button
-					local pBar = self.TechProgress[i].PBar
-					if button.InProgress then
-						self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(self.Team) + button.Technology.Cost, self.Team)
-						pBar:SetVisible(false)
-						pBar.Active = false
-						self.ActiveResearch = false
-						self.TechProgress[i].InProgress = false
-						self.TechProgress[i].PBarActive = false
-						self.TechProgress[i].PBarVisible = false
-						self.TechProgress[i].PBarFraction = 0
-						pBar:SetFraction(0)
-						pBar:SetText("")
-						button.InProgress = false
-					end
-				end
-			end
-		end
-
-		self.Main.Box.Think = function(entity, screen)
-			for i = 1, #self.TechProgress do
-				if self.TechProgress[i].IsResearched == true then
-					self.TechProgress[i].Button:SetText(self.TechProgress[i].ButtonText)
-					if self.TechProgress[i].InProgress == true then
-						self.TechProgress[i].ButtonText = self.TechProgress[i].Button:GetText():gsub("^%w+", "Researched!")
-						self.TechProgress[i].Button:OutlineThickness(0)
-						self.TechProgress[i].PBarVisible = false
-						self.TechProgress[i].PBar:SetVisible(false)
-						self.TechProgress[i].InProgress = false
-					end
-				end
-			end
-			self.Main.Box:SetSize(260, height + self.cancel_button:GetHeight())
-			self.cancel_button:SetPos(5, self.Main.Box:GetHeight() - 20)
-
-			if self.Menu.Controller then
-				--Without this if statement it will scroll regardless
-				if height == maxHeight then
-					local go_up = self.Menu.Controller:IsState(Controller.SCROLL_UP)
-					local go_down = self.Menu.Controller:IsState(Controller.SCROLL_DOWN)
-
-					if go_up then
-						--Subtracts 1
-						scroll = math.max(0, scroll - 1)
-					elseif go_down then
-						--Adds 1
-						scroll = math.min(totalRows - rows, scroll + 1)
-					end
-
-					for i = 1, #self.CEDAvailableTechnology do
-						local row = math.floor((i - 1) / rows) + 1
-						local isVisible = row >= scroll + 1 and row < scroll + 1 + rows
-						--Everything that is parented to self.Main.Box is a key string
-						local button = self.TechProgress[i].Button
-						if button then --If it somehow doesn't exist wtf
-
-							local x = 0 + self.Main.Box:GetPosX() + ((i - 1) % rows + 1 - 1) * posMultiplier
-							local y = 10 + (math.floor((i - 1) / rows ) + 1 - 1) * posMultiplier
-							button:SetPos(x, y - scroll * posMultiplier)
-							button:SetVisible(isVisible)
-						end
-					end
-				end
-			end
-		end
-	end
-
-	drawMenu()
-end
-]]
 
 function ThreadedUpdate(self)
 	if self:IsPlayerControlled() then
@@ -606,66 +412,12 @@ function ThreadedUpdate(self)
 
 	if self.Menu:Update() then
 		self.researchBox:Update();
+		self.infoBox:Update();
 		if self.tooltip:GetHide() == false then
 			self.tooltip:Update();
 		end
 		self.Menu:DrawCursor();
 	end
-
-	--[[
-	if self:IsPlayerControlled() then
-		if not self.Menu.Open then
-			self.Main = {};
-			self.Menu:New(self, self.MenuFunc[1]);
-		end
-	else
-		self.Menu:Remove()
-	end
-
-	if self.ActiveResearch == true then
-		for i = 1, #self.CEDAvailableTechnology do
-			if i == self.ActivePBar then
-				local pBar = self.TechProgress[i].PBar
-				if pBar and pBar.IsProgressBar then --goofy ahhh check
-					if self.TechProgress[i].PBarActive == true then
-						if pBar.Timer:IsPastSimMS(pBar.Delay) then
-							self.TechProgress[i].PBarFraction = self.TechProgress[i].PBarFraction + 0.05
-							pBar:SetFraction(self.TechProgress[i].PBarFraction)
-							pBar.Timer:Reset()
-						end
-						pBar:SetText(string.format("%.0f%%", self.TechProgress[i].PBarFraction * 100))
-
-						if self.TechProgress[i].PBarFraction >= 0.99 then
-							pBar.Active = false
-							self.TechProgress[i].PBarActive = false
-							self.TechProgress[i].IsResearched = true
-							self.technologyController:SendMessage("CED_UnlockTechnology", self.TechProgress[i].Button.Technology.ResearchName)
-							self.ActiveResearch = false
-							self.TechProgress[i].PBarFraction = 0
-						end
-					end
-				end
-			end
-		end
-	end
-
-	--This is to prevent menu resize bugs
-	local dontUpdateMenu = false
-	for _, input in pairs({Controller.SECONDARY_ACTION, Controller.ACTOR_NEXT_PREP, Controller.ACTOR_PREV_PREP}) do
-		if self:GetController():IsState(input) then
-			dontUpdateMenu = true
-			break
-		end
-	end
-	if dontUpdateMenu == false then
-		if self.Menu:Update(self) then
-			for k, gui in pairs(self.Main) do
-				gui:Update(self, {Cursor = self.Menu.Cursor})
-			end
-			self.Menu:DrawCursor(self.Menu.Screen)
-		end
-	end
-	]]
 end
 
 function Destroy(self)
