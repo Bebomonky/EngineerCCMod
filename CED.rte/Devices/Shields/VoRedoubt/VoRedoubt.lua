@@ -2,6 +2,7 @@ require("/CEDSettings");
 
 function Create(self)
 	self.VoRedoubtWalkSound = CreateSoundContainer("Walk CED Vossberg Redoubt", "CED.rte");
+	self.VoRedoubtSprintSound = CreateSoundContainer("Sprint CED Vossberg Redoubt", "CED.rte");
 	self.VoRedoubtEquipSound = CreateSoundContainer("Equip CED Vossberg Redoubt", "CED.rte");
 	self.VoRedoubtDropSound = CreateSoundContainer("Drop CED Vossberg Redoubt", "CED.rte");
 	self.VoRedoubtDeploySound = CreateSoundContainer("Deploy CED Vossberg Redoubt", "CED.rte");
@@ -69,6 +70,7 @@ end
 
 function ThreadedUpdate(self)
 	self.VoRedoubtWalkSound.Pos = self.Pos;
+	self.VoRedoubtSprintSound.Pos = self.Pos;
 	self.VoRedoubtEquipSound.Pos = self.Pos;
 	self.VoRedoubtDropSound.Pos = self.Pos;
 	self.VoRedoubtDeploySound.Pos = self.Pos;
@@ -83,10 +85,13 @@ function ThreadedUpdate(self)
 		local isCrouching = self.parentController:IsState(Controller.BODY_WALKCROUCH); -- can't check movement state because it's also triggered by low ceilings
 		local isMoving = self.parent.MovementState == Actor.WALK;
 		local isMovingFast = self.parent.Vel.Magnitude > 5;
+		local isSprinting = self.parent.MovementState == Actor.RUN;
 		
 		if self.parent.StrideFrame then
-			if self.VoRedoubtAlternateStrideNum == 0 then
-				self.VoRedoubtWalkSound:Play(self.Pos);
+			local sound = isSprinting and self.VoRedoubtSprintSound or self.VoRedoubtWalkSound;
+		
+			if self.VoRedoubtAlternateStrideNum == 0 or isSprinting then
+				sound:Play(self.Pos);
 				self.VoRedoubtAlternateStrideNum = 1;
 			else
 				self.VoRedoubtAlternateStrideNum = 0;
@@ -143,7 +148,7 @@ function ThreadedUpdate(self)
 					if self.VoRedoubtCountingWounds and self.VoRedoubtWoundCountTimer:IsPastSimMS(100) then
 						self.VoRedoubtCountingWounds = false;
 						local glassWounds = self.VoRedoubtGlassWoundCount and self.VoRedoubtGlassWoundCount or 0;
-						if self.WoundCount + self.VoRedoubtGlassWoundCount - self.VoRedoubtHitReactionWoundCounter > 5 then
+						if self.WoundCount + self.VoRedoubtGlassWoundCount - self.VoRedoubtHitReactionWoundCounter > 10 then
 							self.VoRedoubtHeavyHitReactionSound:Play(self.Pos);
 						end
 						self.VoRedoubtHitReactionWoundCounter = self.WoundCount + glassWounds;
@@ -151,10 +156,11 @@ function ThreadedUpdate(self)
 					
 				end	
 			else
-				self.Frame = math.min(0, math.floor(self.FrameCount - 1 * (self.VoRedoubtDeployTimer.ElapsedSimTimeMS / self.VoRedoubtDeployTime)) - 1);
+				self.Frame = 1;
 			end
 		else
-			self.VoRedoubtHitReactionWoundCounter = self.WoundCount;
+			local glassWounds = self.VoRedoubtGlassWoundCount and self.VoRedoubtGlassWoundCount or 0;
+			self.VoRedoubtHitReactionWoundCounter = self.WoundCount  + self.VoRedoubtGlassWoundCount;
 			if self.VoRedoubtDeployed or self.VoRedoubtDeploying then
 				self.VoRedoubtDeployed = false;
 				self.VoRedoubtDeploying = false;
