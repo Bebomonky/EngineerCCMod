@@ -108,7 +108,8 @@ function BuilderMenu(self)
 		end
 	end
 
-	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX")
+	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
+	self.tooltip:SetTitle("");
 	self.tooltip:SetPos(self.builderBox:GetWidth() + 20, 25);
 	self.tooltip:Color(93);
 	self.tooltip:OutlineColor(245);
@@ -190,7 +191,7 @@ function Create(self)
 	self.sounds = {
 		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
-	}
+	};
 
 	if not self.PieMenu:GetFirstPieSliceByPresetName("BuilderMenu") then
 		self.PieMenu:AddPieSlice(CreatePieSlice("BuilderMenu", "CED.rte"), self);
@@ -369,15 +370,12 @@ function Create(self)
 						end
 						self.tooltip.Displaying = true;
 					end
-					textPos = offset + Vector(textWidth, 0) + Vector(self.tooltip:GetAbsolutePos().X + 10, self.tooltip:GetAbsolutePos().Y + 25);
+					textPos = Vector(textWidth, 0) + Vector(self.tooltip:GetAbsolutePos().X, self.tooltip:GetAbsolutePos().Y + 0.5);
 
+					self.tooltip:Update();
 					PrimitiveMan:DrawTextPrimitive(screen, textPos, "(", true, 0);
-					DisplayNumber(self, screen,
-					itemFund and "Green" or "Red",
-					textPos + Vector(4, 0),
-					button.Buildable.Cost > 0 and tostring(button.Buildable.Cost) or "FREE");
-
 					if button.Buildable.Cost > 0 then
+						DisplayNumber(screen, textPos + Vector(4, 0), tostring(button.Buildable.Cost), true, itemFund and "Green" or "Red")
 						PrimitiveMan:DrawTextPrimitive(screen, textPos + Vector(4 + textWidth_price, 0), "oz", true, 0);
 						PrimitiveMan:DrawTextPrimitive(screen,
 						textPos + Vector(4 + textWidth_price + oz_width, 0), ")",
@@ -399,8 +397,6 @@ function Create(self)
 						button:OutlineColor(13);
 						button:Color(249);
 					end
-
-					self.tooltip:Update();
 				else
 					if button.IsResearched == true then
 						button:OutlineColor(144);
@@ -555,11 +551,16 @@ function Create(self)
 	end
 end
 
-function DisplayNumber(self, screen, color, pos, text)
-	for i = 1, string.len(text) do
-		local digit = string.sub(text, i, i);
-		PrimitiveMan:DrawBitmapPrimitive(pos + Vector((3 + 1) * (i - 1) + 1, 5),
-		"CED.rte/Effects/Font/" .. color .. "/Numbers/" .. digit .. ".png", 0);
+function DisplayNumber(screen, vector, txt, isSmall, color)
+	local x = 0;
+	for i = 1, #txt do
+		local char = txt:sub(i, i);
+		local spriteWidth = char == "1" and (isSmall and 3 or 4) or (isSmall and 4 or 6);
+		local pos = vector + Vector(x + spriteWidth / 2, isSmall and 5 or 8);
+		local size = isSmall and "Small" or "Big";
+		local path = "CED.rte/Effects/Font/" .. color .. "/Numbers/" .. size .. "/" .. char .. ".png";
+		PrimitiveMan:DrawBitmapPrimitive(screen, pos, path, 0);
+		x = x + spriteWidth;
 	end
 end
 
