@@ -269,9 +269,9 @@ function ResearchMenu(self)
 	self.infoBox.Think = function()
 		local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5
 		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(4, 100), tostring(self.infoBox.Data.Action) .. "\tFULLY\n AUTOMATIC", true, 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(68, 100), tostring(self.infoBox.Data.RPM) .. "50", false, 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(118, 100), tostring(self.infoBox.Data.MAG) .. "50", false, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(4, 100), tostring(self.infoBox.Data.Action), true, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(68, 100), tostring(self.infoBox.Data.RPM), false, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(118, 100), tostring(self.infoBox.Data.MAG), false, 0);
 		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(1, 125), self.infoBox.Data.Description, true, 0);
 		if self.researchFrame > -1 then
 			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
