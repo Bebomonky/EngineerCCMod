@@ -185,7 +185,7 @@ function BuilderMenu(self)
 end
 
 function Create(self)
-	self.Menu = require("Mods.Extensions.imenu.core");
+	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"));
 	self.Menu:Initialize();
 
 	self.sounds = {

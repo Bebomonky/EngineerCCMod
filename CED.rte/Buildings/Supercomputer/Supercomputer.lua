@@ -2,7 +2,7 @@ require("Mods.Extensions.ExtensionMan");
 require("MasterList");
 
 function Create(self)
-	self.Menu = require("Mods.Extensions.imenu.core");
+	self.Menu = table.Copy(require("Mods.Extensions.imenu.core"));
 	self.Menu:Initialize();
 	self.menuCreated = false;
 
