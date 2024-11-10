@@ -151,7 +151,7 @@ function ThreadedUpdate(self)
 					
 				end	
 			else
-				self.Frame = math.min(0, math.floor(self.FrameCount - 1 * (self.VoRedoubtDeployTimer.ElapsedSimTimeMS / self.VoRedoubtDeployTime)) - 1);
+				self.Frame = 1;
 			end
 		else
 			self.VoRedoubtHitReactionWoundCounter = self.WoundCount;
