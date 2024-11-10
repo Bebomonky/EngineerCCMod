@@ -119,19 +119,25 @@ function Create(self)
 	end
 
 	self.researchFrame = -1; -- -1 blank | 0 Red | 1 Blue | 2 Yellow | 3 Gray
-
 end
 
-function DisplayNumber(self, screen, color, pos, text)
-	for i = 1, string.len(text) do
-		local digit = string.sub(text, i, i);
-		PrimitiveMan:DrawBitmapPrimitive(screen, pos + Vector((3 + 1) * (i - 1) + 1, 5),
-		"CED.rte/Effects/Font/" .. color .. "/Numbers/" .. digit .. ".png",
-		0);
+function DisplayNumber(screen, vector, txt, isSmall, color)
+	local x = 0;
+	for i = 1, #txt do
+		local char = txt:sub(i, i);
+		local spriteWidth = char == "1" and (isSmall and 3 or 4) or (isSmall and 4 or 6);
+		local pos = vector + Vector(x + spriteWidth / 2, isSmall and 5 or 8);
+		local size = isSmall and "Small" or "Big";
+		local path = "CED.rte/Effects/Font/" .. color .. "/Numbers/" .. size .. "/" .. char .. ".png";
+		PrimitiveMan:DrawBitmapPrimitive(screen, pos, path, 0);
+		x = x + spriteWidth;
 	end
 end
 
 function itemDescription(desc, size_x)
+	if desc == nil then
+		desc = "Description not set";
+	end
 	local newDesc = "";
 	local words = {};
 	for word in string.gmatch(desc, "%S+") do
@@ -235,14 +241,16 @@ function ResearchMenu(self)
 	end
 
 	--This is literally so it just draws behind everything except the researchBox
-	local nodeBox = self.researchBox:Add("COLLECTIONBOX");
-	nodeBox:SetHide(true);
-	nodeBox.Think = function()
+	local treeBox = {};
+	treeBox._name = "TREEBOX";
+	treeBox._drawAfterParent = true;
+	treeBox.Update = function()
 		if self.MenuCurrent and self.MenuCurrent.Bitmap then
 			local world_pos = (self.researchBox:GetAbsolutePos() + Vector(self.researchBox:GetWidth() + 80, self.researchBox:GetHeight()) * 0.5);
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, self.MenuCurrent.Bitmap, 0);
 		end
 	end
+	table.insert(self.researchBox:GetChildren(), treeBox);
 
 	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.tooltip:SetHide(true);
@@ -253,6 +261,36 @@ function ResearchMenu(self)
 		self.tooltip:SetHide(true);
 	end
 
+	self.tooltipTitle = self.Menu:CreateGUI("LABEL", self.tooltip);
+	self.tooltipTitle:SetSmallText(true);
+
+	self.tooltipDesc = self.Menu:CreateGUI("LABEL", self.tooltip);
+	self.tooltipDesc:SetSmallText(true);
+	self.tooltipDesc:SetContentAlignment(5);
+
+	self.researchTooltip = self.Menu:CreateGUI("COLLECTIONBOX");
+	self.researchTooltip:SetTitle("");
+	self.researchTooltip:SetHide(true);
+	self.researchTooltip:SetPos(560, 290);
+	self.researchTooltip.Displaying = false;
+	self.researchTooltip.DisplayCost = false;
+	CC_TooltipSkin(self.researchTooltip, true);
+	self.researchTooltip.Think = function()
+		self.researchTooltip:SetHide(true);
+		if self.researchBox.Displaying then
+			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
+			local pos = self.researchTooltip:GetAbsolutePos();
+			local textWidth = FrameMan:CalculateTextWidth("Cost: ", false);
+			local text_pos = pos + Vector(2, -1);
+			PrimitiveMan:DrawTextPrimitive(screen, text_pos, "Cost: ", false, 0);
+			DisplayNumber(screen, text_pos + Vector(textWidth, 0), tostring(self.infoBox.Data.Cost), false, hasFund and "Green" or "Red");
+		end
+	end
+
+	--self.researchTooltipDesc = self.Menu:CreateGUI("LABEL", self.researchTooltip);
+	--self.researchTooltipDesc:SetSmallText(true);
+	--self.researchTooltipDesc:SetContentAlignment(5);
+
 	self.infoBox = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.infoBox:SetTitle("");
 	self.infoBox:SetPos(self.researchBox:GetWidth() + 20, 25);
@@ -260,22 +298,27 @@ function ResearchMenu(self)
 	self.infoBox:Color(146);
 	self.infoBox:OutlineColor(71);
 	self.infoBox:OutlineThickness(2);
-	self.infoBox.Data = {};
-	self.infoBox.Data.Cost = 0;
-	self.infoBox.Data.Description = "";
-	self.infoBox.Data.Action = "";
-	self.infoBox.Data.RPM = "";
-	self.infoBox.Data.MAG = "";
+	self.infoBox.Data = {
+		Cost = 0,
+		Primitives = {
+			{Pos = Vector(4, 100), Text = "", isSmall = true}, --Action
+			{Pos = Vector(68, 100), Text = "", isSmall = false}, --RPM
+			{Pos = Vector(118, 100), Text = "", isSmall = false}, --MAG
+			{Pos = Vector(1, 125), Text = "", isSmall = true}, --Description
+		}
+	};
 	self.infoBox.Think = function()
-		local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5
-		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(4, 100), tostring(self.infoBox.Data.Action), true, 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(68, 100), tostring(self.infoBox.Data.RPM), false, 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(118, 100), tostring(self.infoBox.Data.MAG), false, 0);
-		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(1, 125), self.infoBox.Data.Description, true, 0);
-		if self.researchFrame > -1 then
-			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
-			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
+		if self.clickedCategory == false then
+			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
+			for i = 1, #self.infoBox.Data.Primitives do
+				local data = self.infoBox.Data.Primitives[i];
+				PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + data.Pos, data.Text, data.isSmall, 0);
+			end
+			if self.researchFrame > -1 then
+				local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
+				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
+			end
 		end
 	end
 
@@ -286,14 +329,21 @@ function ResearchMenu(self)
 	researchButton:SetHide(true);
 	researchButton:SetClickable(false);
 	researchButton.Think = function()
-		local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
 		if self.researchFrame > -1 then
 			if self.researchinProgress then
 			
 			else
 				if researchButton:IsHovered() then
+					self.researchTooltip:SetHide(false);
+					if not self.researchBox.Displaying then
+						local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false);
+						self.researchTooltip:SetSize(totalWidth + 5, 15);
+						CC_TooltipSkin(self.researchTooltip);
+						self.researchBox.Displaying = true;
+					end
 					self.researchFrame = 2;
 				else
+					self.researchTooltip.Displaying = false;
 					self.researchFrame = 3;
 				end
 			end
@@ -311,12 +361,6 @@ function ResearchMenu(self)
 		end
 	end
 
-	self.tooltipTitle = self.Menu:CreateGUI("LABEL", self.tooltip);
-	self.tooltipTitle:SetSmallText(true);
-
-	self.tooltipDesc = self.Menu:CreateGUI("LABEL", self.tooltip);
-	self.tooltipDesc:SetSmallText(true);
-	self.tooltipDesc:SetContentAlignment(5);
 
 	local tabs = {};
 	local i = 1;
@@ -363,6 +407,7 @@ function ResearchMenu(self)
 					btn.Selected = false;
 				end
 				self.researchFrame = -1;
+				self.clickedCategory = true;
 				tab.Selected = true;
 				self.sounds.Confirm:Play(-1);
 				self:MenuChange(self.menuData[techID], false);
@@ -383,12 +428,7 @@ function ResearchMenu(self)
 			button:OutlineThickness(2);
 			button.Researched = false;
 			button.RequiredTech = item.RequiredTech;
-			--! TEMPORARY, WILL BE REPLACED WITH BUY ICONS
-			local itemPreset = _G["Create" .. item.ItemClassName](item.ItemPresetName, item.ItemTechName);
-			local width = ToMOSprite(itemPreset):GetSpriteWidth();
-			local height = ToMOSprite(itemPreset):GetSpriteHeight();
-			button:SetSize(width, height);
-			itemPreset = nil; --No longer need it since we just wanted the sprite size
+			button:SetSize(25, 25);
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
@@ -417,17 +457,18 @@ function ResearchMenu(self)
 
 				button.OnPress = function(key)
 					if key == Controller.PRIMARY_ACTION then
-						self.infoBox.Data.Description = itemDescription(item.InfoBoxDescription, self.infoBox:GetWidth());
+						self.clickedCategory = false;
 						self.infoBox.Data.Cost = item.Cost;
-						self.infoBox.Data.Action = item.Action;
-						self.infoBox.Data.RPM = item.RPM;
-						self.infoBox.Data.MAG = item.MAG;
+						self.infoBox.Data.Primitives[1].Text = tostring(item.Action);
+						self.infoBox.Data.Primitives[2].Text = tostring(item.RPM);
+						self.infoBox.Data.Primitives[3].Text = tostring(item.MAG);
+						self.infoBox.Data.Primitives[4].Text = itemDescription(item.InfoBoxDescription, self.infoBox:GetWidth());
 						self.researchFrame = 1;
 						researchButton:SetClickable(true);
 						self.sounds.Confirm:Play(-1);
 					end
 				end
-				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
+				--PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
 			end
 			table.insert(tab.Nodes, button);
 			table.insert(self.menuData[techID].Buttons, button);
