@@ -57,14 +57,37 @@ function Create(self)
 			Buttons = {}
 		};
 
-		for itemID, item in SortedPairs(faction) do
-			table.insert(self.menuData[techID].Items, item);
+		for itemID, item in pairs(faction) do
+			table.insert(self.menuData[techID].Items, {
+				ItemID = itemID,
+				Item = item,
+			});
 		end
 
 		for i = 1, #self.menuData[techID].Items do
-			local item = self.menuData[techID].Items[i];
-			local isResearched = self.Researches[item.RequiredTech];
-			item.IsResearched = isResearched and true or false;
+			local item = self.menuData[techID].Items[i].Item;
+			local itemID = self.menuData[techID].Items[i].ItemID;
+			item.IsResearched = false;
+			if type(item.RequiredTech) == "table" then
+				for _, name in pairs(item.RequiredTech) do
+					if self.Researches[name] then
+						item.IsResearched = true;
+					end
+				end
+			else
+				if item.RequiredTech == "None" then
+					item.IsResearched = true;
+				end
+				if self.Researches[item.RequiredTech] then
+					item.IsResearched = true;
+				end
+			end
+			if self.Queue[itemID] then
+				
+			end
+			--item.IsResearched = researchTech and true or false;
+			--item.InProgress = researchItem.InProgress or false;
+			--item.ElapsedSimTimeMS = researchItem.ElapsedSimTimeMS or 0;
 		end
 	end
 
@@ -96,7 +119,7 @@ function Create(self)
 	end
 
 	self.researchFrame = -1; -- -1 blank | 0 Red | 1 Blue | 2 Yellow | 3 Gray
-	self.researchinProgress = false;
+
 end
 
 function DisplayNumber(self, screen, color, pos, text)
@@ -237,7 +260,19 @@ function ResearchMenu(self)
 	self.infoBox:Color(146);
 	self.infoBox:OutlineColor(71);
 	self.infoBox:OutlineThickness(2);
+	self.infoBox.Data = {};
+	self.infoBox.Data.Cost = 0;
+	self.infoBox.Data.Description = "";
+	self.infoBox.Data.Action = "";
+	self.infoBox.Data.RPM = "";
+	self.infoBox.Data.MAG = "";
 	self.infoBox.Think = function()
+		local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5
+		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(4, 100), tostring(self.infoBox.Data.Action) .. "\tFULLY\n AUTOMATIC", true, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(68, 100), tostring(self.infoBox.Data.RPM) .. "50", false, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(118, 100), tostring(self.infoBox.Data.MAG) .. "50", false, 0);
+		PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(1, 125), self.infoBox.Data.Description, true, 0);
 		if self.researchFrame > -1 then
 			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
@@ -251,6 +286,7 @@ function ResearchMenu(self)
 	researchButton:SetHide(true);
 	researchButton:SetClickable(false);
 	researchButton.Think = function()
+		local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
 		if self.researchFrame > -1 then
 			if self.researchinProgress then
 			
@@ -266,7 +302,12 @@ function ResearchMenu(self)
 
 	researchButton.OnPress = function(key)
 		if key == Controller.PRIMARY_ACTION then
-			self.sounds.Confirm:Play(-1);
+			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
+			if hasFund then
+				self.sounds.Confirm:Play(-1);
+			else
+				self.sounds.Error:Play(-1);
+			end
 		end
 	end
 
@@ -331,7 +372,7 @@ function ResearchMenu(self)
 		i = i + 1;
 
 		for i = 1, #self.menuData[techID].Items do
-			local item = self.menuData[techID].Items[i];
+			local item = self.menuData[techID].Items[i].Item;
 			local button = self.Menu:CreateGUI("BUTTON", self.researchBox, "Node");
 			button:SetVisible(false);
 			button:SetPos(item.Pos.X, item.Pos.Y);
@@ -376,6 +417,11 @@ function ResearchMenu(self)
 
 				button.OnPress = function(key)
 					if key == Controller.PRIMARY_ACTION then
+						self.infoBox.Data.Description = itemDescription(item.InfoBoxDescription, self.infoBox:GetWidth());
+						self.infoBox.Data.Cost = item.Cost;
+						self.infoBox.Data.Action = item.Action;
+						self.infoBox.Data.RPM = item.RPM;
+						self.infoBox.Data.MAG = item.MAG;
 						self.researchFrame = 1;
 						researchButton:SetClickable(true);
 						self.sounds.Confirm:Play(-1);
