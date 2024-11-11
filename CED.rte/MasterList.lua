@@ -63,7 +63,7 @@ Yay!]],
 								  ["QueueTime"] = 20000,
 								  ["Cost"] = 100};
 -------  GUNS  -------
-CEDMasterList.Guns.XarixVidara = {["DisplayName"] = "Xarix Vidara",
+CEDMasterList.Guns.XaVidara = {["DisplayName"] = "Xarix Vidara",
 								  ["Description"] = [[
 Creates a gun
 and pops out the machine!
@@ -79,7 +79,7 @@ Yay!]],
 
 
 -------  BUILDINGS  -------
-CEDMasterList.Buildings.AtmoCoagulator = {["DisplayName"] = "     Atmo\ncoagulator",
+CEDMasterList.Buildings.Coagulator = {["DisplayName"] = "     Atmo\ncoagulator",
 								  ["Description"] = [[
 Builds the Atmo-coagulator
 What it does: Yes
@@ -134,53 +134,197 @@ Yay!]],
 
 -------  TECHNOLOGY  -------
 	-------  XARIX  -------
-CEDMasterList.Technology.Xarix.XarixADoctra = {["DisplayName"] = "Xarix A Doctra",
+CEDMasterList.Technology.Xarix.XaDoctra = {["DisplayName"] = "Xarix A Doctra",
 								  ["RequiredTech"] = "None",
-								  ["Description"] = "Xarix-brand defensive pistol. Unassuming. Does more damage against robotic enemies.",
-								  ["TooltipSize"] = Vector(150, 75),
+								  ["Description"] = [[
+Xarix-brand defensive pistol. Unassuming.
+Does more damage against robotic enemies.
+]],
+								  ["Pos"] = Vector(100, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Xarix.XaA12Axiom = {["DisplayName"] = "Xarix A-12 Axiom",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Xarix-brand defensive pistol. Unassuming.
+Does more damage against robotic enemies.
+]],
+								  ["Pos"] = Vector(150, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Xarix.XaMTXDirective = {["DisplayName"] = "Xarix MTX Directive",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Xarix-brand smart plasma SMG. Merciless once locked on.
+Computerized plasma shots home in on targets, and deal more damage against robots.
+]],
 								  ["Pos"] = Vector(200, 75),
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaDoctra/XaDoctraBuyIcon.png",
-								  ["ItemPresetName"] = "Xarix A Doctra",
-								  ["ItemClassName"] = "HDFirearm",
-								  ["ItemTechName"] = "CED",
-								  ["ResearchTime"] = 1000;
-								  ["Cost"] = 1000,
-};
-CEDMasterList.Technology.Xarix.A_12Axiom = {["DisplayName"] = "Xarix A-12 Axiom",
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Xarix.XaVidara = {["DisplayName"] = "Xarix Vidara",
 								  ["RequiredTech"] = "None",
-								  ["Description"] = "Xarix-brand defensive pistol. Unassuming. Does more damage against robotic enemies.",
-								  ["TooltipSize"] = Vector(150, 75),
-								  ["Pos"] = Vector(150, 75),
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaA12Axiom/XaA12Axiom000.png",
-								  ["ItemPresetName"] = "Xarix A-12 Axiom",
-								  ["ItemClassName"] = "HDFirearm",
-								  ["ItemTechName"] = "CED",
-								  ["ResearchTime"] = 1000;
-								  ["Cost"] = 1000,
-};
+								  ["Description"] = [[
+Xarix-brand hybrid weapon. Multimodal lasergun.
+]],
+								  ["Pos"] = Vector(250, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Xarix.XaEACondor = {["DisplayName"] = "Xarix EA Condor",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Xarix-brand charge cannon. Destructive.
+]],
+								  ["Pos"] = Vector(300, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
 	-------  KHRABAROVSK  -------
-CEDMasterList.Technology.Khrabarovsk.SPr40 = {["DisplayName"] = "Khrabarovsk SPr-40",
+CEDMasterList.Technology.Khrabarovsk.KhSPr40 = {["DisplayName"] = "Khrabarovsk SPr-40",
 								  ["RequiredTech"] = "None",
-								  ["Description"] = "Khrabarovsk-brand revolver. Double-action. Hold and release the fire button to use a more precise single-action mode..",
-								  ["TooltipSize"] = Vector(120, 75),
+								  ["Description"] = [[
+Khrabarovsk-brand revolver. Double-action.
+]],
+								  ["Pos"] = Vector(100, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Khrabarovsk.KhGS7 = {["DisplayName"] = "Khrabarovsk GS7",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Khrabarovsk-brand pump shotgun.
+The CQB weapon of choice since time immemorial.
+]],
 								  ["Pos"] = Vector(150, 75),
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhSPr40/KhSPr40000.png",
-								  ["ItemPresetName"] = "Khrabarovsk SPr-40",
-								  ["ItemClassName"] = "HDFirearm",
-								  ["ItemTechName"] = "CED",
-								  ["ResearchTime"] = 1000;
-								  ["Cost"] = 1000,
-};
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Khrabarovsk.Kh11p35 = {["DisplayName"] = "Khrabarovsk 11p35-rifle",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Khrabarovsk-brand pump shotgun.
+The CQB weapon of choice since time immemorial.
+]],
+								  ["Pos"] = Vector(200, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Khrabarovsk.KhMOSKA = {["DisplayName"] = "Khrabarovsk MOSKA",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Khrabarovsk-brand weapon.
+A boxy little big offbore-handled bolt-action.
+]],
+								  ["Pos"] = Vector(250, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Khrabarovsk.KhJS50 = {["DisplayName"] = "Khrabarovsk JS50",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Khrabarovsk-brand marksman rifle. Semi-automatic.
+]],
+								  ["Pos"] = Vector(300, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Khrabarovsk.KhC8Chimera = {["DisplayName"] = "Khrabarovsk C8 Chimera",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Khrabarovsk-brand GPMG. Unmatched firepower in an unwieldy package.
+For non-heavy actors, can only be used when crouching and still.
+]],
+								  ["Pos"] = Vector(350, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
 	-------  VOSSBERG  -------
-CEDMasterList.Technology.Vossberg.Hammerhead = {["DisplayName"] = "Vossberg Hammerhead",
+CEDMasterList.Technology.Vossberg.VoHammerhead = {["DisplayName"] = "Vossberg Hammerhead",
 								  ["RequiredTech"] = "None",
-								  ["Description"] = "Vossberg-brand handcannon. High-caliber, high-octane.",
-								  ["TooltipSize"] = Vector(150, 75),
+								  ["Description"] = [[
+Vossberg-brand handcannon. High-caliber, high-octane.
+]],
+								  ["Pos"] = Vector(100, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Vossberg.VoAtlastar = {["DisplayName"] = "Vossberg Atlastar",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Vossberg-brand SMG. Double-barreled with hyperburst capabilities. That's two hyperbursts at once.
+]],
 								  ["Pos"] = Vector(150, 75),
-								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoHammerhead/VoHammerhead000.png",
-								  ["ItemPresetName"] = "Vossberg Hammerhead",
-								  ["ItemClassName"] = "HDFirearm",
-								  ["ItemTechName"] = "CED",
-								  ["ResearchTime"] = 1000;
-								  ["Cost"] = 1000,
-};
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Vossberg.VoTrigoliath = {["DisplayName"] = "Vossberg Trigoliath",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Vossberg-brand triple barrel shotgun. A real hunter's weapon.
+]],
+								  ["Pos"] = Vector(200, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Vossberg.VoGrandarme = {["DisplayName"] = "Vossberg Grandarme",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Vossberg-brand assault rifle. Heavy and hardcore.
+]],
+								  ["Pos"] = Vector(250, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Vossberg.VoTitanAMI = {["DisplayName"] = "Vossberg Titan AMI",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Vossberg-brand materia destroyer. Huge single-shot rifle.
+]],
+								  ["Pos"] = Vector(300, 75),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+
+CEDMasterList.Technology.Vossberg.EXPTurbolance = {["DisplayName"] = "CED-EXP Turbolance",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Experimental microgun.
+Emplacement-grade firerate. Overheats rapidly - avoid overuse
+]],
+								  ["Pos"] = Vector(200, 200),
+								  ["IconPath"] = "",
+								  ["IconSize"] = Vector(),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};

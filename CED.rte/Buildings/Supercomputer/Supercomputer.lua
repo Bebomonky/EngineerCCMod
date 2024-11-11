@@ -134,7 +134,7 @@ function DisplayNumber(screen, vector, txt, isSmall, color)
 	end
 end
 
-function itemDescription(desc, size_x)
+function itemDescription(desc, isSmall, panelWidth)
 	if desc == nil then
 		desc = "Description not set";
 	end
@@ -147,8 +147,8 @@ function itemDescription(desc, size_x)
 	for i = 1, #words do
 		local word = words[i];
 		local newLine = line .. (line ~= "" and " " or "") .. word;
-		local descWidth = FrameMan:CalculateTextWidth(newLine, true) + 5;
-		if descWidth > size_x then
+		local descWidth = FrameMan:CalculateTextWidth(newLine, isSmall) + 8;
+		if descWidth > panelWidth then
 			if line ~= "" then
 				newDesc = newDesc .. line .. "\n";
 			end
@@ -160,7 +160,9 @@ function itemDescription(desc, size_x)
 	if line ~= "" then
 		newDesc = newDesc .. line;
 	end
-	return newDesc;
+
+	local descHeight = FrameMan:CalculateTextHeight(newDesc, 0, isSmall) + 25;
+	return newDesc, descHeight;
 end
 
 function CC_TooltipSkin(parent, new)
@@ -253,9 +255,9 @@ function ResearchMenu(self)
 	table.insert(self.researchBox:GetChildren(), treeBox);
 
 	self.tooltip = self.Menu:CreateGUI("COLLECTIONBOX");
-	self.tooltip:SetHide(true);
 	self.tooltip:SetTitle("");
-	self.tooltip.Displaying = false;
+	self.tooltip:SetHide(true);
+	self.tooltip:SetSize(125, 0);
 	CC_TooltipSkin(self.tooltip, true);
 	self.tooltip.Think = function()
 		self.tooltip:SetHide(true);
@@ -428,31 +430,32 @@ function ResearchMenu(self)
 			button:OutlineThickness(2);
 			button.Researched = false;
 			button.RequiredTech = item.RequiredTech;
+			button.justHovered = false;
 			button:SetSize(25, 25);
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
 				if button:IsHovered() then
 					self.tooltip:SetHide(false);
-					if self.tooltip.Displaying == false then
+					if button.justHovered == false then
 						local title = item.DisplayName;
 						local pos = Vector((item.Pos.X + button:GetWidth()), item.Pos.Y);
-						local size = item.TooltipSize;
+						local tooltipWidth = self.tooltip:GetWidth();
+						local desc, descHeight = itemDescription(item.Description, true, tooltipWidth);
 
 						self.tooltip:SetPos(pos.X + 15, pos.Y + 24);
-						self.tooltip:SetSize(size.X, size.Y);
+						self.tooltip:SetSize(tooltipWidth, descHeight);
 
 						self.tooltipTitle:SetText(title);
 						self.tooltipTitle:SetPos(3, 3);
-						self.tooltipDesc:SetSize(size.X, size.Y);
-						local desc = itemDescription(item.Description, size.X);
+						self.tooltipDesc:SetSize(tooltipWidth, descHeight);
 						self.tooltipDesc:SetText(desc);
 						self.tooltipDesc:SetPos(3, 3);
 						CC_TooltipSkin(self.tooltip);
-						self.tooltip.Displaying = true;
+						button.justHovered = true;
 					end
 				else
-					self.tooltip.Displaying = false;
+					button.justHovered = false;
 				end
 
 				button.OnPress = function(key)
