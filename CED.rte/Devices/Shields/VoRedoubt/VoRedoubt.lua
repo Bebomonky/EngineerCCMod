@@ -21,7 +21,7 @@ function Create(self)
 	self.VoRedoubtDeployTime = 300;
 	
 	self.VoRedoubtUndeployedJointStiffness = 0.5
-	self.VoRedoubtDeployedJointStiffness = 0.05;
+	self.VoRedoubtDeployedJointStiffness = 0.1;
 	
 	self.VoRedoubtUndeployedGripStrengthMultiplier = 2;
 	self.VoRedoubtDeployedGripStrengthMultiplier = 10;
@@ -213,12 +213,35 @@ function ThreadedUpdate(self)
 			if self.Frame > 0 then
 				self.Frame = self.Frame - 1;
 			end
-			-- Add any wounds received directly to our effective wound count when not deployed
-			if totalWoundCount - self.VoRedoubtPreviousWoundCounter > 0 then
-				--print("Received straight wounds! Number: " .. tostring(totalWoundCount - self.VoRedoubtPreviousWoundCounter));
-				self.VoRedoubtEffectiveWoundCount = self.VoRedoubtEffectiveWoundCount + (totalWoundCount - self.VoRedoubtPreviousWoundCounter);
-				--print("New effective WC: " .. tostring(self.VoRedoubtEffectiveWoundCount));
-			end	
+		end
+	elseif self.VoRedoubtDeployed or self.VoRedoubtDeploying then
+		self.VoRedoubtDeployed = false;
+		self.VoRedoubtDeploying = false;
+		self.VoRedoubtDeploySound:FadeOut(300);
+		self.VoRedoubtUndeploySound:Play(self.Pos);
+		self.JointStiffness = self.VoRedoubtUndeployedJointStiffness;
+		self.GripStrengthMultiplier = self.VoRedoubtUndeployedGripStrengthMultiplier;
+		self.StanceOffset = self.VoRedoubtOriginalStanceOffset;
+		self:SetEntryWound("Dent Metal CED Vossberg Redoubt", "CED.rte");
+		
+		if self.VoRedoubtTopExtensionAttachment then
+			self.VoRedoubtTopExtensionAttachment.GetsHitByMOs = false;
+			self.VoRedoubtTopExtensionAttachment:SetEntryWound("Dent Metal CED Vossberg Redoubt", "CED.rte");
+			
+			-- Clear all its wounds visually - we count them anyway elsewhere
+			self.VoRedoubtTopExtensionAttachment:RemoveWounds(self.VoRedoubtTopExtensionAttachment.WoundCount);
+		end
+		
+		self.VoRedoubtCountingWounds = false;
+		self.Frame = 0;
+	end
+	
+	if not self.VoRedoubtDeployed then
+		-- Add any wounds received directly to our effective wound count when not deployed
+		if totalWoundCount - self.VoRedoubtPreviousWoundCounter > 0 then
+			--print("Received straight wounds! Number: " .. tostring(totalWoundCount - self.VoRedoubtPreviousWoundCounter));
+			self.VoRedoubtEffectiveWoundCount = self.VoRedoubtEffectiveWoundCount + (totalWoundCount - self.VoRedoubtPreviousWoundCounter);
+			--print("New effective WC: " .. tostring(self.VoRedoubtEffectiveWoundCount));
 		end
 	end
 	
