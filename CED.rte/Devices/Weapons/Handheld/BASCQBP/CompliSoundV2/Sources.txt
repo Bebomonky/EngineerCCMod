@@ -1,0 +1,8 @@
+COD:MW: weap_shotgunsup_fire_plr_atmo_ext1_02
+weap_romeo870_sup_plr_01
+weap_romeo870_fire_plr_swtn_sup_01
+weap_romeo870_fire_plr_mech_03
+weap_shotgun_sup_fire_plr_atmo_int1_01
+weap_aalpha12_fire_plr_mech_01
+
+Warface: shg_02_fire_fp_11_phs_master

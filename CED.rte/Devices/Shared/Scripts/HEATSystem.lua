@@ -242,6 +242,16 @@ function Create(self)
 			print("ERROR: HEATSystem was asked to check a point for indoorness, but was not given a point!");
 		end
 	end
+	
+	-- Normal creation has OnAttach happen properly, but reloading scripts clears the Lua state (and thus the parent) without running OnAttach again, but this will run and fix it
+	local rootParent = self:GetRootParent();
+	if IsAHuman(rootParent) then
+		self.HEATParent = ToAHuman(rootParent);
+		self.HEATParentController = self.HEATParent:GetController();
+		if not self.HEATParent:HasScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua") then
+			self.HEATParent:AddScript("CED.rte/Devices/Shared/Scripts/HEATActorRecoilRespect.lua");
+		end
+	end
 end
 
 function OnAttach(self, newParent)
@@ -517,7 +527,7 @@ function ThreadedUpdate(self)
 						self.HEATEndReload(self);		
 					elseif self.HEATReloadPhaseOverride then
 						self.HEATCurrentReloadPhase = self.HEATReloadPhaseOverride;
-					elseif self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount then
+					elseif self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter < ((self.HEATEmptyReload and self.HEATPlusOneChamberedRound) and (self.HEATFullMagazineRoundCount - 1) or self.HEATFullMagazineRoundCount) then
 						if self.HEATManualInterruptionAttempted then
 							-- If we're in a loop and there appears to be no next phase, then just end the reload
 							if self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
@@ -530,12 +540,15 @@ function ThreadedUpdate(self)
 						end
 					elseif (not self.HEATEmptyReload) and self.HEATCurrentReloadPhaseData.endIfNotEmptyReload then
 						self.HEATEndReload(self);
-					elseif (self.HEATCurrentReloadPhaseData.shotgunReloadLoop and self.HEATAmmoCounter == self.HEATFullMagazineRoundCount) then
-						-- If we're in a loop and there appears to be no next phase, then just end the reload
-						if self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
-							self.HEATEndReload(self);	
-						else
-							self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
+					elseif (self.HEATCurrentReloadPhaseData.shotgunReloadLoop) then
+						local ammoCountToCheckFor = (self.HEATEmptyReload and self.HEATPlusOneChamberedRound) and (self.HEATFullMagazineRoundCount - 1) or self.HEATFullMagazineRoundCount;
+						if (self.HEATAmmoCounter >= ammoCountToCheckFor) then
+							-- If we're in a loop and there appears to be no next phase, then just end the reload
+							if self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
+								self.HEATEndReload(self);	
+							else
+								self.HEATCurrentReloadPhase = self.HEATCurrentReloadPhase + 1;
+							end
 						end
 					elseif self.HEATReloadPhases[self.HEATCurrentReloadPhase + 1] == nil then
 						self.HEATEndReload(self);
