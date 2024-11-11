@@ -25,7 +25,7 @@ function Create(self)
 	
 	-------  BUILDINGS  -------
 	local i = 1;
-	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.AtmoCoagulator
+	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.Coagulator
 	i = i + 1;
 	self.CEDAvailableBuildables.Buildings[i] = CEDMasterList.Buildings.Supercomputer
 	i = i + 1;

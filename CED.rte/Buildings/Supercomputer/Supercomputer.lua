@@ -424,14 +424,24 @@ function ResearchMenu(self)
 			button:SetVisible(false);
 			button:SetPos(item.Pos.X, item.Pos.Y);
 			button:SetSize(40, 25);
-			button:SetText("");
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
 			button.Researched = false;
 			button.RequiredTech = item.RequiredTech;
 			button.justHovered = false;
-			button:SetSize(25, 25);
+			local iconSize = item.IconSize;
+			local iconPath = item.IconPath;
+			if iconSize then
+				button:SetSize(iconSize.X, iconSize.Y);
+			else
+				button:SetSize(25, 25);
+			end
+			if not iconPath or iconPath == "" then
+				button:SetText("NO\nICON");
+			else
+				button:SetText("");
+			end
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
@@ -465,13 +475,15 @@ function ResearchMenu(self)
 						self.infoBox.Data.Primitives[1].Text = tostring(item.Action);
 						self.infoBox.Data.Primitives[2].Text = tostring(item.RPM);
 						self.infoBox.Data.Primitives[3].Text = tostring(item.MAG);
-						self.infoBox.Data.Primitives[4].Text = itemDescription(item.InfoBoxDescription, self.infoBox:GetWidth());
+						self.infoBox.Data.Primitives[4].Text = itemDescription(item.InfoBoxDescription, true, self.infoBox:GetWidth() + 5);
 						self.researchFrame = 1;
 						researchButton:SetClickable(true);
 						self.sounds.Confirm:Play(-1);
 					end
 				end
-				--PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, item.IconPath, 0);
+				if iconPath and iconPath ~= "" then
+					PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, iconPath, 0);
+				end
 			end
 			table.insert(tab.Nodes, button);
 			table.insert(self.menuData[techID].Buttons, button);
