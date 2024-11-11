@@ -437,7 +437,7 @@ function ThreadedUpdate(self)
 					self.Frame = math.floor(self.HEATCurrentReloadPhaseData.startFrame + math.floor(frameChange * progressFactor + 0.55))
 				end
 				
-				if self.HEATParent then
+				if self.HEATParent and self.HEATParent:IsPlayerControlled() then
 					if self.HEATParentController:IsState(Controller.WEAPON_FIRE) then
 						self.HEATManualInterruptionAttempted = true;
 						if self.HEATCurrentReloadPhaseData.shotgunReloadLoop then

@@ -237,7 +237,7 @@ function Create(self)
 	reloadPhase.endFrame = 0;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
-	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.phaseOnInterrupt = 1;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = true;
 	reloadPhase.spawnCasing = false;
@@ -343,7 +343,7 @@ function Create(self)
 	reloadPhase.endFrame = 2;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
-	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.phaseOnInterrupt = 4;
 	reloadPhase.endIfNotEmptyReload = true;
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
@@ -387,7 +387,7 @@ function Create(self)
 	reloadPhase.endFrame = 0;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
-	reloadPhase.phaseOnInterrupt = nil;
+	reloadPhase.phaseOnInterrupt = 4;
 	reloadPhase.endIfNotEmptyReload = false;
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;

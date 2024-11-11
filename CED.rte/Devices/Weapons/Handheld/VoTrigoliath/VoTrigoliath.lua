@@ -1,9 +1,9 @@
 require("/CEDSettings");
 
 function Create(self)
-	self.VoTrigoliathFireVelocity = 140;
+	self.VoTrigoliathFireVelocity = 130;
 	self.VoTrigoliathFireSlugVelocity = 150;
-	self.VoTrigoliathFireSpread = 6 / 2;
+	self.VoTrigoliathFireSpread = 10 / 2;
 	self.VoTrigoliathFireSlugSpread = 0.5 / 2;
 
 	self.VoTrigoliathPreSound = CreateSoundContainer("Pre CED Vossberg Trigoliath", "CED.rte");
@@ -44,6 +44,8 @@ function Create(self)
 			end
 		else		
 			for i = 1, 8 + extraParticleForMultifire do
+				self.VoTrigoliathActingSpread = math.random(-self.VoTrigoliathFireSpread, self.VoTrigoliathFireSpread);
+			
 				local shot = CreateMOPixel("Pellet CED Vossberg Trigoliath", "CED.rte");
 				shot.Pos = self.MuzzlePos + topBarrelVector;
 				shot.Vel = self.Vel + Vector(self.VoTrigoliathActingVelocity * self.FlipFactor, self.VoTrigoliathActingSpread):RadRotate(self.RotAngle);
