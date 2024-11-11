@@ -26,17 +26,26 @@ function Create(self)
 	self.VoRedoubtUndeployedGripStrengthMultiplier = 2;
 	self.VoRedoubtDeployedGripStrengthMultiplier = 10;
 	
-	self.VoRedoubtWoundCounter = self.WoundCount;
-	self.VoRedoubtGlassWoundCounter = self.WoundCount;
-	self.VoRedoubtHitReactionWoundCounter = self.WoundCount;
-	self.VoRedoubtCountingWounds = false;
-	self.VoRedoubtWoundCountTimer = Timer();
+	self.VoRedoubtActualGibWoundLimit = 90;
+	self.GibWoundLimit = 999; -- Not quite invincible, just to make sure
+	self.VoRedoubtEffectiveWoundCount = self:NumberValueExists("VoRedoubt_EffectiveWoundCount") and self:GetNumberValue("VoRedoubt_EffectiveWoundCount") or 0;
+	self.VoRedoubtPreviousWoundCounter = self.WoundCount;
 	
+	self.VoRedoubtHitReactionStartingWounds = 0;
+	self.VoRedoubtHitReactionCountingWounds = false;
+	self.VoRedoubtHitReactionWoundCountTimer = Timer();
+	
+	local i = 1;
 	for att in self.Attachables do
-		if att.PresetName == "Glass CED Vossberg Redoubt" then
-			self.VoRedoubtGlassAttachment = att;
-			self.VoRedoubtGlassWoundCount = att.WoundCount;
-		end
+		self.VoRedoubtPreviousWoundCounter = self.VoRedoubtPreviousWoundCounter + att.WoundCount;
+		
+		if att.PresetName == "Top Extension CED Vossberg Redoubt" then
+			att.Frame = 1;
+			self.VoRedoubtTopExtensionAttachment = att;
+			self.VoRedoubtTopExtensionAttachment.GetsHitByMOs = false;
+		end		
+		
+		i = i + 1;
 	end
 end
 					
@@ -77,13 +86,18 @@ function ThreadedUpdate(self)
 	self.VoRedoubtUndeploySound.Pos = self.Pos;
 	self.VoRedoubtHeavyHitReactionSound.Pos = self.Pos;
 	
-	if self.VoRedoubtGlassAttachment then
-		self.VoRedoubtGlassWoundCount = self.VoRedoubtGlassAttachment.WoundCount;
+	local totalWoundCount = self.WoundCount;
+	
+	local i = 1;
+	for att in self.Attachables do
+		totalWoundCount = totalWoundCount + att.WoundCount;
+		
+		i = i + 1;
 	end
 
 	if self.parent then
-		local isCrouching = self.parentController:IsState(Controller.BODY_WALKCROUCH); -- can't check movement state because it's also triggered by low ceilings
-		local isMoving = self.parent.MovementState == Actor.WALK;
+		local isCrouching = self.parentController:IsState(Controller.BODY_WALKCROUCH); -- can't check crouch movement state because it's also triggered by low ceilings
+		local isMoving = self.parent.MovementState == Actor.WALK or self.parent.MovementState == Actor.CRAWL;
 		local isMovingFast = self.parent.Vel.Magnitude > 5;
 		local isSprinting = self.parent.MovementState == Actor.RUN;
 		
@@ -115,6 +129,11 @@ function ThreadedUpdate(self)
 					self.GripStrengthMultiplier = self.VoRedoubtDeployedGripStrengthMultiplier;
 					self.StanceOffset = self.VoRedoubtDeployedStanceOffset;
 					self:SetEntryWound("Dent Metal Bolted CED Vossberg Redoubt", "CED.rte");
+					
+					if self.VoRedoubtTopExtensionAttachment then
+						self.VoRedoubtTopExtensionAttachment.GetsHitByMOs = true;
+						self.VoRedoubtTopExtensionAttachment:SetEntryWound("Dent Metal Bolted CED Vossberg Redoubt", "CED.rte");
+					end
 										
 					-- FX
 					for i = 1, 4 do						
@@ -135,32 +154,42 @@ function ThreadedUpdate(self)
 						MovableMan:AddParticle(effect)
 					end			
 					
-				else
-					if self.WoundCount > self.VoRedoubtWoundCounter then
+				else		
+
+					if totalWoundCount > self.VoRedoubtPreviousWoundCounter then
+						-- Start heavy hit reaction logic
 						if not self.VoRedoubtCountingWounds then
+							--print("Began counting effective wounds! Starting number: "	.. tostring(self.VoRedoubtEffectiveWoundCount));
 							self.VoRedoubtCountingWounds = true;
-							self.VoRedoubtWoundCountTimer:Reset();
+							self.VoRedoubtHitReactionStartingWounds = self.VoRedoubtEffectiveWoundCount;
+							self.VoRedoubtHitReactionWoundCountTimer:Reset();
 						end
-						self.GibWoundLimit = self.GibWoundLimit + (self.WoundCount - self.VoRedoubtWoundCounter);
-						self.VoRedoubtWoundCounter = self.WoundCount;
-					end
+						
+						-- Ignore single wounds, and halve any received wounds above 1
+						if totalWoundCount - self.VoRedoubtPreviousWoundCounter > 1 then
+						
+							--print("Received enough wounds to change Effective WC. Received wounds: " .. tostring(totalWoundCount - self.VoRedoubtPreviousWoundCounter));
+							self.VoRedoubtEffectiveWoundCount = self.VoRedoubtEffectiveWoundCount + ((totalWoundCount - self.VoRedoubtPreviousWoundCounter) / 2);
+						
+						--	print("New effective wound count: "	.. tostring(self.VoRedoubtEffectiveWoundCount));
+						end
+					end	
 					
-					if self.VoRedoubtCountingWounds and self.VoRedoubtWoundCountTimer:IsPastSimMS(100) then
+					-- Check counted wounds to see if we should play hit reaction
+					if self.VoRedoubtCountingWounds and self.VoRedoubtHitReactionWoundCountTimer:IsPastSimMS(100) then
 						self.VoRedoubtCountingWounds = false;
-						local glassWounds = self.VoRedoubtGlassWoundCount and self.VoRedoubtGlassWoundCount or 0;
-						if self.WoundCount + self.VoRedoubtGlassWoundCount - self.VoRedoubtHitReactionWoundCounter > 10 then
+						--print("Finished counting. Effective wound count now: " .. tostring(self.VoRedoubtEffectiveWoundCount));
+						--print("Reminder we started counting with: " .. tostring(self.VoRedoubtHitReactionStartingWounds));
+						--print("Counted this many effective wounds: " .. tostring(self.VoRedoubtEffectiveWoundCount - self.VoRedoubtHitReactionStartingWounds));
+						if self.VoRedoubtEffectiveWoundCount - self.VoRedoubtHitReactionStartingWounds > 5 then
 							self.VoRedoubtHeavyHitReactionSound:Play(self.Pos);
 						end
-						self.VoRedoubtHitReactionWoundCounter = self.WoundCount + glassWounds;
 					end
-					
 				end	
 			else
 				self.Frame = 1;
 			end
 		else
-			local glassWounds = self.VoRedoubtGlassWoundCount and self.VoRedoubtGlassWoundCount or 0;
-			self.VoRedoubtHitReactionWoundCounter = self.WoundCount  + self.VoRedoubtGlassWoundCount;
 			if self.VoRedoubtDeployed or self.VoRedoubtDeploying then
 				self.VoRedoubtDeployed = false;
 				self.VoRedoubtDeploying = false;
@@ -171,11 +200,35 @@ function ThreadedUpdate(self)
 				self.StanceOffset = self.VoRedoubtOriginalStanceOffset;
 				self:SetEntryWound("Dent Metal CED Vossberg Redoubt", "CED.rte");
 				
+				if self.VoRedoubtTopExtensionAttachment then
+					self.VoRedoubtTopExtensionAttachment.GetsHitByMOs = false;
+					self.VoRedoubtTopExtensionAttachment:SetEntryWound("Dent Metal CED Vossberg Redoubt", "CED.rte");
+					
+					-- Clear all its wounds visually - we count them anyway elsewhere
+					self.VoRedoubtTopExtensionAttachment:RemoveWounds(self.VoRedoubtTopExtensionAttachment.WoundCount);
+				end
+				
 				self.VoRedoubtCountingWounds = false;
 			end
 			if self.Frame > 0 then
 				self.Frame = self.Frame - 1;
 			end
+			-- Add any wounds received directly to our effective wound count when not deployed
+			if totalWoundCount - self.VoRedoubtPreviousWoundCounter > 0 then
+				--print("Received straight wounds! Number: " .. tostring(totalWoundCount - self.VoRedoubtPreviousWoundCounter));
+				self.VoRedoubtEffectiveWoundCount = self.VoRedoubtEffectiveWoundCount + (totalWoundCount - self.VoRedoubtPreviousWoundCounter);
+				--print("New effective WC: " .. tostring(self.VoRedoubtEffectiveWoundCount));
+			end	
 		end
 	end
+	
+	if self.VoRedoubtEffectiveWoundCount > self.VoRedoubtActualGibWoundLimit then
+		self:GibThis();
+	end
+	
+	self.VoRedoubtPreviousWoundCounter = totalWoundCount;
+end
+
+function OnSave(self)
+	self:SetNumberValue("VoRedoubt_EffectiveWoundCount", self.VoRedoubtEffectiveWoundCount);
 end
