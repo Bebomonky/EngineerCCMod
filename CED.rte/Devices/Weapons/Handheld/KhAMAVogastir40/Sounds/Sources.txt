@@ -1,0 +1,9 @@
+COD:MW: sierrax, mkilo3, hdromeo, kilo121, weap_mgolf36_fire_first_plr_01
+
+BF1: MG0818
+
+BF2042: BF01_Soldier_Movement_Foley_WeaponAdd_Parametric_01 150
+
+BF5: Weapons_Shared_Shells_20mm_Exterior_Wave 1 0 0
+
+partially original
