@@ -1,0 +1,3 @@
+COD:MW: tango21 reload, weap_mike14_deadtrigger_plr_01, weap_mike14_first_fire_plr_ads_01
+
+BF2042: AK12 reload

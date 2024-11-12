@@ -1,0 +1,6 @@
+COD:MW: iw8_weap_dpapa12_fire_plr_05
+weap_dpapa12_fire_plr_swtn_ads_05
+weap_oscar12_fire_plr_mech_ads_01
+oscar12 mech last ads
+weap_dmr_fire_plr_atmo_ext2_05
+weap_sniper_fire_plr_atmo_int1_01
