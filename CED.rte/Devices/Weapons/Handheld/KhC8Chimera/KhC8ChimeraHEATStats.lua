@@ -326,7 +326,7 @@ function Create(self)
 	reloadPhase.afterDelay = 600;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
 	reloadPhase.reloadSupportOffsetSpeed = 3;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-12, 10)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-12, 6)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
@@ -369,7 +369,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Khrabarovsk C8 Chimera", "CED.rte");
 	reloadPhase.afterDelay = 1000;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
-	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-3, 6)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 0;
@@ -391,7 +391,7 @@ function Create(self)
 
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(-3, 4);
+		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(-3, 2);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -413,7 +413,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Belt On CED Khrabarovsk C8 Chimera", "CED.rte");
 	reloadPhase.afterDelay = 700;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
-	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetSpeed = 14;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 0)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 1;
@@ -461,7 +461,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Cover Close CED Khrabarovsk C8 Chimera", "CED.rte");
 	reloadPhase.afterDelay = 500;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
-	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(0, -8)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 1;
@@ -505,7 +505,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Back CED Khrabarovsk C8 Chimera", "CED.rte");
 	reloadPhase.afterDelay = 200;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
-	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-2, -3)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = -1;
@@ -549,7 +549,7 @@ function Create(self)
 	reloadPhase.afterSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk C8 Chimera", "CED.rte");
 	reloadPhase.afterDelay = 500;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
-	reloadPhase.reloadSupportOffsetSpeed = 3;
+	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -3)
 	reloadPhase.rotationTarget = 0;
 	reloadPhase.angVel = 1;
