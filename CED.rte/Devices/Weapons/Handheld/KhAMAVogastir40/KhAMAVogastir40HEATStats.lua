@@ -66,12 +66,12 @@ function Create(self)
 	
 	-- Data to feed into the ParticleUtility. Read the ParticleUtility itself for information on these properties.
 	self.HEATParticleUtilityFiringSmokeDataTable = {};
-	self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
+	self.HEATParticleUtilityFiringSmokeDataTable.Power = 50;
 	self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
 	self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
-	self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
+	self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.0;
 	self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
-	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1;
+	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.5;
 	self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
 	self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.2;
 	self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
@@ -223,7 +223,7 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = CreateSoundContainer("Mag Out Prepare CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	reloadPhase.prepareDelay = 320;
+	reloadPhase.prepareDelay = 400;
 	reloadPhase.prepareSoundLength = 100;
 	reloadPhase.afterSound = CreateSoundContainer("Mag Out CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	reloadPhase.afterDelay = 1000;
@@ -273,8 +273,8 @@ function Create(self)
 	reloadPhase.addsMag = false;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = CreateSoundContainer("Fetch Mag Prepare CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	reloadPhase.prepareDelay = 1000;
-	reloadPhase.prepareSoundLength = 1000;
+	reloadPhase.prepareDelay = 700;
+	reloadPhase.prepareSoundLength = 700;
 	reloadPhase.afterSound = nil;
 	reloadPhase.afterDelay = 330;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
@@ -317,8 +317,8 @@ function Create(self)
 	reloadPhase.addsMag = true;
 	reloadPhase.autoProgressIfFinishedButInterrupted = true;
 	reloadPhase.prepareSound = CreateSoundContainer("Mag In Prepare CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	reloadPhase.prepareDelay = 2200;
-	reloadPhase.prepareSoundLength = 2110;
+	reloadPhase.prepareDelay = 1000;
+	reloadPhase.prepareSoundLength = 300;
 	reloadPhase.afterSound = CreateSoundContainer("Mag In CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	reloadPhase.afterDelay = 500;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
@@ -361,8 +361,8 @@ function Create(self)
 	reloadPhase.addsMag = true;
 	reloadPhase.autoProgressIfFinishedButInterrupted = false;
 	reloadPhase.prepareSound = CreateSoundContainer("Belt On Prepare CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	reloadPhase.prepareDelay = 1560;
-	reloadPhase.prepareSoundLength = 1560;
+	reloadPhase.prepareDelay = 850;
+	reloadPhase.prepareSoundLength = 850;
 	reloadPhase.afterSound = CreateSoundContainer("Belt On CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	reloadPhase.afterDelay = 500;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 5);
@@ -565,7 +565,7 @@ function Create(self)
 	self.HEATRecoilAngVariation = 1;
 	
 	-- Strength of the recoil when firing. Affects rotation and SharpLength kickback.
-	self.HEATRecoilStrength = 8
+	self.HEATRecoilStrength = 25
 	-- Some sort of mathemagical strength value to affect the recoil.
 	self.HEATRecoilPowStrength = 0.2;
 	-- Upper end of a random multiplier applied to the recoil. 1 is the lower end.

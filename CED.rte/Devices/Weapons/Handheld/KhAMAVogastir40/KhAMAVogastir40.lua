@@ -1,7 +1,7 @@
 require("/CEDSettings");
 
 function Create(self)
-	self.KhAMAVogastir40FireVelocity = 160;
+	self.KhAMAVogastir40FireVelocity = 140;
 	self.KhAMAVogastir40FireSpread = 5 / 2;
 
 	self.KhAMAVogastir40MechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
@@ -25,6 +25,8 @@ function Create(self)
 	self.KhAMAVogastir40AIFairnessEnabled = false;
 	
 	self.KhAMAVogastir40OriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y);
+	
+	self.CompliSoundGroundSmokeStr = 15;
 end
 
 function OnFire(self)
@@ -34,23 +36,13 @@ function OnFire(self)
 	
 	local spread = math.random(-self.KhAMAVogastir40FireSpread, self.KhAMAVogastir40FireSpread);
 	
-	local shot = CreateMOPixel("Bullet CED Khrabarovsk AMA-Vogastir 40 Scripted", "CED.rte");
+	local shot = CreateMOSRotating("Explosive Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
 	shot.Vel = self.Vel + Vector(self.KhAMAVogastir40FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
 	MovableMan:AddParticle(shot);
-	
-	for i = 1, 1 do
-		local shot = CreateMOPixel("Bullet CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-		shot.Vel = self.Vel + Vector(self.KhAMAVogastir40FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
-		shot.Team = self.Team;
-		shot.IgnoresTeamHits = true;
-		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
-		MovableMan:AddParticle(shot);
-	end
 
 	-- Use our HEATStats to spawn a casing every time we fire.
 	local casing
@@ -148,7 +140,7 @@ function ThreadedUpdate(self)
 				self.HEATRotationTargetOverride = nil;
 				
 				self.HEATOriginalSharpLength = 170;
-				self.HEATRecoilStrength = 8
+				self.HEATRecoilStrength = 25
 				self.HEATRecoilDamping = 0.55
 				self.HEATRecoilMax = 4;
 				self.SharpShakeRange = 3;
@@ -162,7 +154,7 @@ function ThreadedUpdate(self)
 					end
 					if isPlayerControlled then
 						self.HEATOriginalSharpLength = 50;
-						self.HEATRecoilStrength = 14
+						self.HEATRecoilStrength = 30
 						self.HEATRecoilDamping = 0.2
 						self.HEATRecoilMax = 12;
 						self.SharpShakeRange = 6;

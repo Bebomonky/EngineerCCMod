@@ -1,1 +1,15 @@
-fire
+COD:MW: weap_mama2_fire_plr_01
+weap_mama2_fire_plr_mech_01
+weap_mama2_fire_plr_links_02
+weap_lmg_fire_plr_atmo_ext1_01
+atmo sniper int1
+
+frag env ext
+frag env int
+
+BF2042: BF01_Weapons_Handheld_Shared_Reflections_All_Parametric_01 81
+BF01_Weapons_Vehicle_Shared_Pre_AutoCannon_Parametric_01 1
+
+BF1: Weapons_Stationary_AA_HiFi_Wave 0 0 0
+
+Titanfall 2: wpn_40mm_1p_wpnfire_ringout_2ch_v1_02
