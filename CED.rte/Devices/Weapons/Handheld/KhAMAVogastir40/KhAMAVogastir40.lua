@@ -1,7 +1,7 @@
 require("/CEDSettings");
 
 function Create(self)
-	self.KhAMAVogastir40FireVelocity = 140;
+	self.KhAMAVogastir40FireVelocity = 110;
 	self.KhAMAVogastir40FireSpread = 5 / 2;
 
 	self.KhAMAVogastir40MechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
