@@ -135,17 +135,12 @@ function DisplayNumber(screen, vector, txt, isSmall, color)
 end
 
 function itemDescription(desc, isSmall, panelWidth)
-	if desc == nil then
+	if desc == nil or desc == "" then
 		desc = "Description not set";
 	end
 	local newDesc = "";
-	local words = {};
-	for word in string.gmatch(desc, "%S+") do
-		table.insert(words, word);
-	end
 	local line = "";
-	for i = 1, #words do
-		local word = words[i];
+	for word in string.gmatch(desc, "%S+") do
 		local newLine = line .. (line ~= "" and " " or "") .. word;
 		local descWidth = FrameMan:CalculateTextWidth(newLine, isSmall) + 8;
 		if descWidth > panelWidth then
@@ -226,6 +221,75 @@ function CC_TooltipSkin(parent, new)
 	end
 end
 
+--This is the greatest addQueue of all time
+function addQueue(panel, queueData, successSound, failSound)
+	local isInQueue = false;
+	for k, v in ipairs(self.queueBox:GetChildren()) do
+		if v:GetName() == self.infoBox.Data.ItemID then
+			failSound:Play(-1);
+			isInQueue = true;
+			break;
+		end
+	end
+
+	if isInQueue then
+		return;
+	end
+
+	local screen = panel:GetScreen();
+	local owner = panel:GetOwner();
+	local queueItem = panel:Add("COLLECTIONBOX");
+	queueItem:SetTitle(queueData.DisplayName);
+	queueItem:SetName(queueData.ItemID);
+	queueItem:SetSize(queueItem:GetParent():GetWidth(), 40);
+
+	local i = table.Count(panel:GetChildren());
+	queueItem:SetPos(0, 40 * ((i - 1)));
+	queueItem.Position = i;
+
+	local progressBar = queueItem:Add("PROGRESSBAR");
+	progressBar:SetName(queueData.ItemID);
+	progressBar:SetPos(5, progressBar:GetParent():GetHeight() - 15);
+	progressBar:SetSize(50, 10);
+	progressBar:BGColor(245);
+	progressBar.IsRunning = false;
+	progressBar:SetFraction(0);
+
+	local function updateList()
+		for i, panel in ipairs(panel:GetChildren()) do
+			local child = panel:GetChildren()[1];
+			panel:SetPos(0, 40 * (i - 1));
+			panel:GetChildren()[1]:SetPos(5, child:GetParent():GetHeight() - 15);
+			panel.Position = i;
+		end
+	end
+	
+	function progressBar:OnComplete()
+		successSound:Play(-1);
+		self:GetParent():Remove();
+		updateList();
+	end
+
+	function progressBar:Think()
+		local parent = self:GetParent();
+		if parent.Position == 1 then
+			if self.IsRunning == true then
+				local timeLeft = (self.TotalTime - self.Timer:LeftTillSimTimeLimitMS()) / self.TotalTime;
+				self:SetFraction(timeLeft);
+			elseif self.IsRunning == false then
+				self.Timer = Timer();
+				self.TotalTime = 10000;
+				self.Timer:SetSimTimeLimitMS(progressBar.TotalTime);
+				self.IsRunning = true;
+			end
+		end
+
+		self:SetText(string.format("%.0f%%", self:GetFraction() * 100));
+		local world_pos = parent:GetAbsolutePos();
+		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(queueData.QueueIconSize.X / 2, 15), queueData.QueueIcon, 0);
+	end
+end
+
 function ResearchMenu(self)
 	self.researchBox = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.researchBox:SetTitle("");
@@ -234,13 +298,16 @@ function ResearchMenu(self)
 	self.researchBox:Color(146);
 	self.researchBox:OutlineColor(71);
 	self.researchBox:OutlineThickness(2);
-	self.researchBox.LinePos = Vector(80, 0);
 	local screen = self.researchBox:GetScreen();
 
-	self.researchBox.Think = function()
-		local world_pos = self.researchBox:GetAbsolutePos() + self.researchBox.LinePos;
-		PrimitiveMan:DrawLinePrimitive(screen, world_pos, world_pos + Vector(0, self.researchBox:GetHeight()), 71, 2);
-	end
+	self.queueBox = self.Menu:CreateGUI("COLLECTIONBOX", self.researchBox);
+	self.queueBox:SetTitle("");
+	self.queueBox:SetPos(0, 0);
+	self.queueBox:SetSize(90, 300);
+	self.queueBox:Color(146);
+	self.queueBox:OutlineColor(71);
+	self.queueBox:OutlineThickness(2);
+	self.queueBox:SetOwner(self);
 
 	--This is literally so it just draws behind everything except the researchBox
 	local treeBox = {};
@@ -277,6 +344,7 @@ function ResearchMenu(self)
 	self.researchTooltip.Displaying = false;
 	self.researchTooltip.DisplayCost = false;
 	CC_TooltipSkin(self.researchTooltip, true);
+
 	self.researchTooltip.Think = function()
 		self.researchTooltip:SetHide(true);
 		if self.researchBox.Displaying then
@@ -289,10 +357,6 @@ function ResearchMenu(self)
 		end
 	end
 
-	--self.researchTooltipDesc = self.Menu:CreateGUI("LABEL", self.researchTooltip);
-	--self.researchTooltipDesc:SetSmallText(true);
-	--self.researchTooltipDesc:SetContentAlignment(5);
-
 	self.infoBox = self.Menu:CreateGUI("COLLECTIONBOX");
 	self.infoBox:SetTitle("");
 	self.infoBox:SetPos(self.researchBox:GetWidth() + 20, 25);
@@ -301,22 +365,27 @@ function ResearchMenu(self)
 	self.infoBox:OutlineColor(71);
 	self.infoBox:OutlineThickness(2);
 	self.infoBox.Data = {
+		ItemID = "",
+		DisplayName = "",
+		QueueIcon = "",
+		QueueIconSize = Vector(),
 		Cost = 0,
-		Primitives = {
-			{Pos = Vector(4, 100), Text = "", isSmall = true}, --Action
-			{Pos = Vector(68, 100), Text = "", isSmall = false}, --RPM
-			{Pos = Vector(118, 100), Text = "", isSmall = false}, --MAG
-			{Pos = Vector(1, 125), Text = "", isSmall = true}, --Description
-		}
+		Action = "",
+		RPM = "",
+		MAG = "",
+		Description = ""
 	};
+
 	self.infoBox.Think = function()
 		if self.clickedCategory == false then
-			local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5
-			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
-			for i = 1, #self.infoBox.Data.Primitives do
-				local data = self.infoBox.Data.Primitives[i];
-				PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + data.Pos, data.Text, data.isSmall, 0);
-			end
+			PrimitiveMan:DrawBitmapPrimitive(screen, self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
+			local world_pos = self.infoBox:GetAbsolutePos();
+
+			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(5, 100), self.infoBox.Data.Action, true, 0); --Action
+			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(51, 100), self.infoBox.Data.RPM, false, 0); --RPM
+			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(100, 100), self.infoBox.Data.MAG, false, 0); --MAG
+			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(1, 125), self.infoBox.Data.Description, true, 0); --Description
+
 			if self.researchFrame > -1 then
 				local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
 				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
@@ -332,22 +401,18 @@ function ResearchMenu(self)
 	researchButton:SetClickable(false);
 	researchButton.Think = function()
 		if self.researchFrame > -1 then
-			if self.researchinProgress then
-			
-			else
-				if researchButton:IsHovered() then
-					self.researchTooltip:SetHide(false);
-					if not self.researchBox.Displaying then
-						local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false);
-						self.researchTooltip:SetSize(totalWidth + 5, 15);
-						CC_TooltipSkin(self.researchTooltip);
-						self.researchBox.Displaying = true;
-					end
-					self.researchFrame = 2;
-				else
-					self.researchTooltip.Displaying = false;
-					self.researchFrame = 3;
+			if researchButton:IsHovered() then
+				self.researchTooltip:SetHide(false);
+				if not self.researchBox.Displaying then
+					local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false);
+					self.researchTooltip:SetSize(totalWidth + 5, 15);
+					CC_TooltipSkin(self.researchTooltip);
+					self.researchBox.Displaying = true;
 				end
+				self.researchFrame = 2;
+			else
+				self.researchTooltip.Displaying = false;
+				self.researchFrame = 3;
 			end
 		end
 	end
@@ -356,7 +421,7 @@ function ResearchMenu(self)
 		if key == Controller.PRIMARY_ACTION then
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
 			if hasFund then
-				self.sounds.Confirm:Play(-1);
+				addQueue(self.queueBox, self.infoBox.Data, self.sounds.Confirm, self.sounds.Error)
 			else
 				self.sounds.Error:Play(-1);
 			end
@@ -365,21 +430,18 @@ function ResearchMenu(self)
 
 
 	local tabs = {};
-	local i = 1;
-	local totalWidth = 0;
-	local width = 50;
-	local height = 40;
-	local spacing = 30;
-	local totalWidth = (3 * width) + (spacing * (3 - 1));
-	local mainWidth = self.researchBox:GetWidth() + 80;
-	local emptySpace = mainWidth - totalWidth;
-	local padding = emptySpace / 2;
-
-	for techID, faction in SortedPairs(CEDMasterList.Technology) do
-		local x = padding + (i - 1) * (width + spacing);
+	local buttons = {};
+	local tab_pos = {
+		["Xarix"] = 135,
+		["Khrabarovsk"] = 215,
+		["Vossberg"] = 295
+	};
+	for techID, faction in pairs(CEDMasterList.Technology) do
 		local tab = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
-		tab:SetPos(x, 10);
-		tab:SetSize(width, height);
+		if tab_pos[techID] then
+			tab:SetPos(tab_pos[techID], 10);
+		end
+		tab:SetSize(50, 40);
 		tab:SetText(techID);
 		tab:Color(146);
 		tab:OutlineColor(144);
@@ -388,7 +450,6 @@ function ResearchMenu(self)
 		if self.MenuCurrent == self.menuData[techID] then
 			tab.Selected = true;
 		end
-		tab.Nodes = {};
 		tab.Think = function()
 			tab:OutlineColor(tab:IsHovered() and 117 or 144);
 
@@ -399,27 +460,21 @@ function ResearchMenu(self)
 
 		tab.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
-				if table.IsEmpty(faction) then
-					print("Table is empty!");
-					self.sounds.Error:Play(-1);
-					return;
-				end
-
 				for _, btn in ipairs(tabs) do
 					btn.Selected = false;
 				end
+				tab.Selected = true;
 				self.researchFrame = -1;
 				self.clickedCategory = true;
-				tab.Selected = true;
 				self.sounds.Confirm:Play(-1);
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
 		table.insert(tabs, tab);
-		i = i + 1;
 
 		for i = 1, #self.menuData[techID].Items do
 			local item = self.menuData[techID].Items[i].Item;
+			local itemID = self.menuData[techID].Items[i].ItemID;
 			local button = self.Menu:CreateGUI("BUTTON", self.researchBox, "Node");
 			button:SetVisible(false);
 			button:SetPos(item.Pos.X, item.Pos.Y);
@@ -430,8 +485,18 @@ function ResearchMenu(self)
 			button.Researched = false;
 			button.RequiredTech = item.RequiredTech;
 			button.justHovered = false;
+			button.Selected = false;
+
 			local iconSize = item.IconSize;
 			local iconPath = item.IconPath;
+			local action = item.Action or "N/A";
+			local rpm = item.RPM or "N/A";
+			local mag = item.MAG or "N/A";
+			local description = item.InfoBoxDescription;
+
+			if not description or description == "" then
+				description = "Description not set";
+			end
 			if iconSize then
 				button:SetSize(iconSize.X, iconSize.Y);
 			else
@@ -445,6 +510,9 @@ function ResearchMenu(self)
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
+				if button.Selected then
+					button:OutlineColor(252);
+				end
 				if button:IsHovered() then
 					self.tooltip:SetHide(false);
 					if button.justHovered == false then
@@ -470,13 +538,23 @@ function ResearchMenu(self)
 
 				button.OnPress = function(key)
 					if key == Controller.PRIMARY_ACTION then
-						self.clickedCategory = false;
-						self.infoBox.Data.Cost = item.Cost;
-						self.infoBox.Data.Primitives[1].Text = tostring(item.Action);
-						self.infoBox.Data.Primitives[2].Text = tostring(item.RPM);
-						self.infoBox.Data.Primitives[3].Text = tostring(item.MAG);
-						self.infoBox.Data.Primitives[4].Text = itemDescription(item.InfoBoxDescription, true, self.infoBox:GetWidth() + 5);
+						for _, btn in ipairs(buttons) do
+							btn.Selected = false;
+						end
+						button.Selected = true;
 						self.researchFrame = 1;
+						self.clickedCategory = false;
+
+						self.infoBox.Data.ItemID = itemID;
+						self.infoBox.Data.DisplayName = item.DisplayName;
+						self.infoBox.Data.QueueIcon = item.IconPath;
+						self.infoBox.Data.QueueIconSize = item.IconSize;
+						self.infoBox.Data.Cost = item.Cost;
+						self.infoBox.Data.Action = action;
+						self.infoBox.Data.RPM = rpm;
+						self.infoBox.Data.MAG = mag;
+						self.infoBox.Data.Description = description;
+
 						researchButton:SetClickable(true);
 						self.sounds.Confirm:Play(-1);
 					end
@@ -485,7 +563,7 @@ function ResearchMenu(self)
 					PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + button:GetSize() / 2, iconPath, 0);
 				end
 			end
-			table.insert(tab.Nodes, button);
+			table.insert(buttons, button);
 			table.insert(self.menuData[techID].Buttons, button);
 		end
 	end
