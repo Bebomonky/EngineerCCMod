@@ -74,10 +74,16 @@ function Create(self)
 		for i = 1, #self.menuData[techID].Items do
 			local item = self.menuData[techID].Items[i].Item;
 			local itemID = self.menuData[techID].Items[i].ItemID;
+
 			item.IsResearched = false;
 			if type(item.RequiredTech) == "table" then
+				local failCount = #item.RequiredTech
 				for _, name in pairs(item.RequiredTech) do
 					if self.Researches[name] then
+						failCount = failCount - 1;
+					end
+
+					if failCount == 0 then
 						item.IsResearched = true;
 					end
 				end
@@ -411,15 +417,14 @@ function ResearchMenu(self)
 	self.researchTooltip.Think = function()
 		self.researchTooltip:SetHide(true);
 		if self.researchTooltip.Displaying then
+			local world_pos = self.researchTooltip:GetAbsolutePos();
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
-			local pos = self.researchTooltip:GetAbsolutePos();
-			local textWidth = FrameMan:CalculateTextWidth("Cost: ", false);
-			local text_pos = pos + Vector(2, -1);
-			PrimitiveMan:DrawTextPrimitive(screen, text_pos, "Cost: ", false, 0);
-
-			PrimitiveMan:DrawTextPrimitive(screen, text_pos + Vector(1, 14), "Required: \n" .. self.researchTooltip.TechRequirements, true, 0);
-
-			DisplayNumber(screen, text_pos + Vector(textWidth, 0), tostring(self.infoBox.Data.Cost), false, hasFund and "Green" or "Red");
+			local enoughGold = hasFund and "Can be purchased" or "Not enough gold"
+			if self.researchTooltip.Requirements then
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(3, 1), enoughGold .. "\nRequired: \n" .. self.researchTooltip.Requirements, true, 0);
+			else
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(3, 1), enoughGold, true, 0);
+			end
 		end
 	end
 
@@ -445,6 +450,8 @@ function ResearchMenu(self)
 	self.infoBox.Think = function()
 		local world_pos = self.infoBox:GetAbsolutePos();
 		if self.clickedCategory == false then
+			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
+
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + self.infoBox:GetSize() * 0.5, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
 
 			-- Action
@@ -462,6 +469,10 @@ function ResearchMenu(self)
 				"CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png",
 				0);
 			end
+
+			local textWidth = FrameMan:CalculateTextWidth("Cost: ", false);
+			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(2, self.infoBox:GetHeight() - 15), "Cost: ", false, 0);
+			DisplayNumber(screen, world_pos + Vector(textWidth, self.infoBox:GetHeight() - 15), tostring(self.infoBox.Data.Cost), false, hasFund and "Green" or "Red");
 		end
 	end
 
@@ -483,23 +494,34 @@ function ResearchMenu(self)
 				if not self.researchTooltip.Displaying then
 					local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false) + 5;
 
-					local tech = type(self.infoBox.Data.RequiredTech) == "table" and table.concat(self.infoBox.Data.RequiredTech, ", ") or self.infoBox.Data.RequiredTech;
-					local maxWidth = FrameMan:CalculateTextWidth(tech, true);
-					local desc, descHeight, longestWord = itemDescription(tech, true, totalWidth + 40);
-					self.researchTooltip.TechRequirements = desc;
+					local tech = type(self.infoBox.Data.RequiredTech) == "table" and table.concat(self.infoBox.Data.RequiredTech, " ") or self.infoBox.Data.RequiredTech;
+					local requirements = {};
+					if tech ~= "None" then
+						for i = 1, #self.MenuCurrent.Items do
+							local item = self.MenuCurrent.Items[i].Item;
+							local itemID = self.MenuCurrent.Items[i].ItemID;
+	
+							if string.find(tech, itemID) then
+								table.insert(requirements, item.DisplayName);
+							end
+						end
+						local requiredTech = table.concat(requirements, ",\n");
+						local maxHeight = FrameMan:CalculateTextHeight(requiredTech, 0, true) + 25;
+						local maxWidth = FrameMan:CalculateTextWidth(requiredTech, true);
+						self.researchTooltip.Requirements = requiredTech;
 
-					local longestWordWidth = FrameMan:CalculateTextWidth(longestWord, true);
-					self.researchTooltip:SetSize(totalWidth + longestWordWidth, descHeight);
+						self.researchTooltip:SetSize(totalWidth, maxHeight);
+					else
+						self.researchTooltip:SetSize(70, 15);
+					end
 					CC_TooltipSkin(self.researchTooltip);
 					self.researchTooltip.Displaying = true;
 				end
 
 				if self.Researches[self.infoBox.Data.ItemID] then
-					--print("ALREADY RESEARCHED | FAILURE")
 					self.researchFrame = 3; -- Gray
 				else
 					if self.Queue[self.infoBox.Data.ItemID] then
-						--print("IN QUEUE | FAILURE")
 						self.researchFrame = 3; -- Gray
 					elseif hasFund and not self.Queue[self.infoBox.Data.ItemID] then
 						if type(self.infoBox.Data.RequiredTech) == "table" then
@@ -646,7 +668,6 @@ function ResearchMenu(self)
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
-			button.IsResearched = item.IsResearched;
 			button.RequiredTech = item.RequiredTech;
 			button.justHovered = false;
 			button.Selected = false;
@@ -673,8 +694,12 @@ function ResearchMenu(self)
 			end
 
 			button.Think = function()
+				button.IsResearched = self.Researches[itemID];
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
+				if button.IsResearched then
+					button:OutlineColor(5);
+				end
 				if button.Selected then
 					button:OutlineColor(252);
 				end
@@ -710,6 +735,7 @@ function ResearchMenu(self)
 						self.clickedCategory = false;
 
 						self.infoBox.Data.ItemID = itemID;
+						self.infoBox.Data.TechID = techID;
 						self.infoBox.Data.RequiredTech = item.RequiredTech;
 						self.infoBox.Data.DisplayName = item.DisplayName;
 						self.infoBox.Data.Description = description;
