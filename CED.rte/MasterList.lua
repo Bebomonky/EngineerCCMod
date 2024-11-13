@@ -134,11 +134,10 @@ Yay!]],
 
 -------  TECHNOLOGY  -------
 	-------  XARIX  -------
-CEDMasterList.Technology.Xarix.XaDoctra = {["DisplayName"] = "Xarix A Doctra",
+CEDMasterList.Technology.Xarix.XaDoctra = {["DisplayName"] = "A Doctra",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Xarix-brand defensive pistol. Unassuming.
-Does more damage against robotic enemies.
+Plasma pistol.
 ]],
 								  ["InfoBoxDescription"] = [[
 Blank
@@ -152,11 +151,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Xarix.XaA12Axiom = {["DisplayName"] = "Xarix A-12 Axiom",
+CEDMasterList.Technology.Xarix.XaA12Axiom = {["DisplayName"] = "A-12 Axiom",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Xarix-brand defensive pistol. Unassuming.
-Does more damage against robotic enemies.
+Plasma autorevolver.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -170,11 +168,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Xarix.XaMTXDirective = {["DisplayName"] = "Xarix MTX Directive",
+CEDMasterList.Technology.Xarix.XaMTXDirective = {["DisplayName"] = "MTX Directive",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Xarix-brand smart plasma SMG. Merciless once locked on.
-Computerized plasma shots home in on targets, and deal more damage against robots.
+Plasma smartgun.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -188,10 +185,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Xarix.XaVidara = {["DisplayName"] = "Xarix Vidara",
+CEDMasterList.Technology.Xarix.XaVidara = {["DisplayName"] = "Vidara",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Xarix-brand hybrid weapon. Multimodal lasergun.
+Hybrid lasergun.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -205,10 +202,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Xarix.XaEACondor = {["DisplayName"] = "Xarix EA Condor",
+CEDMasterList.Technology.Xarix.XaEACondor = {["DisplayName"] = "EA Condor",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Xarix-brand charge cannon. Destructive.
+Charge cannon.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -222,10 +219,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 	-------  KHRABAROVSK  -------
-CEDMasterList.Technology.Khrabarovsk.KhSPr40 = {["DisplayName"] = "Khrabarovsk SPr-40",
+CEDMasterList.Technology.Khrabarovsk.KhSPr40 = {["DisplayName"] = "SPr-40",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand revolver. Double-action.
+Double-action revolver.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -239,11 +236,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Khrabarovsk.KhGS7 = {["DisplayName"] = "Khrabarovsk GS7",
+CEDMasterList.Technology.Khrabarovsk.KhGS7 = {["DisplayName"] = "GS7",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand pump shotgun.
-The CQB weapon of choice since time immemorial.
+Pump action shotgun.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -257,10 +253,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Khrabarovsk.Kh11p35 = {["DisplayName"] = "Khrabarovsk 11p35-rifle",
+CEDMasterList.Technology.Khrabarovsk.Kh11p35 = {["DisplayName"] = "11p35-rifle",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand assault rifle. Versatile.
+Select-fire assault rifle with underbarrel launcher.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -274,11 +270,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Khrabarovsk.KhMOSKA = {["DisplayName"] = "Khrabarovsk MOSKA",
+CEDMasterList.Technology.Khrabarovsk.KhMOSKA = {["DisplayName"] = "MOSKA",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand weapon.
-A boxy little big offbore-handled bolt-action.
+Bolt-action rifle.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -292,10 +287,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Khrabarovsk.KhJS50 = {["DisplayName"] = "Khrabarovsk JS50",
+CEDMasterList.Technology.Khrabarovsk.KhJS50 = {["DisplayName"] = "JS50",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand marksman rifle. Semi-automatic.
+Marksman rifle.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -309,11 +304,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Khrabarovsk.KhC8Chimera = {["DisplayName"] = "Khrabarovsk C8 Chimera",
+CEDMasterList.Technology.Khrabarovsk.KhC8Chimera = {["DisplayName"] = "C8 Chimera",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Khrabarovsk-brand GPMG. Unmatched firepower in an unwieldy package.
-For non-heavy actors, can only be used when crouching and still.
+Deployable GPMG.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -326,11 +320,44 @@ Blank
 								  ["IconSize"] = Vector(43, 13),
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
-	-------  VOSSBERG  -------
-CEDMasterList.Technology.Vossberg.VoHammerhead = {["DisplayName"] = "Vossberg Hammerhead",
+								  
+CEDMasterList.Technology.Khrabarovsk.KhAMAVogastir40 = {["DisplayName"] = "AMA-Vogastir 40",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Vossberg-brand handcannon. High-caliber, high-octane.
+Deployable GMG.
+]],
+["InfoBoxDescription"] = [[
+Khrabarovsk-brand grenade machine gun.
+Slow, but supreme. For non-heavy
+actors, can only be used when
+crouching and still.
+ 
+You don't generally hear the words
+'sawn-off grenade machine gun'
+put together that way, but the
+AMA-Vogastir 40 is just that, a
+shorty belt-fed GMG with detachable
+box-magazines, LMG-style, firing
+full-power, high-velocity 40x76mm
+explosive shells at a rate-limited,
+but steady pace. Suffice to say,
+few things will want to come into 
+this creature's line of sight when
+it's all set up and loaded.
+]],
+								  ["Action"] = "\tFULLY\nAUTOMATIC",
+								  ["RPM"] = "\t 220",
+								  ["MAG"] = "\t  25",
+								  ["Pos"] = Vector(350, 100),
+								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhAMAVogastir40/Icon.png",
+								  ["IconSize"] = Vector(29, 12),
+								  ["ResearchTime"] = 1000,
+								  ["Cost"] = 1000};
+	-------  VOSSBERG  -------
+CEDMasterList.Technology.Vossberg.VoHammerhead = {["DisplayName"] = "Hammerhead",
+								  ["RequiredTech"] = "None",
+								  ["Description"] = [[
+Handcannon.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -344,10 +371,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Vossberg.VoAtlastar = {["DisplayName"] = "Vossberg Atlastar",
+CEDMasterList.Technology.Vossberg.VoAtlastar = {["DisplayName"] = "Atlastar",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Vossberg-brand SMG. Double-barreled with hyperburst capabilities. That's two hyperbursts at once.
+Double-barreled hyperburst SMG.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -361,10 +388,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Vossberg.VoTrigoliath = {["DisplayName"] = "Vossberg Trigoliath",
+CEDMasterList.Technology.Vossberg.VoTrigoliath = {["DisplayName"] = "Trigoliath",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Vossberg-brand triple barrel shotgun. A real hunter's weapon.
+Triple-barrel shotgun.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -378,10 +405,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Vossberg.VoGrandarme = {["DisplayName"] = "Vossberg Grandarme",
+CEDMasterList.Technology.Vossberg.VoGrandarme = {["DisplayName"] = "Grandarme",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Vossberg-brand assault rifle. Heavy and hardcore.
+High-caliber assault rifle.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -395,10 +422,10 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Vossberg.VoTitanAMI = {["DisplayName"] = "Vossberg Titan AMI",
+CEDMasterList.Technology.Vossberg.VoTitanAMI = {["DisplayName"] = "Titan AMI",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Vossberg-brand materia destroyer. Huge single-shot rifle.
+Anti-materiel rifle.
 ]],
 ["InfoBoxDescription"] = [[
 Blank
@@ -412,14 +439,26 @@ Blank
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
 
-CEDMasterList.Technology.Vossberg.EXPTurbolance = {["DisplayName"] = "CED-EXP Turbolance",
+CEDMasterList.Technology.Vossberg.EXPTurbolance = {["DisplayName"] = "Turbolance",
 								  ["RequiredTech"] = "None",
 								  ["Description"] = [[
-Experimental microgun.
-Emplacement-grade firerate. Overheats rapidly - avoid overuse.
+Minigun.
 ]],
 ["InfoBoxDescription"] = [[
-Blank
+Experimental microgun. Emplacement-grade firerate.
+ Overheats rapidly - avoid overuse,
+ or use the Primary Ability Hotkey
+ (default V) to manually cool off the gun.
+
+The Turbolance makes no concessions when
+ it comes to giving you the power of a minigun,
+ except in the sensical areas like "capacity"
+ and "practicality". It's armed to the teeth with
+ gyroscopic stabilizers so you can be armed to the
+ teeth with it, leaving only the overheating to fear.
+ Luckily, active thermal vents are available to use,
+ so you'll never be stuck waiting around for minutes
+ at a time for the gun to cool off.
 ]],
 								  ["Action"] = "  ELECTRIC",
 								  ["RPM"] = "\t3600",
