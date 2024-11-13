@@ -1,6 +1,5 @@
 function Create(self)
-	self.exploOutdoorsSound = CreateSoundContainer("Explo Outdoors CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	self.exploIndoorsSound = CreateSoundContainer("Explo Indoors CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
+	self.exploOutdoorsSound = CreateSoundContainer("Explo Small Add Outdoors CED", "CED.rte");
 
 	local outdoorRays = 0;
 	local indoorRays = 0;
@@ -36,8 +35,8 @@ function Create(self)
 	if outdoorRays >= rayThreshold then
 		self.exploOutdoorsSound:Play(self.Pos);
 	else
-		self.exploIndoorsSound:Play(self.Pos);
-	end		
+		--self.exploIndoorsSound:Play(self.Pos);
+	end
 	
 	self:GibThis();	
 end

@@ -4,9 +4,6 @@ weap_mama2_fire_plr_links_02
 weap_lmg_fire_plr_atmo_ext1_01
 atmo sniper int1
 
-frag env ext
-frag env int
-
 BF2042: BF01_Weapons_Handheld_Shared_Reflections_All_Parametric_01 81
 BF01_Weapons_Vehicle_Shared_Pre_AutoCannon_Parametric_01 1
 

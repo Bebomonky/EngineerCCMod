@@ -140,7 +140,7 @@ function ThreadedUpdate(self)
 						self.HEATOriginalSupportOffset = self.KhAMAVogastir40OriginalSupportOffset;
 					else
 						self.HEATRecoilDamping = 0.35;
-						self.HEATOriginalSharpLength = 170;
+						self.HEATOriginalSharpLength = 240;
 						self.SupportOffset = self.KhAMAVogastir40DeployedSupportOffset;
 						self.HEATOriginalSupportOffset = self.KhAMAVogastir40DeployedSupportOffset;
 					end

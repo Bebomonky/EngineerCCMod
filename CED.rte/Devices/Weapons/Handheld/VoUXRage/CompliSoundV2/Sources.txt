@@ -1,0 +1,13 @@
+CP2077: w_gun_sniper_power_grad_fire
+
+COD:MW: weap_sniper3_fire_plr_atmo_ext1_01
+refl_explo_urban_dist_lsrs_lrg_01
+
+Warframe: SwarmMissileLauncherFire2DShotA
+GrnLaserAimRifleAltMechB
+
+SW: SW01_Weapons_Projectiles_GenericRocket_TrailLoop_VAR_01 0 0 0
+SW01_Weapons_Explosive_RocketLauncher_CoreBass_Close_VAR_06 3 0 0
+
+Insurgency: Sandstorm: exp_tail_indoor_large_close_01
+

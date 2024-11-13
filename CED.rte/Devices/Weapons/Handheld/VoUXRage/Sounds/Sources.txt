@@ -1,0 +1,10 @@
+COD:MW: alpha50, xmike109
+
+Titanfall 2: Wpn_Softball_new_reload_end_Mech_MagCls_fr04_2ch_v1_01
+
+Bf2042: BF02_Weapons_Handheld_M95_Reload_Markers_01 15
+
+DOOM: Eternal: chaingun_switchtoturret_id#834756762
+chaingun_switchtoheatblast_id#447507869
+
+Unknown EmptyClick, taken from Frostbite mod

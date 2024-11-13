@@ -145,7 +145,6 @@ end
 function OnDetach(self)
 	self.parent = nil;
 	self.parentController = nil;
-	self.EXPTurbolanceSpinLoopSound:Stop(-1);
 	self.EXPTurbolanceOverheatLoopSound.Volume = 0; -- Don't outright stop this because we can't tell if we're being dropped or put in inventory
 end
 
