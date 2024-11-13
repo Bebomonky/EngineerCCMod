@@ -15,11 +15,6 @@ function Create(self)
 		ResearchCompleted = CreateSoundContainer("Confirm", "Base.rte"),
 		ResearchCanceled = CreateSoundContainer("Confirm", "Base.rte"),
 		ResearchItemSelect = CreateSoundContainer("Confirm", "Base.rte"),
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
 		Click = CreateSoundContainer("Geiger Click", "Base.rte")
 	};
@@ -88,10 +83,13 @@ function Create(self)
 				end
 			else
 				if item.RequiredTech == "None" then
-					item.IsResearched = true;
-				end
-				if self.Researches[item.RequiredTech] then
-					item.IsResearched = true;
+					if self.Researches[itemID] then
+						item.IsResearched = true;
+					end
+				else
+					if self.Researches[item.RequiredTech] then
+						item.IsResearched = true;
+					end
 				end
 			end
 		end
@@ -125,7 +123,7 @@ function Create(self)
 	end
 
 	self.researchFrame = -1; -- -1 blank | 0 Red | 1 Blue | 2 Yellow | 3 Gray
-	--When a category is clicked, clear infoBox
+	-- When a category is clicked, clear infoBox
 	self.clickedCategory = nil;
 end
 
@@ -137,8 +135,12 @@ function DisplayNumber(screen, vector, txt, isSmall, color)
 		local pos = vector + Vector(x + spriteWidth / 2, isSmall and 5 or 8);
 		local size = isSmall and "Small" or "Big";
 		local path = "CED.rte/Effects/Font/" .. color .. "/Numbers/" .. size .. "/" .. char .. ".png";
-		PrimitiveMan:DrawBitmapPrimitive(screen, pos, path, 0);
 		x = x + spriteWidth;
+		if tonumber(char) ~= nil then
+			PrimitiveMan:DrawBitmapPrimitive(screen, pos, path, 0);
+		else
+			PrimitiveMan:DrawTextPrimitive(screen, pos - Vector(2, 8), tostring(char), false, 0);
+		end
 	end
 end
 
@@ -148,6 +150,7 @@ function itemDescription(desc, isSmall, panelWidth)
 	end
 	local newDesc = "";
 	local line = "";
+	local longestWord = "";
 	for word in string.gmatch(desc, "%S+") do
 		local newLine = line .. (line ~= "" and " " or "") .. word;
 		local descWidth = FrameMan:CalculateTextWidth(newLine, isSmall) + 8;
@@ -159,13 +162,16 @@ function itemDescription(desc, isSmall, panelWidth)
 		else
 			line = newLine;
 		end
+		if #word > #longestWord then
+			longestWord = word;
+		end
 	end
 	if line ~= "" then
 		newDesc = newDesc .. line;
 	end
 
 	local descHeight = FrameMan:CalculateTextHeight(newDesc, 0, isSmall) + 25;
-	return newDesc, descHeight;
+	return newDesc, descHeight, longestWord;
 end
 
 function CC_TooltipSkin(parent, new)
@@ -173,12 +179,12 @@ function CC_TooltipSkin(parent, new)
 	local w = parent:GetWidth();
 	local h = parent:GetHeight();
 	local outlines = {
-		{Vector(w + 1, 0), Vector(1, h + 2), false, 21},
-		{Vector(0, h + 1), Vector(w + 2, 1), false, 21},
-		{Vector(0, 0), Vector(1, h), true, 21},
-		{Vector(0, 0), Vector(w, 1), true, 21},
-		{Vector(w - 1, 1), Vector(1, h - 1), true, 59},
-		{Vector(1, h - 1), Vector(w - 1, 1), true, 59},
+		{ Vector(w + 1, 0), Vector(1, h + 2), false, 21 },
+		{ Vector(0, h + 1), Vector(w + 2, 1), false, 21 },
+		{ Vector(0, 0),     Vector(1, h),     true,  21 },
+		{ Vector(0, 0),     Vector(w, 1),     true,  21 },
+		{ Vector(w - 1, 1), Vector(1, h - 1), true,  59 },
+		{ Vector(1, h - 1), Vector(w - 1, 1), true,  59 },
 	};
 	if new then
 		parent:Color(93);
@@ -229,7 +235,7 @@ function CC_TooltipSkin(parent, new)
 	end
 end
 
---This is the greatest AddQueue of all time
+-- This is the greatest AddQueue of all time
 function AddQueue(self, techController, panel, queueData)
 	local isInQueue = false;
 	local itemID = queueData.ItemID;
@@ -297,6 +303,7 @@ function AddQueue(self, techController, panel, queueData)
 	progressBar.OnComplete = function()
 		self.sounds.ResearchCompleted:Play(-1);
 		self.Queue[itemID] = nil;
+		self.Researches[itemID] = true;
 		self.technologyController:SendMessage("CED_UnlockTechnology", itemID);
 		progressBar:GetParent():Remove();
 		updateList();
@@ -365,7 +372,7 @@ function ResearchMenu(self)
 	self.queueBox:OutlineColor(71);
 	self.queueBox:OutlineThickness(2);
 
-	--This is literally so it just draws behind everything except the researchBox
+	-- This is literally so it just draws behind everything except the researchBox
 	local treeBox = {};
 	treeBox._name = "TREEBOX";
 	treeBox._drawAfterParent = true;
@@ -403,12 +410,15 @@ function ResearchMenu(self)
 
 	self.researchTooltip.Think = function()
 		self.researchTooltip:SetHide(true);
-		if self.researchBox.Displaying then
+		if self.researchTooltip.Displaying then
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
 			local pos = self.researchTooltip:GetAbsolutePos();
 			local textWidth = FrameMan:CalculateTextWidth("Cost: ", false);
 			local text_pos = pos + Vector(2, -1);
 			PrimitiveMan:DrawTextPrimitive(screen, text_pos, "Cost: ", false, 0);
+
+			PrimitiveMan:DrawTextPrimitive(screen, text_pos + Vector(1, 14), "Required: \n" .. self.researchTooltip.TechRequirements, true, 0);
+
 			DisplayNumber(screen, text_pos + Vector(textWidth, 0), tostring(self.infoBox.Data.Cost), false, hasFund and "Green" or "Red");
 		end
 	end
@@ -437,13 +447,13 @@ function ResearchMenu(self)
 		if self.clickedCategory == false then
 			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + self.infoBox:GetSize() * 0.5, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
 
-			--Action
+			-- Action
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(5, 100), self.infoBox.Data.Action, true, 0);
-			--RPM
+			-- RPM
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(51, 100), self.infoBox.Data.RPM, false, 0);
-			--MAG
+			-- MAG
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(100, 100), self.infoBox.Data.MAG, false, 0);
-			--Description
+			-- Description
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(1, 125), self.infoBox.Data.Description, true, 0);
 
 			if self.researchFrame > -1 then
@@ -461,29 +471,111 @@ function ResearchMenu(self)
 	researchButton:SetSize(127, 25);
 	researchButton:SetHide(true);
 	researchButton:SetClickable(false);
+	local isClickable = false;
 	researchButton.Think = function()
-		if self.researchFrame > -1 then
+
+		isClickable = false;
+		local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
+
+		if researchButton:GetClickable() == true then
 			if researchButton:IsHovered() then
 				self.researchTooltip:SetHide(false);
-				if not self.researchBox.Displaying then
-					local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false);
-					self.researchTooltip:SetSize(totalWidth + 5, 15);
+				if not self.researchTooltip.Displaying then
+					local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false) + 5;
+
+					local tech = type(self.infoBox.Data.RequiredTech) == "table" and table.concat(self.infoBox.Data.RequiredTech, ", ") or self.infoBox.Data.RequiredTech;
+					local maxWidth = FrameMan:CalculateTextWidth(tech, true);
+					local desc, descHeight, longestWord = itemDescription(tech, true, totalWidth + 40);
+					self.researchTooltip.TechRequirements = desc;
+
+					local longestWordWidth = FrameMan:CalculateTextWidth(longestWord, true);
+					self.researchTooltip:SetSize(totalWidth + longestWordWidth, descHeight);
 					CC_TooltipSkin(self.researchTooltip);
-					self.researchBox.Displaying = true;
+					self.researchTooltip.Displaying = true;
 				end
-				self.researchFrame = 2;
+
+				if self.Researches[self.infoBox.Data.ItemID] then
+					--print("ALREADY RESEARCHED | FAILURE")
+					self.researchFrame = 3; -- Gray
+				else
+					if self.Queue[self.infoBox.Data.ItemID] then
+						--print("IN QUEUE | FAILURE")
+						self.researchFrame = 3; -- Gray
+					elseif hasFund and not self.Queue[self.infoBox.Data.ItemID] then
+						if type(self.infoBox.Data.RequiredTech) == "table" then
+							local failCount = #self.infoBox.Data.RequiredTech;
+							for _, name in pairs(self.infoBox.Data.RequiredTech) do
+								if self.Researches[name] then
+									failCount = failCount - 1;
+								end
+								if failCount == 0 then
+									isClickable = true;
+									self.researchFrame = 2; -- Yellow
+								else
+									self.researchFrame = 3; -- Gray
+								end
+							end
+						else
+							if self.infoBox.Data.RequiredTech == "None" then
+								isClickable = true;
+								self.researchFrame = 2; -- Yellow
+							else
+								if self.Researches[self.infoBox.Data.RequiredTech] then
+									isClickable = true;
+									self.researchFrame = 2; -- Yellow
+								else
+									self.researchFrame = 3; -- Gray
+								end
+							end
+						end
+					elseif not hasFund then
+						self.researchFrame = 3; -- Gray
+					end
+				end
 			else
+				if self.Researches[self.infoBox.Data.ItemID] then
+					self.researchFrame = 3; -- Gray
+				else
+					if self.Queue[self.infoBox.Data.ItemID] then
+						self.researchFrame = 0; -- Red
+					elseif hasFund and not self.Queue[self.infoBox.Data.ItemID] then
+						if type(self.infoBox.Data.RequiredTech) == "table" then
+							local failCount = #self.infoBox.Data.RequiredTech;
+							for _, name in pairs(self.infoBox.Data.RequiredTech) do
+								if self.Researches[name] then
+									failCount = failCount - 1;
+								end
+								if failCount == 0 then
+									self.researchFrame = 1; -- Blue
+								else
+									self.researchFrame = 0; -- Red
+								end
+							end
+						else
+							if self.infoBox.Data.RequiredTech == "None" then
+								self.researchFrame = 1; -- Blue
+							else
+								if self.Researches[self.infoBox.Data.RequiredTech] then
+									self.researchFrame = 1; -- Blue
+								else
+									self.researchFrame = 0; -- Red
+								end
+							end
+						end
+					elseif not hasFund then
+						self.researchFrame = 0; -- Red
+					end
+				end
 				self.researchTooltip.Displaying = false;
-				self.researchFrame = 3;
 			end
 		end
 	end
 
 	researchButton.OnPress = function(key)
 		if key == Controller.PRIMARY_ACTION then
-			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
-			if hasFund then
+			if isClickable then
 				local queue = AddQueue(self, self.technologyController, self.queueBox, self.infoBox.Data);
+				self.sounds.ResearchStarted:Play(-1);
 			else
 				self.sounds.Error:Play(-1);
 			end
@@ -538,6 +630,7 @@ function ResearchMenu(self)
 				self.researchFrame = -1;
 				self.clickedCategory = true;
 				self.sounds[techID .. "Tree"]:Play(-1);
+				researchButton:SetClickable(false);
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
@@ -553,7 +646,7 @@ function ResearchMenu(self)
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
-			button.Researched = false;
+			button.IsResearched = item.IsResearched;
 			button.RequiredTech = item.RequiredTech;
 			button.justHovered = false;
 			button.Selected = false;
@@ -578,6 +671,7 @@ function ResearchMenu(self)
 			else
 				button:SetText("");
 			end
+
 			button.Think = function()
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
@@ -613,10 +707,10 @@ function ResearchMenu(self)
 							btn.Selected = false;
 						end
 						button.Selected = true;
-						self.researchFrame = 1;
 						self.clickedCategory = false;
 
 						self.infoBox.Data.ItemID = itemID;
+						self.infoBox.Data.RequiredTech = item.RequiredTech;
 						self.infoBox.Data.DisplayName = item.DisplayName;
 						self.infoBox.Data.Description = description;
 						self.infoBox.Data.Action = action;
