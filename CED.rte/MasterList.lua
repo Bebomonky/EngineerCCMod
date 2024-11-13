@@ -143,9 +143,9 @@ Does more damage against robotic enemies.
 								  ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tSEMI\nAUTOMATIC",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "12",
+								  ["Action"] = "\t SEMI\nAUTOMATIC",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t  12",
 								  ["Pos"] = Vector(100, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaDoctra/Icon.png",
 								  ["IconSize"] = Vector(15, 8),
@@ -161,9 +161,9 @@ Does more damage against robotic enemies.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tDOUBLE\nACTION",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "5",
+								  ["Action"] = "\tDOUBLE\n\tACTION",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t   5",
 								  ["Pos"] = Vector(150, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaA12Axiom/Icon.png",
 								  ["IconSize"] = Vector(23, 12),
@@ -180,8 +180,8 @@ Computerized plasma shots home in on targets, and deal more damage against robot
 Blank
 ]],
 								  ["Action"] = "\tFULLY\nAUTOMATIC",
-								  ["RPM"] = "800",
-								  ["MAG"] = "30+1",
+								  ["RPM"] = "\t 800",
+								  ["MAG"] = "\t30+1",
 								  ["Pos"] = Vector(200, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaMTXDirective/Icon.png",
 								  ["IconSize"] = Vector(17, 10),
@@ -196,9 +196,9 @@ Xarix-brand hybrid weapon. Multimodal lasergun.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "ELECTRIC",
-								  ["RPM"] = "150-400",
-								  ["MAG"] = "24",
+								  ["Action"] = "  ELECTRIC",
+								  ["RPM"] = " 150-400",
+								  ["MAG"] = "\t  24",
 								  ["Pos"] = Vector(250, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaVidara/Icon.png",
 								  ["IconSize"] = Vector(25, 10),
@@ -213,9 +213,9 @@ Xarix-brand charge cannon. Destructive.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "CHARGE",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "1",
+								  ["Action"] = "   CHARGE",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t   1",
 								  ["Pos"] = Vector(300, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaEACondor/Icon.png",
 								  ["IconSize"] = Vector(34, 13),
@@ -230,9 +230,9 @@ Khrabarovsk-brand revolver. Double-action.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tDOUBLE\nACTION",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "8",
+								  ["Action"] = "\tDOUBLE\n\tACTION",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t   8",
 								  ["Pos"] = Vector(100, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhSPr40/Icon.png",
 								  ["IconSize"] = Vector(14, 10),
@@ -248,9 +248,9 @@ The CQB weapon of choice since time immemorial.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tPUMP\nACTION",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "4+1",
+								  ["Action"] = "\t PUMP\n\tACTION",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t 4+1",
 								  ["Pos"] = Vector(150, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhGS7/Icon.png",
 								  ["IconSize"] = Vector(28, 10),
@@ -265,9 +265,9 @@ Khrabarovsk-brand assault rifle. Versatile.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tSELECT\nFIRE",
-								  ["RPM"] = "600",
-								  ["MAG"] = "30+1",
+								  ["Action"] = "   SELECT\n\t FIRE",
+								  ["RPM"] = "\t 600",
+								  ["MAG"] = "\t30+1",
 								  ["Pos"] = Vector(200, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/Kh11p35/Icon.png",
 								  ["IconSize"] = Vector(28, 12),
@@ -283,9 +283,9 @@ A boxy little big offbore-handled bolt-action.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tBOLT\nACTION",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "4+1",
+								  ["Action"] = "\t  BOLT\n\tACTION",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t 4+1",
 								  ["Pos"] = Vector(250, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhMOSKA/Icon.png",
 								  ["IconSize"] = Vector(32, 10),
@@ -300,9 +300,9 @@ Khrabarovsk-brand marksman rifle. Semi-automatic.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tSEMI\nAUTOMATIC",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "7+1",
+								  ["Action"] = "\t SEMI\nAUTOMATIC",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t 7+1",
 								  ["Pos"] = Vector(300, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhJS50/Icon.png",
 								  ["IconSize"] = Vector(34, 12),
@@ -319,8 +319,8 @@ For non-heavy actors, can only be used when crouching and still.
 Blank
 ]],
 								  ["Action"] = "\tFULLY\nAUTOMATIC",
-								  ["RPM"] = "550",
-								  ["MAG"] = "80",
+								  ["RPM"] = "\t 550",
+								  ["MAG"] = "\t  80",
 								  ["Pos"] = Vector(350, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/KhC8Chimera/Icon.png",
 								  ["IconSize"] = Vector(43, 13),
@@ -335,9 +335,9 @@ Vossberg-brand handcannon. High-caliber, high-octane.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tSEMI\nAUTOMATIC",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "7+1",
+								  ["Action"] = "\t SEMI\nAUTOMATIC",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t 7+1",
 								  ["Pos"] = Vector(100, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoHammerhead/Icon.png",
 								  ["IconSize"] = Vector(18, 10),
@@ -354,7 +354,7 @@ Blank
 ]],
 								  ["Action"] = "\tFULLY\nAUTOMATIC",
 								  ["RPM"] = "800-3600",
-								  ["MAG"] = "20",
+								  ["MAG"] = "\t  20",
 								  ["Pos"] = Vector(150, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoAtlastar/Icon.png",
 								  ["IconSize"] = Vector(22, 10),
@@ -369,9 +369,9 @@ Vossberg-brand triple barrel shotgun. A real hunter's weapon.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tBREAK\nACTION",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "3",
+								  ["Action"] = "\tBREAK\n   ACTION",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t   3",
 								  ["Pos"] = Vector(200, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoTrigoliath/Icon.png",
 								  ["IconSize"] = Vector(36, 11),
@@ -387,8 +387,8 @@ Vossberg-brand assault rifle. Heavy and hardcore.
 Blank
 ]],
 								  ["Action"] = "\tFULLY\nAUTOMATIC",
-								  ["RPM"] = "250-490",
-								  ["MAG"] = "30+1",
+								  ["RPM"] = " 250-490",
+								  ["MAG"] = "\t30+1",
 								  ["Pos"] = Vector(250, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoGrandarme/Icon.png",
 								  ["IconSize"] = Vector(35, 16),
@@ -403,9 +403,9 @@ Vossberg-brand materia destroyer. Huge single-shot rifle.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "\tBREECH\nLOADING",
-								  ["RPM"] = "SEMI",
-								  ["MAG"] = "1",
+								  ["Action"] = "   BREECH\n  LOADING",
+								  ["RPM"] = "\tSEMI",
+								  ["MAG"] = "\t   1",
 								  ["Pos"] = Vector(300, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/VoTitanAMI/Icon.png",
 								  ["IconSize"] = Vector(39, 11),
@@ -421,9 +421,9 @@ Emplacement-grade firerate. Overheats rapidly - avoid overuse.
 ["InfoBoxDescription"] = [[
 Blank
 ]],
-								  ["Action"] = "ELECTRIC",
-								  ["RPM"] = "3600",
-								  ["MAG"] = "200",
+								  ["Action"] = "  ELECTRIC",
+								  ["RPM"] = "\t3600",
+								  ["MAG"] = "\t 200",
 								  ["Pos"] = Vector(200, 200),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/EXPTurbolance/Icon.png",
 								  ["IconSize"] = Vector(37, 16),
