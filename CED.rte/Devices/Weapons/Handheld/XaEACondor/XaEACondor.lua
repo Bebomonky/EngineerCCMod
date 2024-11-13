@@ -88,7 +88,7 @@ function ThreadedUpdate(self)
 	end
 	
 	if self.XaEACondorCharging then
-		self.HEATAngVelOverride = math.random(-3, 3) * (1 - self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime);
+		self.HEATAngVelManualAddition = math.random(-3, 3) * (1 - self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime);
 		CameraMan:AddScreenShake(1.05 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
 		if self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorChargeTime) then
 			self:Activate();

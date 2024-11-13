@@ -1,11 +1,8 @@
-All CP2077
-
+CP2077:
 smart_ashura_handle_pull, tech_achilles_servo
-
 smart_sidewinder_mag_in
-
 smart_ashura_handle_release
-
 emptyclick = w_gun_rifle_power_masamune_trigger
-
 switch: tech achilles loaded
+
+BF1: Weapons_Shared_Reload_3p_MagDrop_Small_01_Wave 1 4 0

@@ -72,7 +72,7 @@ function ThreadedUpdate(self)
 	self.XaA12AxiomHeatMechSound.Pos = self.Pos;
 	self.XaA12AxiomHeatMechChargedSound.Pos = self.Pos;
 
-	self.HEATAngVelOverride = 0;
+	self.HEATAngVelManualAddition = 0;
 
 	if self.parent then
 		local fire = self.RoundInMagCount > 0 and self:IsActivated();
@@ -89,7 +89,7 @@ function ThreadedUpdate(self)
 						self.XaA12AxiomChargeSound:Play(self.Pos);
 					end
 					
-					self.HEATAngVelOverride = math.random(-3, 3) * self.XaA12AxiomChargingTimer.ElapsedSimTimeMS / (self.XaA12AxiomChargingHoldTime + self.XaA12AxiomChargingChargeTime);
+					self.HEATAngVelManualAddition = math.random(-3, 3) * self.XaA12AxiomChargingTimer.ElapsedSimTimeMS / (self.XaA12AxiomChargingHoldTime + self.XaA12AxiomChargingChargeTime);
 				end
 				
 				if self.XaA12AxiomChargingTimer:IsPastSimMS(self.XaA12AxiomChargingHoldTime + self.XaA12AxiomChargingChargeTime) then
@@ -98,7 +98,7 @@ function ThreadedUpdate(self)
 						self.parent:GetController():SetState(Controller.WEAPON_FIRE, true);
 					end
 					self:Activate();
-					self.HEATAngVelOverride = 0;
+					self.HEATAngVelManualAddition = 0;
 					self.XaA12AxiomActivated = false;
 					self.XaA12AxiomCharging = false;
 					self.XaA12AxiomChargingTimer:Reset();

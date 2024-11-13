@@ -86,6 +86,9 @@ function ThreadedUpdate(self)
 	self.KhC8ChimeraUndeploySound.Pos = self.Pos;
 
 	if self.parent then
+		self.HEATRotationTargetOverride = nil; -- Just reset these every frame to make sure
+		self.HEATRotationTargetManualAddition = 0;	
+	
 		local isPlayerControlled = self.parent:IsPlayerControlled();
 		local aimAngle = math.deg(self.parent:GetAimAngle(false));	
 	
@@ -130,11 +133,11 @@ function ThreadedUpdate(self)
 			-- Fully deployed
 			if self.KhC8ChimeraDeployTimer:IsPastSimMS(timeToUse) then
 				self.HEATRotationTargetOverride = nil;
-				self.HEATAngVelOverride = 0;
+				self.HEATAngVelManualAddition = 0;
 				
 				if not self.KhC8ChimeraDeployed then
 					self.KhC8ChimeraDeployed = true;
-					self.HEATAngVelOverride = 5;
+					self.HEATAngVelManualAddition = 5;
 				end
 				
 				if not self:IsReloading() then
@@ -162,13 +165,16 @@ function ThreadedUpdate(self)
 			else
 				self.HEATRotationSpeed = 3;
 				self.HEATRotationTargetOverride = 20;
+				self:Deactivate();
 			end
 		-- Not valid for deployment
 		elseif self.KhC8ChimeraInvalidStanceGraceTimer:IsPastSimMS(self.KhC8ChimeraInvalidStanceGraceTime) then
-			if self.KhC8ChimeraDeployed then
+			if self.KhC8ChimeraDeploySoundPlayed then
+				if self.KhC8ChimeraDeployed then
+					self.KhC8ChimeraUndeploySound:Play(self.Pos);
+				end
 				self.KhC8ChimeraDeployed = false;
 				self.KhC8ChimeraDeploySound:FadeOut(200);
-				self.KhC8ChimeraUndeploySound:Play(self.Pos);
 				
 				self.KhC8ChimeraDeploySoundPlayed = false;
 				
@@ -184,7 +190,8 @@ function ThreadedUpdate(self)
 			self.HEATOriginalSharpLength = 0;
 			
 			if self:IsReloading() then
-				self.HEATRotationTargetOverride = 35 - aimAngle;
+				self.HEATRotationTargetOverride = 0;
+				self.HEATRotationTargetManualAddition = 35 - aimAngle;
 			else
 				self.HEATRotationTargetOverride = 70 - aimAngle;
 			end
@@ -192,13 +199,13 @@ function ThreadedUpdate(self)
 		end
 		if self.parent.StrideFrame then
 			if not canDeploy then
-				self.HEATAngVelOverride = 18;
+				self.HEATAngVelManualAddition = 18;
 			end
 			if self.Magazine then
 				self.KhC8ChimeraWalkBeltSound:Play(self.Pos);
 			end
 		else
-			self.HEATAngVelOverride = 0;
+			self.HEATAngVelManualAddition = 0;
 		end		
 	end
 

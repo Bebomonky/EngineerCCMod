@@ -98,7 +98,7 @@ function Create(self)
 	-- Whether to take away one round from the final reload when reloading from empty.
 	self.HEATPlusOneChamberedRound = false;
 	-- Your full magazine size, including the one in the chamber. This should be equal to the Magazine's RoundCount.
-	self.HEATFullMagazineRoundCount = 18;
+	self.HEATFullMagazineRoundCount = 24;
 	
 	-- Whether this becomes dual-reloadable when not emptied. Won't have an effect if you don't expect this to ever be dual-wielded.
 	-- If you don't want the HEATSystem to meddle with this at all, leave it false.

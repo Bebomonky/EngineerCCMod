@@ -249,6 +249,7 @@ function Create(self)
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 2) then
 			self.HEATCurrentReloadPhaseData.rotationTarget = 0;
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-12, 8);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
 			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 8);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
@@ -344,7 +345,7 @@ function Create(self)
 
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(0, 4);
+		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(0, 2);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -371,7 +372,7 @@ function Create(self)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 0;
-	reloadPhase.verticalAnim = 0;
+	reloadPhase.verticalAnim = 1;
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 6;
 	reloadPhase.endFrame = 6;
@@ -419,7 +420,7 @@ function Create(self)
 	reloadPhase.rotationTarget = -1;
 	reloadPhase.angVel = 1;
 	reloadPhase.horizontalAnim = 0;
-	reloadPhase.verticalAnim = 0;
+	reloadPhase.verticalAnim = 1;
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 6;
 	reloadPhase.endFrame = 0;
@@ -436,7 +437,7 @@ function Create(self)
 	
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(2, -3);
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, -3);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -461,8 +462,8 @@ function Create(self)
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 1)
 	reloadPhase.rotationTarget = -1;
-	reloadPhase.angVel = -1;
-	reloadPhase.horizontalAnim = -1;
+	reloadPhase.angVel = -5;
+	reloadPhase.horizontalAnim = -2;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
 	reloadPhase.startFrame = 7;
@@ -505,8 +506,8 @@ function Create(self)
 	reloadPhase.reloadSupportOffsetSpeed = 16;
 	reloadPhase.reloadSupportOffsetTarget = Vector(-8, 1)
 	reloadPhase.rotationTarget = 0;
-	reloadPhase.angVel = 1;
-	reloadPhase.horizontalAnim = 1;
+	reloadPhase.angVel = 5;
+	reloadPhase.horizontalAnim = 2;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = false;
 	reloadPhase.startFrame = 11;

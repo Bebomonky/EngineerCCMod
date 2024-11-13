@@ -77,6 +77,9 @@ function ThreadedUpdate(self)
 	self.KhAMAVogastir40UndeploySound.Pos = self.Pos;
 
 	if self.parent then
+		self.HEATRotationTargetOverride = nil; -- Just reset these every frame to make sure
+		self.HEATRotationTargetManualAddition = 0;
+	
 		local isPlayerControlled = self.parent:IsPlayerControlled();
 		local aimAngle = math.deg(self.parent:GetAimAngle(false));	
 	
@@ -121,11 +124,11 @@ function ThreadedUpdate(self)
 			-- Fully deployed
 			if self.KhAMAVogastir40DeployTimer:IsPastSimMS(timeToUse) then
 				self.HEATRotationTargetOverride = nil;
-				self.HEATAngVelOverride = 0;
+				self.HEATAngVelManualAddition = 0;
 				
 				if not self.KhAMAVogastir40Deployed then
 					self.KhAMAVogastir40Deployed = true;
-					self.HEATAngVelOverride = 5;
+					self.HEATAngVelManualAddition = 5;
 				end
 				
 				if not self:IsReloading() then
@@ -153,13 +156,16 @@ function ThreadedUpdate(self)
 			else
 				self.HEATRotationSpeed = 3;
 				self.HEATRotationTargetOverride = 20;
+				self:Deactivate();
 			end
 		-- Not valid for deployment
 		elseif self.KhAMAVogastir40InvalidStanceGraceTimer:IsPastSimMS(self.KhAMAVogastir40InvalidStanceGraceTime) then
-			if self.KhAMAVogastir40Deployed then
+			if self.KhAMAVogastir40DeploySoundPlayed then
+				if self.KhAMAVogastir40Deployed then
+					self.KhAMAVogastir40UndeploySound:Play(self.Pos);
+				end
 				self.KhAMAVogastir40Deployed = false;
 				self.KhAMAVogastir40DeploySound:FadeOut(200);
-				self.KhAMAVogastir40UndeploySound:Play(self.Pos);
 				
 				self.KhAMAVogastir40DeploySoundPlayed = false;
 				
@@ -175,31 +181,23 @@ function ThreadedUpdate(self)
 			self.HEATOriginalSharpLength = 0;
 			
 			if self:IsReloading() then
-				self.HEATRotationTargetOverride = 35 - aimAngle;
+				self.HEATRotationTargetOverride = 0;
+				self.HEATRotationTargetManualAddition = 35 - aimAngle;
 			else
 				self.HEATRotationTargetOverride = 70 - aimAngle;
 			end
-			self.HEATRotationSpeed = 3;
-			
-			if self.parent.StrideFrame then
-				self.HEATAngVelOverride = 18;
-				if self.Magazine then
-					self.KhAMAVogastir40WalkSound:Play(self.Pos);
-				end
-			else
-				self.HEATAngVelOverride = 0;
-			end			
+			self.HEATRotationSpeed = 3;	
 		end
 	
 		if self.parent.StrideFrame then
 			if not canDeploy then
-				self.HEATAngVelOverride = 18;
+				self.HEATAngVelManualAddition = 18;
 			end
 			if self.Magazine then
 				self.KhAMAVogastir40WalkSound:Play(self.Pos);
 			end
 		else
-			self.HEATAngVelOverride = 0;
+			self.HEATAngVelManualAddition = 0;
 		end
 	end
 

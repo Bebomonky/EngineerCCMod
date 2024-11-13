@@ -47,7 +47,7 @@ function ThreadedUpdate(self)
 	self.KhSPr40SinglePreSound.Pos = self.Pos;
 	
 	self.HEATRotationTargetOverride = nil;
-	self.HEATAngVelOverride = 0;
+	self.HEATAngVelManualAddition = 0;
 	self.HEATPersistentFrame = 0;
 
 	if self.parent then
@@ -63,7 +63,7 @@ function ThreadedUpdate(self)
 					if not self.KhSPr40PrecisionMode then
 						self.KhSPr40PrecisionMode = true;
 						self.KhSPr40HammerBackSound:Play(self.Pos);
-						self.HEATAngVelOverride = -5;
+						self.HEATAngVelManualAddition = -5;
 						self.HEATOriginalSharpLength = 300;
 					end
 					self.HEATPreSound = self.KhSPr40SinglePreSound;

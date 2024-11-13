@@ -4,6 +4,8 @@ BF1: MG0818
 
 BF2042: BF01_Soldier_Movement_Foley_WeaponAdd_Parametric_01 150
 
+BF4: Destruction_Metal_Box_Small_Cluster_01_wave 0 0 0_2ch, Destruction_Metal_Box_Small_Debris_Long_01_wave 0 0 0_2ch
+
 BF5: Weapons_Shared_Shells_20mm_Exterior_Wave 1 0 0
 
 partially original
