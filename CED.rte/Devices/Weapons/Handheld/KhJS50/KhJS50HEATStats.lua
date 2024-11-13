@@ -232,7 +232,7 @@ function Create(self)
 	reloadPhase.afterDelay = 350;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 2);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, 8)
+	reloadPhase.reloadSupportOffsetTarget = Vector(1, 5)
 	reloadPhase.rotationTarget = 20;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
@@ -253,7 +253,7 @@ function Create(self)
 		
 	end
 	reloadPhase.finishCallback = function (self)
-		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-2, 2);
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 2);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -276,7 +276,7 @@ function Create(self)
 	reloadPhase.afterDelay = 110;
 	reloadPhase.reloadStanceOffsetTarget = Vector(4, -2);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(2, -1)
+	reloadPhase.reloadSupportOffsetTarget = Vector(2, -3)
 	reloadPhase.rotationTarget = 15;
 	reloadPhase.angVel = -2;
 	reloadPhase.horizontalAnim = 0;
@@ -297,7 +297,7 @@ function Create(self)
 		
 	end
 	reloadPhase.finishCallback = function (self)
-		
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-4, 3);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
@@ -320,7 +320,7 @@ function Create(self)
 	reloadPhase.afterDelay = 350;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -1)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-4, -3)
 	reloadPhase.rotationTarget = 5;
 	reloadPhase.angVel = 15;
 	reloadPhase.horizontalAnim = 0;
@@ -341,7 +341,7 @@ function Create(self)
 		
 	end
 	reloadPhase.finishCallback = function (self)
-		
+		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(3, 5);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
 		
