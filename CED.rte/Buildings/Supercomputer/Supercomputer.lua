@@ -8,6 +8,18 @@ function Create(self)
 
 	self.sounds = {
 		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		XarixTree = CreateSoundContainer("Confirm", "Base.rte"),
+		KhrabarovskTree = CreateSoundContainer("Confirm", "Base.rte"),
+		VossbergTree = CreateSoundContainer("Confirm", "Base.rte"),
+		ResearchStarted = CreateSoundContainer("Confirm", "Base.rte"),
+		ResearchCompleted = CreateSoundContainer("Confirm", "Base.rte"),
+		ResearchCanceled = CreateSoundContainer("Confirm", "Base.rte"),
+		ResearchItemSelect = CreateSoundContainer("Confirm", "Base.rte"),
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
 		Click = CreateSoundContainer("Geiger Click", "Base.rte")
 	};
@@ -18,14 +30,14 @@ function Create(self)
 	self.saveLoadHandler:Initialize(false);
 
 	if self:StringValueExists("CEDSupercomputerResearch") then
-		self.Researches = self.saveLoadHandler:DeserializeTable(self:GetStringValue("CEDSupercomputerResearch"), "CEDSupercomputerResearch");
+		self.Researches = self.saveLoadHandler:DeserializeTable(self:GetEncodedStringValue("CEDSupercomputerResearch"), "CEDSupercomputerResearch");
 		self:RemoveStringValue("CEDSupercomputerResearch");
 	else
 		self.Researches = {};
 	end
 
 	if self:StringValueExists("CEDSupercomputerQueue") then
-		self.Queue = self.saveLoadHandler:DeserializeTable(self:GetStringValue("CEDSupercomputerQueue"), "CEDSupercomputerQueue");
+		self.Queue = self.saveLoadHandler:DeserializeTable(self:GetEncodedStringValue("CEDSupercomputerQueue"), "CEDSupercomputerQueue");
 		self:RemoveStringValue("CEDSupercomputerQueue");
 	else
 		self.Queue = {};
@@ -82,12 +94,6 @@ function Create(self)
 					item.IsResearched = true;
 				end
 			end
-			if self.Queue[itemID] then
-				
-			end
-			--item.IsResearched = researchTech and true or false;
-			--item.InProgress = researchItem.InProgress or false;
-			--item.ElapsedSimTimeMS = researchItem.ElapsedSimTimeMS or 0;
 		end
 	end
 
@@ -119,6 +125,8 @@ function Create(self)
 	end
 
 	self.researchFrame = -1; -- -1 blank | 0 Red | 1 Blue | 2 Yellow | 3 Gray
+	--When a category is clicked, clear infoBox
+	self.clickedCategory = nil;
 end
 
 function DisplayNumber(screen, vector, txt, isSmall, color)
@@ -221,12 +229,13 @@ function CC_TooltipSkin(parent, new)
 	end
 end
 
---This is the greatest addQueue of all time
-function addQueue(panel, queueData, successSound, failSound)
+--This is the greatest AddQueue of all time
+function AddQueue(self, techController, panel, queueData)
 	local isInQueue = false;
-	for k, v in ipairs(self.queueBox:GetChildren()) do
-		if v:GetName() == self.infoBox.Data.ItemID then
-			failSound:Play(-1);
+	local itemID = queueData.ItemID;
+	for k, panel in ipairs(panel:GetChildren()) do
+		if panel:GetName() == itemID then
+			self.sounds.Error:Play(-1);
 			isInQueue = true;
 			break;
 		end
@@ -236,19 +245,34 @@ function addQueue(panel, queueData, successSound, failSound)
 		return;
 	end
 
+	local displayName = queueData.DisplayName;
+	local queueIcon = queueData.QueueIcon;
+	local queueIconWidth = queueData.QueueIconWidth;
+	local researchTime = queueData.ResearchTime;
+	local elapsedSimTimeMS = queueData.ElapsedSimTimeMS or 0;
+
+	if not self.Queue[itemID] then
+		self.Queue[itemID] = {
+			DisplayName = queueData.DisplayName,
+			QueueIcon = queueData.QueueIcon,
+			QueueIconWidth = queueData.QueueIconWidth,
+			ResearchTime = queueData.ResearchTime,
+			ElapsedSimTimeMS = queueData.ElapsedSimTimeMS or 0
+		};
+	end
+
 	local screen = panel:GetScreen();
-	local owner = panel:GetOwner();
 	local queueItem = panel:Add("COLLECTIONBOX");
-	queueItem:SetTitle(queueData.DisplayName);
-	queueItem:SetName(queueData.ItemID);
+	queueItem:SetTitle(displayName);
+	queueItem:SetName(itemID);
 	queueItem:SetSize(queueItem:GetParent():GetWidth(), 40);
 
 	local i = table.Count(panel:GetChildren());
-	queueItem:SetPos(0, 40 * ((i - 1)));
+	queueItem:SetPos(0, 40 * (i - 1));
 	queueItem.Position = i;
 
 	local progressBar = queueItem:Add("PROGRESSBAR");
-	progressBar:SetName(queueData.ItemID);
+	progressBar:SetName("RESEARCHBAR");
 	progressBar:SetPos(5, progressBar:GetParent():GetHeight() - 15);
 	progressBar:SetSize(50, 10);
 	progressBar:BGColor(245);
@@ -256,37 +280,70 @@ function addQueue(panel, queueData, successSound, failSound)
 	progressBar:SetFraction(0);
 
 	local function updateList()
-		for i, panel in ipairs(panel:GetChildren()) do
-			local child = panel:GetChildren()[1];
-			panel:SetPos(0, 40 * (i - 1));
-			panel:GetChildren()[1]:SetPos(5, child:GetParent():GetHeight() - 15);
-			panel.Position = i;
+		for i, queuePanel in ipairs(panel:GetChildren()) do
+			queuePanel:SetPos(0, 40 * (i - 1));
+			queuePanel.Position = i;
+			local researchPanel = queuePanel:GetChildren()[1];
+			local cancelPanel = queuePanel:GetChildren()[2];
+			if researchPanel:GetName("RESEARCHBAR") then
+				researchPanel:SetPos(5, queuePanel:GetHeight() - 15);
+			end
+			if cancelPanel:GetName("CANCELRESEARCH") then
+				cancelPanel:SetPos(queuePanel:GetWidth() - cancelPanel:GetWidth(), 0);
+			end
 		end
 	end
-	
-	function progressBar:OnComplete()
-		successSound:Play(-1);
-		self:GetParent():Remove();
+
+	progressBar.OnComplete = function()
+		self.sounds.ResearchCompleted:Play(-1);
+		self.Queue[itemID] = nil;
+		self.technologyController:SendMessage("CED_UnlockTechnology", itemID);
+		progressBar:GetParent():Remove();
 		updateList();
 	end
 
-	function progressBar:Think()
-		local parent = self:GetParent();
+	local cancelButton = queueItem:Add("BUTTON");
+	cancelButton:SetText("X");
+	cancelButton:SetName("CANCELRESEARCH");
+	cancelButton:SetSmallText(false);
+	cancelButton:SetSize(10, 10);
+	cancelButton:SetPos(cancelButton:GetParent():GetWidth() - cancelButton:GetWidth(), 0);
+
+	cancelButton.Think = function()
+		cancelButton:Color(cancelButton:IsHovered() and 13 or 144);
+	end
+	
+	cancelButton.OnPress = function(key)
+		if key == Controller.PRIMARY_ACTION then
+			self.sounds.ResearchCanceled:Play(-1);
+			self.Queue[itemID] = nil;
+			cancelButton:GetParent():Remove();
+			updateList();
+		end
+	end
+
+	progressBar.Think = function()
+		local parent = progressBar:GetParent();
+
 		if parent.Position == 1 then
-			if self.IsRunning == true then
-				local timeLeft = (self.TotalTime - self.Timer:LeftTillSimTimeLimitMS()) / self.TotalTime;
-				self:SetFraction(timeLeft);
-			elseif self.IsRunning == false then
-				self.Timer = Timer();
-				self.TotalTime = 10000;
-				self.Timer:SetSimTimeLimitMS(progressBar.TotalTime);
-				self.IsRunning = true;
+			if progressBar.IsRunning == true then
+				local timeLeft = progressBar.Timer.ElapsedSimTimeMS / progressBar.TotalTime;
+				progressBar:SetFraction(timeLeft);
+			elseif progressBar.IsRunning == false then
+				progressBar.Timer = Timer();
+				progressBar.TotalTime = researchTime;
+				progressBar.Timer.ElapsedSimTimeMS = elapsedSimTimeMS;
+				progressBar.IsRunning = true;
 			end
 		end
 
-		self:SetText(string.format("%.0f%%", self:GetFraction() * 100));
+		progressBar:SetText(string.format("%.0f%%", progressBar:GetFraction() * 100));
 		local world_pos = parent:GetAbsolutePos();
-		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(queueData.QueueIconSize.X / 2, 15), queueData.QueueIcon, 0);
+		PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + Vector(queueIconWidth, 15), queueIcon, 0);
+
+		if progressBar.Timer then
+			self.Queue[itemID].ElapsedSimTimeMS = progressBar.Timer.ElapsedSimTimeMS;
+		end
 	end
 end
 
@@ -307,7 +364,6 @@ function ResearchMenu(self)
 	self.queueBox:Color(146);
 	self.queueBox:OutlineColor(71);
 	self.queueBox:OutlineThickness(2);
-	self.queueBox:SetOwner(self);
 
 	--This is literally so it just draws behind everything except the researchBox
 	local treeBox = {};
@@ -368,7 +424,7 @@ function ResearchMenu(self)
 		ItemID = "",
 		DisplayName = "",
 		QueueIcon = "",
-		QueueIconSize = Vector(),
+		QueueIconWidth = 0,
 		Cost = 0,
 		Action = "",
 		RPM = "",
@@ -377,18 +433,24 @@ function ResearchMenu(self)
 	};
 
 	self.infoBox.Think = function()
+		local world_pos = self.infoBox:GetAbsolutePos();
 		if self.clickedCategory == false then
-			PrimitiveMan:DrawBitmapPrimitive(screen, self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
-			local world_pos = self.infoBox:GetAbsolutePos();
+			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + self.infoBox:GetSize() * 0.5, "CED.rte/Buildings/Supercomputer/infoBox.png", 0);
 
-			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(5, 100), self.infoBox.Data.Action, true, 0); --Action
-			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(51, 100), self.infoBox.Data.RPM, false, 0); --RPM
-			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(100, 100), self.infoBox.Data.MAG, false, 0); --MAG
-			PrimitiveMan:DrawTextPrimitive(screen, self.infoBox:GetAbsolutePos() + Vector(1, 125), self.infoBox.Data.Description, true, 0); --Description
+			--Action
+			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(5, 100), self.infoBox.Data.Action, true, 0);
+			--RPM
+			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(51, 100), self.infoBox.Data.RPM, false, 0);
+			--MAG
+			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(100, 100), self.infoBox.Data.MAG, false, 0);
+			--Description
+			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(1, 125), self.infoBox.Data.Description, true, 0);
 
 			if self.researchFrame > -1 then
-				local world_pos = self.infoBox:GetAbsolutePos() + self.infoBox:GetSize() * 0.5 + Vector(0, 120);
-				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos, "CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png", 0);
+				PrimitiveMan:DrawBitmapPrimitive(screen,
+				world_pos + self.infoBox:GetSize() * 0.5 + Vector(0, 120),
+				"CED.rte/Buildings/Supercomputer/research00" .. self.researchFrame .. ".png",
+				0);
 			end
 		end
 	end
@@ -421,7 +483,7 @@ function ResearchMenu(self)
 		if key == Controller.PRIMARY_ACTION then
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
 			if hasFund then
-				addQueue(self.queueBox, self.infoBox.Data, self.sounds.Confirm, self.sounds.Error)
+				local queue = AddQueue(self, self.technologyController, self.queueBox, self.infoBox.Data);
 			else
 				self.sounds.Error:Play(-1);
 			end
@@ -436,6 +498,15 @@ function ResearchMenu(self)
 		["Khrabarovsk"] = 215,
 		["Vossberg"] = 295
 	};
+
+	if not table.IsEmpty(self.Queue) then
+		for itemID, data in pairs(self.Queue) do
+			local queueData = data;
+			queueData.ItemID = itemID;
+			AddQueue(self, self.technologyController, self.queueBox, queueData);
+		end
+	end
+
 	for techID, faction in pairs(CEDMasterList.Technology) do
 		local tab = self.Menu:CreateGUI("BUTTON", self.researchBox, "Category");
 		if tab_pos[techID] then
@@ -466,7 +537,7 @@ function ResearchMenu(self)
 				tab.Selected = true;
 				self.researchFrame = -1;
 				self.clickedCategory = true;
-				self.sounds.Confirm:Play(-1);
+				self.sounds[techID .. "Tree"]:Play(-1);
 				self:MenuChange(self.menuData[techID], false);
 			end
 		end
@@ -547,16 +618,17 @@ function ResearchMenu(self)
 
 						self.infoBox.Data.ItemID = itemID;
 						self.infoBox.Data.DisplayName = item.DisplayName;
-						self.infoBox.Data.QueueIcon = item.IconPath;
-						self.infoBox.Data.QueueIconSize = item.IconSize;
-						self.infoBox.Data.Cost = item.Cost;
+						self.infoBox.Data.Description = description;
 						self.infoBox.Data.Action = action;
 						self.infoBox.Data.RPM = rpm;
 						self.infoBox.Data.MAG = mag;
-						self.infoBox.Data.Description = description;
+						self.infoBox.Data.QueueIcon = item.IconPath;
+						self.infoBox.Data.QueueIconWidth = item.IconSize.X / 2;
+						self.infoBox.Data.ResearchTime = item.ResearchTime;
+						self.infoBox.Data.Cost = item.Cost;
 
 						researchButton:SetClickable(true);
-						self.sounds.Confirm:Play(-1);
+						self.sounds.ResearchItemSelect:Play(-1);
 					end
 				end
 				if iconPath and iconPath ~= "" then
@@ -596,6 +668,9 @@ function ThreadedUpdate(self)
 		if self.tooltip:GetHide() == false then
 			self.tooltip:Update();
 		end
+		if self.researchTooltip:GetHide() == false then
+			self.researchTooltip:Update();
+		end
 		self.Menu:DrawCursor();
 	end
 end
@@ -605,5 +680,6 @@ function Destroy(self)
 end
 
 function OnSave(self)
-	self:SetStringValue("CEDSupercomputerResearch", self.saveLoadHandler:SerializeTable(self.Researches));
+	self:SetEncodedStringValue("CEDSupercomputerResearch", self.saveLoadHandler:SerializeTable(self.Researches));
+	self:SetEncodedStringValue("CEDSupercomputerQueue", self.saveLoadHandler:SerializeTable(self.Queue));
 end
