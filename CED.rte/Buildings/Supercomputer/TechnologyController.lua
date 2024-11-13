@@ -38,7 +38,7 @@ function Create(self)
 	self.saveLoadHandler:Initialize(false);
 	
 	if self:StringValueExists("CEDUnlockedTechnologies") then
-		self.Technologies = self.saveLoadHandler:DeserializeTable(self:GetStringValue("CEDUnlockedTechnologies"), "CEDUnlockedTechnologies");
+		self.Technologies = self.saveLoadHandler:DeserializeTable(self:GetEncodedStringValue("CEDUnlockedTechnologies"), "CEDUnlockedTechnologies");
 		self:RemoveStringValue("CEDUnlockedTechnologies");
 	else
 		self.Technologies = {};
@@ -60,5 +60,5 @@ function Destroy(self)
 end
 
 function OnSave(self)
-	self:SetStringValue("CEDUnlockedTechnologies", self.saveLoadHandler:SerializeTable(self.Technologies));
+	self:SetEncodedStringValue("CEDUnlockedTechnologies", self.saveLoadHandler:SerializeTable(self.Technologies));
 end
