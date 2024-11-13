@@ -20,9 +20,10 @@ function Create(self)
 	self.KhAMAVogastir40InvalidStanceGraceTime = 400;
 	self.KhAMAVogastir40DeployTimer = Timer();
 	self.KhAMAVogastir40DeployTime = 1600;
+	self.KhAMAVogastir40StandingDeployTime = 500;
 	
 	self.KhAMAVogastir40OriginalSupportOffset = Vector(math.abs(self.SupportOffset.X), self.SupportOffset.Y);
-	self.KhAMAVogastir40DeployedSupportOffset = Vector(-5, -3);
+	self.KhAMAVogastir40DeployedSupportOffset = Vector(-4, -2);
 	
 	self.KhAMAVogastir40AIFairnessTimer = Timer();
 	self.KhAMAVogastir40AIFairnessTime = 2000;
