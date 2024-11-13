@@ -19,6 +19,8 @@ function Create(self)
 end
 
 function OnFire(self)
+	CameraMan:AddScreenShake(7, self.Pos);
+
 	local velocity = self.VoUXRageAutoMode and self.VoUXRageFireAutoVelocity or self.VoUXRageFireVelocity;
 	local spread = math.random(-self.VoUXRageFireSpread, self.VoUXRageFireSpread);
 
