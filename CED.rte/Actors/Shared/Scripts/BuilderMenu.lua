@@ -102,7 +102,7 @@ function BuilderMenu(self)
 
 	self.cancelButton.OnPress = function(key)
 		if key == Controller.PRIMARY_ACTION then
-			self.Menu.Cursor_Bitmap = "Mods/CED.rte/Actors/Shared/Sprites/Menus/CancelCursor.png";
+			self.Menu.Cursor_Bitmap = "CED.rte/Effects/Menus/CancelCursor.png";
 			self.renderBox = nil;
 			self.cancelButton.isRemoving = true;
 		end

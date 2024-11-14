@@ -388,8 +388,8 @@ function ResearchMenu(self)
 
 	local bitmapList = {
 		InfoBox = "CED.rte/Buildings/Supercomputer/infoBox.png",
-		ArrowDown = "Mods/CED.rte/Actors/Shared/Sprites/Menus/ArrowDown.png",
-		ArrowUp = "Mods/CED.rte/Actors/Shared/Sprites/Menus/ArrowUp.png",
+		ArrowDown = "CED.rte/Effects/Menus/ArrowDown.png",
+		ArrowUp = "CED.rte/Effects/Menus/ArrowUp.png",
 		researchFrame = "CED.rte/Buildings/Supercomputer/research00"
 	};
 
