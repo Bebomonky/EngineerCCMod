@@ -18,7 +18,6 @@ function Create(self)
 end
 
 function OnFire(self)
-	print("hi")
 	self.KhJS50BassSound:Play(self.Pos);
 	self.KhJS50ShotSound:Play(self.Pos);
 	local spread = math.random(-self.KhJS50FireSpread, self.KhJS50FireSpread);
