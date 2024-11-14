@@ -70,35 +70,6 @@ function Create(self)
 				Item = item,
 			});
 		end
-
-		for i = 1, #self.menuData[techID].Items do
-			local item = self.menuData[techID].Items[i].Item;
-			local itemID = self.menuData[techID].Items[i].ItemID;
-
-			item.IsResearched = false;
-			if type(item.RequiredTech) == "table" then
-				local failCount = #item.RequiredTech
-				for _, name in pairs(item.RequiredTech) do
-					if self.Researches[name] then
-						failCount = failCount - 1;
-					end
-
-					if failCount == 0 then
-						item.IsResearched = true;
-					end
-				end
-			else
-				if item.RequiredTech == "None" then
-					if self.Researches[itemID] then
-						item.IsResearched = true;
-					end
-				else
-					if self.Researches[item.RequiredTech] then
-						item.IsResearched = true;
-					end
-				end
-			end
-		end
 	end
 
 	self.menuData["Xarix"].Bitmap = "CED.rte/Buildings/Supercomputer/ResearchTree/XarixTree.png";
@@ -771,7 +742,7 @@ function ResearchMenu(self)
 			end
 
 			button.Think = function()
-				button.IsResearched = self.Researches[itemID];
+				button.IsResearched = self.Researches[itemID] or false;
 				local world_pos = button:GetAbsolutePos();
 				button:OutlineColor(button:IsHovered() and 117 or 144);
 				if button.IsResearched then
