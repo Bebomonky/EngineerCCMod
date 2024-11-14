@@ -1,6 +1,8 @@
 function OnGlobalMessage(self, message, object)
 	if message == "CED_UnlockTechnology" then
-		self.Technologies[object] = true;
+		if not self.Technologies[object] then
+			self.Technologies[object] = true;
+		end
 		for actor in MovableMan.Actors do
 			if actor.ClassName ~= "ADoor" then
 				if self.utilityActors[actor.PresetName] and actor.Team == self.fixedTeam then
@@ -13,7 +15,9 @@ end
 
 function OnMessage(self, message, object)
 	if message == "CED_UnlockTechnology" then
-		self.Technologies[object] = true;
+		if not self.Technologies[object] then
+			self.Technologies[object] = true;
+		end
 		for actor in MovableMan.Actors do
 			if actor.ClassName ~= "ADoor" then
 				if self.utilityActors[actor.PresetName] and actor.Team == self.fixedTeam then
@@ -39,6 +43,9 @@ function Create(self)
 	
 	if self:StringValueExists("CEDUnlockedTechnologies") then
 		self.Technologies = self.saveLoadHandler:DeserializeTable(self:GetEncodedStringValue("CEDUnlockedTechnologies"), "CEDUnlockedTechnologies");
+		for tech, v in pairs(self.Technologies) do
+			self:SendMessage("CED_UnlockTechnology", tech);
+		end
 		self:RemoveStringValue("CEDUnlockedTechnologies");
 	else
 		self.Technologies = {};
