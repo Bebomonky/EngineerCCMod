@@ -26,8 +26,6 @@ function Create(self)
 	
 	self.EXPTurbolanceHeatFXTimer = Timer();
 
-	self.drawPos = Vector()
-
 	self.EXPTurbolanceBlinkTimer = Timer()
 	self.EXPTurbolanceToBlink = false
 	self.EXPTurbolanceBlinkRange = 70
@@ -177,11 +175,11 @@ function ThreadedUpdate(self)
 	end
 
 	if self.parent and self.parent:IsPlayerControlled() then
-		self.drawPos = Vector(self.parent.AboveHUDPos.X, self.parent.AboveHUDPos.Y)
+		local drawPos = Vector(self.parent.AboveHUDPos.X, self.parent.AboveHUDPos.Y)
 
 		local ctrl = self.parent:GetController()
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
-		local heat_pos = self.drawPos - Vector(10, 5)
+		local heat_pos = drawPos - Vector(10, 5)
 		local ammo_pos = heat_pos - Vector(-20, 0)
 		local box_y = -5
 		local box_x = -20

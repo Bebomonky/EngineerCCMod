@@ -1,6 +1,10 @@
 require("/CEDSettings");
 
 function Create(self)
+	self.KhGS7FireVelocity = 120;
+	self.KhGS7FireSpread = 2 / 2;	-- Pellets are .ini, no need for high spread for the 1 scripted one
+
+	self.KhGS7BassSound = CreateSoundContainer("Bass CED Khrabarovsk GS7", "CED.rte");
 	self.KhGS7BoltForwardSound = CreateSoundContainer("Bolt Forward CED Khrabarovsk GS7", "CED.rte");
 	
 	self.KhGS7SlamFireMode = false;
@@ -12,11 +16,13 @@ function Create(self)
 end
 
 function OnFire(self)
-	local velocity = 150;
+	self.KhGS7BassSound:Play(self.Pos);
+	
+	local spread = math.random(-self.KhGS7FireSpread, self.KhGS7FireSpread);
 
 	local shot = CreateMOPixel("Pellet CED Khrabarovsk GS7 Scripted", "CED.rte");
 	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, 0):RadRotate(self.RotAngle);
+	shot.Vel = self.Vel + Vector(self.KhGS7FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
 	shot.Team = self.Team;
 	shot.IgnoresTeamHits = true;
 	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);

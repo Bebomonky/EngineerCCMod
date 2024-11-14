@@ -4,6 +4,8 @@ function Create(self)
 	self.KhC8ChimeraFireVelocity = 160;
 	self.KhC8ChimeraFireSpread = 5 / 2;
 
+	self.KhC8ChimeraBassSound = CreateSoundContainer("Bass CED Khrabarovsk C8 Chimera", "CED.rte");
+	self.KhC8ChimeraShotSound = CreateSoundContainer("Shot CED Khrabarovsk C8 Chimera", "CED.rte");
 	self.KhC8ChimeraMechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk C8 Chimera", "CED.rte");
 	
 	self.KhC8ChimeraWalkBeltSound = CreateSoundContainer("Walk Belt CED Khrabarovsk C8 Chimera", "CED.rte");
@@ -35,6 +37,8 @@ function Create(self)
 end
 
 function OnFire(self)
+	self.KhC8ChimeraBassSound:Play(self.Pos);
+	self.KhC8ChimeraShotSound:Play(self.Pos);
 	self.KhC8ChimeraMechEndSound:Play(self.Pos);
 	
 	local spread = math.random(-self.KhC8ChimeraFireSpread, self.KhC8ChimeraFireSpread);

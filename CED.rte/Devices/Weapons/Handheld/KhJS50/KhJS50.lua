@@ -4,6 +4,8 @@ function Create(self)
 	self.KhJS50FireVelocity = 140;
 	self.KhJS50FireSpread = 0.5 / 2;
 
+	self.KhJS50BassSound = CreateSoundContainer("Bass CED Khrabarovsk JS50", "CED.rte");
+	self.KhJS50ShotSound = CreateSoundContainer("Shot CED Khrabarovsk JS50", "CED.rte");
 	self.KhJS50ScopeClickSound = CreateSoundContainer("Scope Click CED Khrabarovsk JS50", "CED.rte");
 	
 	-- Table of SharpLengths to cycle through.
@@ -16,6 +18,9 @@ function Create(self)
 end
 
 function OnFire(self)
+	print("hi")
+	self.KhJS50BassSound:Play(self.Pos);
+	self.KhJS50ShotSound:Play(self.Pos);
 	local spread = math.random(-self.KhJS50FireSpread, self.KhJS50FireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Khrabarovsk JS50 Scripted", "CED.rte");

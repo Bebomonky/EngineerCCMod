@@ -6,6 +6,7 @@ function Create(self)
 	self.VoTrigoliathFireSpread = 10 / 2;
 	self.VoTrigoliathFireSlugSpread = 0.5 / 2;
 
+	self.VoTrigoliathBassSound = CreateSoundContainer("Bass CED Vossberg Trigoliath", "CED.rte");
 	self.VoTrigoliathPreSound = CreateSoundContainer("Pre CED Vossberg Trigoliath", "CED.rte");
 	self.VoTrigoliathMultiFirePreSound = CreateSoundContainer("Multi Fire Pre CED Vossberg Trigoliath", "CED.rte");
 	
@@ -59,6 +60,8 @@ function Create(self)
 end
 
 function OnFire(self)
+	self.VoTrigoliathBassSound:Play(self.Pos);
+
 	local topBarrelVector = Vector(0, 0);
 	if self.HEATAmmoCounter == 1 then
 		topBarrelVector = Vector(0, -2):RadRotate(self.RotAngle);

@@ -3,9 +3,15 @@ require("/CEDSettings");
 function Create(self)
 	self.VoHammerheadFireVelocity = 140;
 	self.VoHammerheadFireSpread = 1 / 2;
+	
+	self.VoHammerheadBassSound = CreateSoundContainer("Bass CED Vossberg Hammerhead", "CED.rte");
+	self.VoHammerheadShotSound = CreateSoundContainer("Shot CED Vossberg Hammerhead", "CED.rte");
 end
 
 function OnFire(self)
+	self.VoHammerheadBassSound:Play(self.Pos);
+	self.VoHammerheadShotSound:Play(self.Pos);
+
 	local spread = math.random(-self.VoHammerheadFireSpread, self.VoHammerheadFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED Vossberg Hammerhead Scripted", "CED.rte");

@@ -10,7 +10,8 @@ function Create(self)
 	self.Kh11p35FromGLSound = CreateSoundContainer("From GL CED Khrabarovsk 11p35-rifle", "CED.rte");
 	
 	self.Kh11p35GLFireSound = CreateSoundContainer("GL Fire CED Khrabarovsk 11p35-rifle", "CED.rte");
-	self.Kh11p35FireSound = CreateSoundContainer("Fire CED Khrabarovsk 11p35-rifle", "CED.rte");
+	self.Kh11p35MechSound = CreateSoundContainer("Mech CED Khrabarovsk 11p35-rifle", "CED.rte");
+	self.Kh11p35ShotSound = CreateSoundContainer("Shot CED Khrabarovsk 11p35-rifle", "CED.rte");
 	
 	self.Kh11p35SelectSingleSound = CreateSoundContainer("Select Single CED Khrabarovsk 11p35-rifle", "CED.rte");
 	self.Kh11p35SelectFullSound = CreateSoundContainer("Select Full CED Khrabarovsk 11p35-rifle", "CED.rte");
@@ -39,7 +40,8 @@ function OnFire(self)
 		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
 		MovableMan:AddParticle(shot);		
 	else
-		self.Kh11p35FireSound:Play(self.Pos);
+		self.Kh11p35MechSound:Play(self.Pos);
+		self.Kh11p35ShotSound:Play(self.Pos);
 	
 		if self.RoundInMagCount == 0 then
 			self.HEATCurrentReloadPhase = 1;
@@ -81,6 +83,8 @@ end
 function ThreadedUpdate(self)
 	self.Kh11p35ToGLSound.Pos = self.Pos;
 	self.Kh11p35FromGLSound.Pos = self.Pos;
+	
+	self.Kh11p35MechSound.Pos = self.Pos;
 	
 	self.Kh11p35SelectSingleSound.Pos = self.Pos;
 	self.Kh11p35SelectFullSound.Pos = self.Pos;

@@ -4,6 +4,8 @@ function Create(self)
 	self.KhAMAVogastir40FireVelocity = 110;
 	self.KhAMAVogastir40FireSpread = 5 / 2;
 
+	self.KhAMAVogastir40ShotSound = CreateSoundContainer("Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
+	self.KhAMAVogastir40MechRingSound = CreateSoundContainer("Mech Ring CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	self.KhAMAVogastir40MechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	
 	self.KhAMAVogastir40WalkSound = CreateSoundContainer("Walk CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
@@ -37,6 +39,8 @@ end
 function OnFire(self)
 	CameraMan:AddScreenShake(7, self.Pos);
 
+	self.KhAMAVogastir40ShotSound:Play(self.Pos);
+	self.KhAMAVogastir40MechRingSound:Play(self.Pos);
 	self.KhAMAVogastir40MechEndSound:Play(self.Pos);
 	
 	local spread = math.random(-self.KhAMAVogastir40FireSpread, self.KhAMAVogastir40FireSpread);

@@ -2,8 +2,9 @@ require("/CEDSettings");
 
 function Create(self)
 	self.BASPDWFireVelocity = 100;
-	self.BASPDWFireSpread = 5 / 2;
+	self.BASPDWFireSpread = 7 / 2;
 
+	self.BASPDWShotSound = CreateSoundContainer("Shot CED CED-BAS PDW", "CED.rte");
 	self.BASPDWMechLastSound = CreateSoundContainer("Mech Last CED CED-BAS PDW", "CED.rte");
 	
 	self.BASPDWSpecialFakeMagFrame = 1;
@@ -13,6 +14,8 @@ function Create(self)
 end
 
 function OnFire(self)
+	self.BASPDWShotSound:Play(self.Pos);
+
 	local spread = math.random(-self.BASPDWFireSpread, self.BASPDWFireSpread);
 
 	local shot = CreateMOPixel("Bullet CED CED-BAS PDW Scripted", "CED.rte");

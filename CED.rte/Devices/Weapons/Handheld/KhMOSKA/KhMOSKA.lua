@@ -11,6 +11,7 @@ function Create(self)
 	self.KhMOSKARBulletFireVelocity = 180;
 	self.KhMOSKAFireSpread = 0.5 / 2;	
 	
+	self.KhMOSKABassSound = CreateSoundContainer("Bass CED Khrabarovsk MOSKA", "CED.rte");
 	self.KhMOSKACasingEjectAddSound = CreateSoundContainer("Casing Eject Add CED Khrabarovsk MOSKA", "CED.rte");
 	self.KhMOSKARBulletAddSound = CreateSoundContainer("R Bullet Add CED Khrabarovsk MOSKA", "CED.rte");
 	
@@ -29,6 +30,8 @@ function Create(self)
 end
 
 function OnFire(self)
+	self.KhMOSKABassSound:Play(self.Pos);
+
 	local spread = math.random(-self.KhMOSKAFireSpread, self.KhMOSKAFireSpread);
 	local velocity = self.KhMOSKARBulletLoaded and self.KhMOSKARBulletFireVelocity or self.KhMOSKAFireVelocity;
 
