@@ -26,7 +26,7 @@ function Create(self)
 	self.KhAMAVogastir40DeployedSupportOffset = Vector(-4, -2);
 	
 	self.KhAMAVogastir40AIFairnessTimer = Timer();
-	self.KhAMAVogastir40AIFairnessTime = 2000;
+	self.KhAMAVogastir40AIFairnessTime = 2500;
 	self.KhAMAVogastir40AIFairnessEnabled = false;
 	
 	self.KhAMAVogastir40OriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y);
@@ -85,25 +85,39 @@ function ThreadedUpdate(self)
 		local aimAngle = math.deg(self.parent:GetAimAngle(false));	
 	
 		local isMoving = (self.parentController:IsState(Controller.MOVE_LEFT) == true or self.parentController:IsState(Controller.MOVE_RIGHT) == true) or self.parent.Vel.Magnitude > 3;
+		local isMovingFast = self.parent.MovementState == Actor.RUN or self.parent.Vel.Magnitude > 6;
 		local isCrouching = (self.parentController:IsState(Controller.BODY_PRONE) == true) or (self.parentController:IsState(Controller.BODY_WALKCROUCH) == true);
 		
-		local heavyEnoughForStandingFire = self.parent.IndividualMass >= 60;
-		local heavyEnoughForMovingFire = self.parent.IndividualMass >= 90;
+		local heavyEnoughForWalkingFire = self.parent.IndividualMass >= 60;
+		local heavyEnoughForRunningFire = self.parent.IndividualMass >= 90;
 		
 		local canDeploy;
 		local standingDeploy = not isCrouching;
 		if isCrouching and not isMoving then
 			canDeploy = true;
-			self.KhAMAVogastir40AIFairnessEnabled = false;
-		elseif heavyEnoughForStandingFire and not isMoving then
+			self.KhC8ChimeraAIFairnessEnabled = false;
+		elseif heavyEnoughForWalkingFire and not isMovingFast then
 			canDeploy = true;
-			self.KhAMAVogastir40AIFairnessEnabled = false;
-		elseif heavyEnoughForMovingFire then
+			self.KhC8ChimeraAIFairnessEnabled = false;
+		elseif heavyEnoughForRunningFire then
 			canDeploy = true;
-			self.KhAMAVogastir40AIFairnessEnabled = false;
+			self.KhC8ChimeraAIFairnessEnabled = false;
 		elseif not isPlayerControlled then
 			canDeploy = true;
-			self.KhAMAVogastir40AIFairnessEnabled = true;
+			self.KhC8ChimeraAIFairnessEnabled = true;
+		end
+		
+		local timeToUse = standingDeploy and self.KhAMAVogastir40StandingDeployTime or self.KhAMAVogastir40DeployTime;
+		
+		if self.KhAMAVogastir40AIFairnessEnabled then
+			if self.KhAMAVogastir40AIFairnessTimer:IsPastSimMS(self.KhAMAVogastir40AIFairnessTime) then
+				self.KhAMAVogastir40AIFairnessTime = math.random(2500, 4000)
+				self.KhAMAVogastir40AIFairnessTimer:Reset();
+			elseif self.KhAMAVogastir40AIFairnessTimer:IsPastSimMS(self.KhAMAVogastir40AIFairnessTime / 1.5) then
+				self:Deactivate();
+				canDeploy = false;
+				timeToUse = 200;
+			end
 		end
 		
 		if canDeploy then
@@ -112,16 +126,19 @@ function ThreadedUpdate(self)
 				self.KhAMAVogastir40DeploySoundPlayed = true;
 				self.KhAMAVogastir40UndeploySound:Stop(-1);
 				if standingDeploy then
-					self.KhAMAVogastir40StandingDeploySound:Play(self.Pos);
+					if isPlayerControlled and not self:IsReloading() then
+						self.KhAMAVogastir40StandingDeploySound:Play(self.Pos);
+					end
 				else
-					self.KhAMAVogastir40DeploySound:Play(self.Pos);
+					if isPlayerControlled and not self:IsReloading() then
+						self.KhAMAVogastir40DeploySound:Play(self.Pos);
+					end
 				end
 			end
 			
 			self.HUDVisible = true;
 			self.HEATRotationTargetOverride = nil;
 			
-			local timeToUse = standingDeploy and self.KhAMAVogastir40StandingDeployTime or self.KhAMAVogastir40DeployTime;
 			-- Fully deployed
 			if self.KhAMAVogastir40DeployTimer:IsPastSimMS(timeToUse) then
 				self.HEATRotationTargetOverride = nil;
@@ -163,7 +180,9 @@ function ThreadedUpdate(self)
 		elseif self.KhAMAVogastir40InvalidStanceGraceTimer:IsPastSimMS(self.KhAMAVogastir40InvalidStanceGraceTime) then
 			if self.KhAMAVogastir40DeploySoundPlayed then
 				if self.KhAMAVogastir40Deployed then
-					self.KhAMAVogastir40UndeploySound:Play(self.Pos);
+					if isPlayerControlled and not self:IsReloading() then
+						self.KhAMAVogastir40UndeploySound:Play(self.Pos);
+					end
 				end
 				self.KhAMAVogastir40Deployed = false;
 				self.KhAMAVogastir40DeploySound:FadeOut(200);
@@ -199,15 +218,6 @@ function ThreadedUpdate(self)
 			end
 		else
 			self.HEATAngVelManualAddition = 0;
-		end
-	end
-
-	if self.KhAMAVogastir40AIFairnessEnabled then
-		if self.KhAMAVogastir40AIFairnessTimer:IsPastSimMS(self.KhAMAVogastir40AIFairnessTime) then
-			self.KhAMAVogastir40AIFairnessTime = math.random(1500, 4000)
-			self.KhAMAVogastir40AIFairnessTimer:Reset();
-		elseif self.KhAMAVogastir40AIFairnessTimer:IsPastSimMS(self.KhAMAVogastir40AIFairnessTime / 2) then
-			self:Deactivate();
 		end
 	end
 end
