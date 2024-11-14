@@ -401,6 +401,7 @@ function ResearchMenu(self)
 	self.researchTooltip:SetPos(560, researchButtonTotalPos.Y + 160);
 	self.researchTooltip.Displaying = false;
 	self.researchTooltip.DisplayCost = false;
+	self.researchTooltip.Requirements = "";
 	CC_TooltipSkin(self.researchTooltip, true);
 
 	self.researchTooltip.Think = function()
@@ -408,8 +409,8 @@ function ResearchMenu(self)
 		if self.researchTooltip.Displaying then
 			local world_pos = self.researchTooltip:GetAbsolutePos();
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
-			local enoughGold = hasFund and "Can be purchased" or "Not enough gold"
-			if self.researchTooltip.Requirements then
+			local enoughGold = hasFund and "Can be purchased" or "Not enough gold";
+			if self.researchTooltip.Requirements ~= "" then
 				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(3, 1), enoughGold .. "\nRequired: \n" .. self.researchTooltip.Requirements, true, 0);
 			else
 				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(3, 3), enoughGold, true, 0);
@@ -538,7 +539,6 @@ function ResearchMenu(self)
 			if researchButton:IsHovered() then
 				self.researchTooltip:SetHide(false);
 				if not self.researchTooltip.Displaying then
-					local totalWidth = FrameMan:CalculateTextWidth("Cost: " .. tostring(self.infoBox.Data.Cost), false) + 5;
 
 					local tech = type(self.infoBox.Data.RequiredTech) == "table" and
 					table.concat(self.infoBox.Data.RequiredTech, " ") or self.infoBox.Data.RequiredTech;
@@ -557,8 +557,9 @@ function ResearchMenu(self)
 						local maxWidth = FrameMan:CalculateTextWidth(requiredTech, true);
 						self.researchTooltip.Requirements = requiredTech;
 
-						self.researchTooltip:SetSize(totalWidth, maxHeight);
+						self.researchTooltip:SetSize(70, maxHeight);
 					else
+						self.researchTooltip.Requirements = "";
 						self.researchTooltip:SetSize(70, 15);
 					end
 					CC_TooltipSkin(self.researchTooltip);
@@ -680,9 +681,11 @@ function ResearchMenu(self)
 		tab:OutlineThickness(2);
 		tab.Selected = false;
 		buttons[techID] = {};
+
 		if self.MenuCurrent == self.menuData[techID] then
 			tab.Selected = true;
 		end
+
 		tab.Think = function()
 			tab:OutlineColor(tab:IsHovered() and 117 or 144);
 
@@ -716,8 +719,7 @@ function ResearchMenu(self)
 			button:Color(146);
 			button:OutlineColor(144);
 			button:OutlineThickness(2);
-			button.RequiredTech = item.RequiredTech;
-			button.justHovered = false;
+			button.JustHovered = false;
 			button[techID] = { Selected = false, ForcePressed = false };
 
 			local iconSize = item.IconSize;
@@ -759,7 +761,7 @@ function ResearchMenu(self)
 				end
 				if button:IsHovered() then
 					self.tooltip:SetHide(false);
-					if button.justHovered == false then
+					if button.JustHovered == false then
 						local title = item.DisplayName;
 						local pos = Vector((item.Pos.X + button:GetWidth()), item.Pos.Y);
 						local tooltipWidth = self.tooltip:GetWidth();
@@ -774,10 +776,10 @@ function ResearchMenu(self)
 						tooltipDesc:SetText(desc);
 						tooltipDesc:SetPos(3, 3);
 						CC_TooltipSkin(self.tooltip);
-						button.justHovered = true;
+						button.JustHovered = true;
 					end
 				else
-					button.justHovered = false;
+					button.JustHovered = false;
 				end
 
 				button.OnPress = function(key)
