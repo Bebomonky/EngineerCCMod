@@ -13,11 +13,11 @@ CEDMasterList.Technology.Vossberg = {};
 
 -------  FORTIFICATIONS  -------
 CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
+								  ["ItemID"] = "CEDLogo",
 								  ["Description"] = [[
 Builds the CED Logo
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericTerrainBuildable/GenericTerrainBuildable.png",
@@ -31,11 +31,11 @@ Yay!]],
 
 -------  TURRETS  -------
 CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "  Plink\nTurret",
+								  ["ItemID"] = "PlinkTurret",
 								  ["Description"] = [[
 Builds the Plink Turret
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildables/GenericBuildable/GenericBuildable.png",
@@ -49,12 +49,12 @@ Yay!]],
 
 -------  ACTORS  -------
 CEDMasterList.Actors.Behemoth = {["DisplayName"] = "Behemoth",
+								  ["ItemID"] = "Behemoth",
 								  ["Description"] = [[
 Consumes Combat Engineer and
 transforms into a behemoth!
 Requirement: 1 Combat Engineer
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "CED.rte/Actors/Infantry/Behemoth/Helmet.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["EntityPresetName"] = "CED.rte/Behemoth",
@@ -64,11 +64,11 @@ Yay!]],
 								  ["Cost"] = 100};
 -------  GUNS  -------
 CEDMasterList.Guns.XaVidara = {["DisplayName"] = "Xarix Vidara",
+								  ["ItemID"] = "XaVidara",
 								  ["Description"] = [[
 Creates a gun
 and pops out the machine!
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "CED.rte/Devices/Weapons/Handheld/XaVidara/XaVidaraBuyIcon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["EntityPresetName"] = "CED.rte/Xarix Vidara",
@@ -80,11 +80,12 @@ Yay!]],
 
 -------  BUILDINGS  -------
 CEDMasterList.Buildings.Coagulator = {["DisplayName"] = "     Atmo\ncoagulator",
+								  ["RequiredTech"] = "None",
+								  ["ItemID"] = "Coagulator",
 								  ["Description"] = [[
 Builds the Atmo-coagulator
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Coagulator/Coagulator.png",
@@ -97,11 +98,11 @@ Yay!]],
 								  ["SnapToGround"] = true};
 								  
 CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "   Super\ncomputer",
+								  ["ItemID"] = "Supercomputer",
 								  ["Description"] = [[
 Builds the Supercomputer
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/Supercomputer/Supercomputer.png",
@@ -114,11 +115,12 @@ Yay!]],
 								  ["SnapToGround"] = true};
 
 CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "   Xarix\nNanofab",
+								  ["RequiredTech"] = "None",
+								  ["ItemID"] = "XarixNanofab",
 								  ["Description"] = [[
 Builds the Xarix-Nanofab
 What it does: Yes
 Yay!]],
-								  ["TooltipSize"] = Vector(150, 75),
 								  ["IconPath"] = "Coalition.rte/Actors/Mecha/GatlingDrone/Icon.png",
 								  ["IconPos"] = Vector(0, -5),
 								  ["RenderPath"] = "CED.rte/Buildings/XarixNanofab/XarixNanofab.png",
