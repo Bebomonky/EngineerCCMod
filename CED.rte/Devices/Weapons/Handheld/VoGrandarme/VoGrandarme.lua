@@ -9,6 +9,9 @@ function Create(self)
 
 	self.VoGrandarmeShotSound = CreateSoundContainer("Shot CED Vossberg Grandarme", "CED.rte");
 	self.VoGrandarmeShotAutoSound = CreateSoundContainer("Shot Auto CED Vossberg Grandarme", "CED.rte");
+	
+	self.VoGrandarmeNoiseOutdoorsSound = CreateSoundContainer("Noise Outdoors CED Vossberg Grandarme", "CED.rte");
+	self.VoGrandarmeNoiseIndoorsSound = CreateSoundContainer("Noise Indoors CED Vossberg Grandarme", "CED.rte");
 
 	self.VoGrandarmeFirstShot = true;
 	
@@ -54,6 +57,12 @@ function OnFire(self)
 	MovableMan:AddParticle(casing);
 	
 	self.VoGrandarmeFirstShot = false;
+	
+	if self.HEATCheckIfPointIsIndoors(self, self.MuzzlePos) then
+		self.VoGrandarmeNoiseIndoorsSound:Play(self.Pos);
+	else
+		self.VoGrandarmeNoiseOutdoorsSound:Play(self.Pos);
+	end
 end
 					
 function OnAttach(self, newParent)
