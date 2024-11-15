@@ -1,0 +1,13 @@
+Insurgency: artillery_strike_dist
+
+Insurgency: Sandstorm: GAU8_Loop_Start, Middle, End, Tail
+
+COD:MW: iw8_ks_a10_breath_of_god
+iw8_ks_a10_imp_main_01
+iw8_ks_a10_imp_spray_01
+
+Titanfall 2: disembark_hatch_open_08
+
+Warframe: GrnThumperBotThumperImpactCloseE
+
+Post Scriptum: Artillery_shell_incoming_close_02
