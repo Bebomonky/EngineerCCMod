@@ -30,19 +30,24 @@ function Create(self)
 
 	self.UnlockedResearches = {};
 
-	self.defaultUnlockedResearches = {
-		["CEDLogo"] = true,
-		["PlinkTurret"] = true,
-		["Behemoth"] = true,
-		["Coagulator"] = true,
-		["Supercomputer"] = true
+	local defaultUnlockResearch = {
+		"CEDLogo",
+		"PlinkTurret",
+		"Behemoth",
+		"Coagulator",
+		"Supercomputer"
 	};
+
+	for _, tech in pairs(defaultUnlockResearch) do
+		self.UnlockedResearches[tech] = true;
+	end
 
 	self.Activity = ActivityMan:GetActivity();
 
 	self.menuData = {};
 	for catID, data in pairs(self.CEDAvailableBuildables) do
 		self.menuData[catID] = {
+			ToScroll = false;
 			Items = {},
 			Buttons = {}
 		};
@@ -80,7 +85,9 @@ function Create(self)
 			if button:GetName() == "Buildable" then
 				button.Selected = false;
 			end
-			button:SetVisible(true);
+			if newMenu.ToScroll == false then
+				button:SetVisible(true);
+			end
 		end
 	end
 end
@@ -211,8 +218,9 @@ function BuilderMenu(self)
 							end
 						end
 						if buildable then
-							--Temp cursor snap
-							self.Menu.Cursor = mo.Pos;
+							-- Temp cursor snap
+							--? Broken, imenu stuff
+							--self.Menu.Cursor = mo.Pos;
 
 							--I think it's a good idea to set it once instead of constantly
 							if renderBox.X == 0 then
@@ -263,7 +271,7 @@ function BuilderMenu(self)
 
 	local tabs = {};
 	local buttons = {};
-	local scrolls = {};
+	local scrolls = {}; --Scroll for each menu
 	local tab_pos = {
 		["Fortifications"] = 7,
 		["Turrets"] = 72,
@@ -280,13 +288,24 @@ function BuilderMenu(self)
 
 	local validPlacement = false;
 
-	--This is for terrain checking for nonair
+	-- This is for terrain checking for nonair
 	local tolerance = 0.1;
 
-	--amount of items per row
+	-- Amount of items per row
 	local perRow = 5;
-	--amount of rows before needing to scroll
+	-- Amount of rows before needing to scroll
 	local maxRows = 2;
+	-- Distance between buttons
+	local buttonDist = Vector(50, 60);
+
+	-- Total rows for each menu
+	local totalRows = {};
+
+	local buttonPos = Vector(0, 40);
+
+	-- Count amount of items and if are at max enable scrolling
+	local itemCount = {};
+	local maxItemCount = {};
 
 	for catID, data in pairs(self.CEDAvailableBuildables) do
 		local tab = self.Menu:CreateGUI("BUTTON", self.builderBox, "Category");
@@ -301,6 +320,9 @@ function BuilderMenu(self)
 		tab.Selected = false;
 		buttons[catID] = {};
 		scrolls[catID] = 0;
+		totalRows[catID] = 0;
+		itemCount[catID] = 0;
+		maxItemCount[catID] = 10;
 
 		if self.MenuCurrent == self.menuData[catID] then
 			tab.Selected = true;
@@ -312,31 +334,69 @@ function BuilderMenu(self)
 			if tab.Selected then
 				tab:OutlineColor(252);
 			end
+
+			if self.MenuCurrent == self.menuData[catID] then
+				if itemCount[catID] > maxItemCount[catID] then
+					if self.Menu.Controller then
+						local go_up = self.Menu.Controller:IsState(Controller.SCROLL_UP);
+						local go_down = self.Menu.Controller:IsState(Controller.SCROLL_DOWN);
+		
+						if go_up then
+							scrolls[catID] = math.max(0, scrolls[catID] - 1);
+						elseif go_down then
+							scrolls[catID] = math.min(totalRows[catID] - maxRows, scrolls[catID] + 1);
+						end
+					end
+					for i, button in ipairs(self.MenuCurrent.Buttons) do
+						local pos = buttonPos;
+						local row = math.floor((i - 1) / perRow);
+						local isVisible = row >= scrolls[catID] and row < scrolls[catID] + maxRows;
+						local j = ((i - 1) % perRow);
+						pos = pos + Vector(j * buttonDist.X, row * buttonDist.Y);
+						button:SetPos(pos.X + 8, pos.Y - scrolls[catID] * buttonDist.Y);
+						if button.JustHovered and button:GetVisible() == false then
+							if button.IsResearched == true then
+								button:OutlineColor(144);
+							else
+								button:OutlineColor(248);
+								button:Color(249);
+							end
+							button.JustHovered = false;
+						end
+						button:SetVisible(isVisible);
+					end
+				end
+			end
 		end
 
 		tab.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
-				for _, btn in ipairs(tabs) do
-					btn.Selected = false;
+				if self.MenuCurrent ~= self.menuData[catID] then
+					for _, btn in ipairs(tabs) do
+						btn.Selected = false;
+					end
+					tab.Selected = true;
+
+					self.sounds.Confirm:Play(-1);
+
+					if itemCount[catID] > maxItemCount[catID] then
+						self.menuData[catID].ToScroll = true;
+					end
+					self:MenuChange(self.menuData[catID], false);
 				end
-				tab.Selected = true;
-
-				self.sounds.Confirm:Play(-1);
-
-				self:MenuChange(self.menuData[catID], false);
 			end
 		end
+
 		table.insert(tabs, tab);
 
 		for i = 1, #self.menuData[catID].Items do
 			local item = self.menuData[catID].Items[i];
 			local itemID = item.ItemID;
 
-			local pos = Vector(0, 40);
+			local pos = buttonPos;
 			local row = math.floor((i - 1) / perRow);
-			local isVisible = row >= scrolls[catID] and row < scrolls[catID] + maxRows;
 			local j = ((i - 1) % perRow);
-			pos = pos + Vector(j * 85, row * 85);
+			pos = pos + Vector(j * buttonDist.X, row * buttonDist.Y);
 
 			local button = self.Menu:CreateGUI("BUTTON", self.builderBox, "Buildable");
 			button:SetVisible(false);
@@ -345,8 +405,8 @@ function BuilderMenu(self)
 			button:SetTextPos(0, 14);
 			button:Color(146);
 			button:OutlineColor(144);
-			button.IsResearched = self.UnlockedResearches[itemID] or (self.defaultUnlockedResearches[itemID] or false);
-			button:OutlineThickness(button.IsResearched and 2 or 0);
+			button:OutlineThickness(2);
+			button.IsResearched = self.UnlockedResearches[itemID] or false;
 			button.JustHovered = false;
 			button[catID] = { Selected = false, ForcePressed = false };
 			local iconPath = item.IconPath;
@@ -359,12 +419,12 @@ function BuilderMenu(self)
 			end
 
 			button.Think = function()
-				button.IsResearched = self.UnlockedResearches[itemID] or (self.defaultUnlockedResearches[itemID] or false);
+				button.IsResearched = self.UnlockedResearches[itemID] or false;
 				local offset = CameraMan:GetOffset(screen);
 				local world_pos = button:GetAbsolutePos();
+				local relative_pos = button:GetRelativePos();
 				local hasFund = self.Activity:GetTeamFunds(self.Team) >= item.Cost;
 
-				button:OutlineThickness(button.IsResearched and 2 or 0);
 				button:Color(hasFund and 146 or 248);
 
 				if button:IsHovered() then
@@ -372,7 +432,7 @@ function BuilderMenu(self)
 					self.tooltip:SetHide(false);
 					if button.JustHovered == false then
 						local title = item.DisplayName:gsub("\n", ""):gsub(" ", "");
-						local pos = Vector(pos.X + button:GetWidth(), pos.Y);
+						local pos = Vector(relative_pos.X + button:GetWidth() / 2, relative_pos.Y - 25);
 						local tooltipWidth = self.tooltip:GetWidth();
 						local desc = item.Description;
 						local descHeight = FrameMan:CalculateTextHeight(item.Description, 0, true) + 25;
@@ -401,6 +461,7 @@ function BuilderMenu(self)
 					if button.IsResearched == true then
 						button:OutlineColor(144);
 					else
+						button:OutlineColor(248);
 						button:Color(249);
 					end
 					button.JustHovered = false;
@@ -505,7 +566,7 @@ function BuilderMenu(self)
 							renderBox = item.RenderSize;
 							self.cancelButton.IsRemoving = false;
 							self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png";
-							for _, btn in ipairs(self.menuData[catID].Buttons) do
+							for _, btn in ipairs(self.MenuCurrent.Buttons) do
 								btn.Selected = false;
 							end
 							button.Selected = true;
@@ -516,9 +577,12 @@ function BuilderMenu(self)
 				end
 			end
 
+			itemCount[catID] = itemCount[catID] + 1;
 			table.insert(buttons[catID], button);
 			table.insert(self.menuData[catID].Buttons, button);
 		end
+
+		totalRows[catID] = math.ceil(#self.menuData[catID].Buttons / perRow);
 	end -- for
 
 	return true;

@@ -696,15 +696,17 @@ function ResearchMenu(self)
 
 		tab.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
-				for _, btn in ipairs(tabs) do
-					btn.Selected = false;
+				if self.MenuCurrent ~= self.menuData[catID] then
+					for _, btn in ipairs(tabs) do
+						btn.Selected = false;
+					end
+					tab.Selected = true;
+					self.researchFrame = -1;
+					self.infoBox.Popup = false;
+					self.sounds[techID .. "Tree"]:Play(-1);
+					researchButton:SetClickable(false);
+					self:MenuChange(self.menuData[techID], false);
 				end
-				tab.Selected = true;
-				self.researchFrame = -1;
-				self.infoBox.Popup = false;
-				self.sounds[techID .. "Tree"]:Play(-1);
-				researchButton:SetClickable(false);
-				self:MenuChange(self.menuData[techID], false);
 			end
 		end
 		table.insert(tabs, tab);
