@@ -19,6 +19,7 @@ function Create(self)
 
 	self.sounds = {
 		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		Deselect = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
 	};
 
@@ -561,15 +562,20 @@ function BuilderMenu(self)
 				if key == Controller.PRIMARY_ACTION then
 					if button.IsResearched then
 						if itemFund then
-							self.sounds.Confirm:Play(-1);
-							self.selectDelayTime:Reset();
-							renderBox = item.RenderSize;
-							self.cancelButton.IsRemoving = false;
-							self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png";
-							for _, btn in ipairs(self.MenuCurrent.Buttons) do
-								btn.Selected = false;
+							if button.Selected == false then
+								self.sounds.Confirm:Play(-1);
+								self.selectDelayTime:Reset();
+								renderBox = item.RenderSize;
+								self.cancelButton.IsRemoving = false;
+								self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png";
+								for _, btn in ipairs(self.MenuCurrent.Buttons) do
+									btn.Selected = false;
+								end
+								button.Selected = true;
+							else
+								self.sounds.Deselect:Play(-1);
+								button.Selected = false;
 							end
-							button.Selected = true;
 						end
 					else
 						self.sounds.Error:Play(-1);

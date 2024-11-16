@@ -786,31 +786,34 @@ function ResearchMenu(self)
 
 				button.OnPress = function(key)
 					if key == Controller.PRIMARY_ACTION then
-						for _, btn in ipairs(buttons[techID]) do
-							btn[techID].Selected = false;
-						end
-						button[techID].Selected = true;
-						self.infoBox.Popup = true;
+						if button[techID].Selected == false then
+							for _, btn in ipairs(buttons[techID]) do
+								btn[techID].Selected = false;
+							end
+							button[techID].Selected = true;
+							self.infoBox.Popup = true;
 
-						self.infoBox.Data.ItemID = itemID;
-						self.infoBox.Data.TechID = techID;
-						self.infoBox.Data.RequiredTech = item.RequiredTech;
-						self.infoBox.Data.DisplayName = item.DisplayName;
-						self.infoBox.Data.Description = MultiLineStringToTable(description);
-						self.infoBox.Data.Action = action;
-						self.infoBox.Data.RPM = rpm;
-						self.infoBox.Data.MAG = mag;
-						self.infoBox.Data.QueueIcon = item.IconPath;
-						self.infoBox.Data.QueueIconWidth = item.IconSize.X / 2;
-						self.infoBox.Data.ResearchTime = item.ResearchTime;
-						self.infoBox.Data.Cost = item.Cost;
+							self.infoBox.Data.ItemID = itemID;
+							self.infoBox.Data.TechID = techID;
+							self.infoBox.Data.Type = item.Type;
+							self.infoBox.Data.RequiredTech = item.RequiredTech;
+							self.infoBox.Data.DisplayName = item.DisplayName;
+							self.infoBox.Data.Description = MultiLineStringToTable(description);
+							self.infoBox.Data.Action = action;
+							self.infoBox.Data.RPM = rpm;
+							self.infoBox.Data.MAG = mag;
+							self.infoBox.Data.QueueIcon = item.IconPath;
+							self.infoBox.Data.QueueIconWidth = item.IconSize.X / 2;
+							self.infoBox.Data.ResearchTime = item.ResearchTime;
+							self.infoBox.Data.Cost = item.Cost;
 
-						researchButton:SetClickable(true);
-						self.infoBox.ArrowAnimation:Reset();
-						self.infoBox.TextScroll = 0;
-						self.infoBox.LastScroll = 0;
-						if not button[techID].ForcePressed then
-							self.sounds.ResearchItemSelect:Play(-1);
+							researchButton:SetClickable(true);
+							self.infoBox.ArrowAnimation:Reset();
+							self.infoBox.TextScroll = 0;
+							self.infoBox.LastScroll = 0;
+							if not button[techID].ForcePressed then
+								self.sounds.ResearchItemSelect:Play(-1);
+							end
 						end
 					end
 				end
