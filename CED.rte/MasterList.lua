@@ -14,6 +14,7 @@ CEDMasterList.Technology.Vossberg = {};
 -------  FORTIFICATIONS  -------
 CEDMasterList.Fortifications.CEDLogo = {["DisplayName"] = "CED Logo",
 								  ["ItemID"] = "CEDLogo",
+								  ["Type"] = "Building",
 								  ["Description"] = [[
 Builds the CED Logo
 What it does: Yes
@@ -32,6 +33,7 @@ Yay!]],
 -------  TURRETS  -------
 CEDMasterList.Turrets.PlinkTurret = {["DisplayName"] = "  Plink\nTurret",
 								  ["ItemID"] = "PlinkTurret",
+								  ["Type"] = "Actor",
 								  ["Description"] = [[
 Builds the Plink Turret
 What it does: Yes
@@ -50,6 +52,7 @@ Yay!]],
 -------  ACTORS  -------
 CEDMasterList.Actors.Behemoth = {["DisplayName"] = "Behemoth",
 								  ["ItemID"] = "Behemoth",
+								  ["Type"] = "Actor",
 								  ["Description"] = [[
 Consumes Combat Engineer and
 transforms into a behemoth!
@@ -65,6 +68,7 @@ Yay!]],
 -------  GUNS  -------
 CEDMasterList.Guns.XaVidara = {["DisplayName"] = "Xarix Vidara",
 								  ["ItemID"] = "XaVidara",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Creates a gun
 and pops out the machine!
@@ -82,6 +86,7 @@ Yay!]],
 CEDMasterList.Buildings.Coagulator = {["DisplayName"] = "     Atmo\ncoagulator",
 								  ["RequiredTech"] = "None",
 								  ["ItemID"] = "Coagulator",
+								  ["Type"] = "Building",
 								  ["Description"] = [[
 Builds the Atmo-coagulator
 What it does: Yes
@@ -99,6 +104,7 @@ Yay!]],
 								  
 CEDMasterList.Buildings.Supercomputer = {["DisplayName"] = "   Super\ncomputer",
 								  ["ItemID"] = "Supercomputer",
+								  ["Type"] = "Building",
 								  ["Description"] = [[
 Builds the Supercomputer
 What it does: Yes
@@ -117,6 +123,7 @@ Yay!]],
 CEDMasterList.Buildings.XarixNanofab = {["DisplayName"] = "   Xarix\nNanofab",
 								  ["RequiredTech"] = "None",
 								  ["ItemID"] = "XarixNanofab",
+								  ["Type"] = "Building",
 								  ["Description"] = [[
 Builds the Xarix-Nanofab
 What it does: Yes
@@ -136,8 +143,10 @@ Yay!]],
 
 -------  TECHNOLOGY  -------
 	-------  XARIX  -------
+	-------  GUNS  -------
 CEDMasterList.Technology.Xarix.XaDoctra = {["DisplayName"] = "A Doctra",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Plasma pistol.
 ]],
@@ -155,6 +164,7 @@ Blank
 
 CEDMasterList.Technology.Xarix.XaA12Axiom = {["DisplayName"] = "A-12 Axiom",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Plasma autorevolver.
 ]],
@@ -172,6 +182,7 @@ Blank
 
 CEDMasterList.Technology.Xarix.XaMTXDirective = {["DisplayName"] = "MTX Directive",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Plasma smartgun.
 ]],
@@ -189,6 +200,7 @@ Blank
 
 CEDMasterList.Technology.Xarix.XaVidara = {["DisplayName"] = "Vidara",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Hybrid lasergun.
 ]],
@@ -206,6 +218,7 @@ Blank
 
 CEDMasterList.Technology.Xarix.XaEACondor = {["DisplayName"] = "EA Condor",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Charge cannon.
 ]],
@@ -220,9 +233,12 @@ Blank
 								  ["IconSize"] = Vector(34, 13),
 								  ["ResearchTime"] = 1000,
 								  ["Cost"] = 1000};
+	-------  BUILDINGS  -------
+
 	-------  KHRABAROVSK  -------
 CEDMasterList.Technology.Khrabarovsk.KhSPr40 = {["DisplayName"] = "SPr-40",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Double-action revolver.
 ]],
@@ -240,6 +256,7 @@ Blank
 
 CEDMasterList.Technology.Khrabarovsk.KhGS7 = {["DisplayName"] = "GS7",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Pump action shotgun.
 ]],
@@ -257,6 +274,7 @@ Blank
 
 CEDMasterList.Technology.Khrabarovsk.Kh11p35 = {["DisplayName"] = "11p35-rifle",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Select-fire assault rifle with underbarrel launcher.
 ]],
@@ -274,6 +292,7 @@ Blank
 
 CEDMasterList.Technology.Khrabarovsk.KhMOSKA = {["DisplayName"] = "MOSKA",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Bolt-action rifle.
 ]],
@@ -291,6 +310,7 @@ Blank
 
 CEDMasterList.Technology.Khrabarovsk.KhJS50 = {["DisplayName"] = "JS50",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Marksman rifle.
 ]],
@@ -308,6 +328,7 @@ Blank
 
 CEDMasterList.Technology.Khrabarovsk.KhC8Chimera = {["DisplayName"] = "C8 Chimera",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Deployable GPMG.
 ]],
@@ -325,6 +346,7 @@ Blank
 								  
 CEDMasterList.Technology.Khrabarovsk.KhAMAVogastir40 = {["DisplayName"] = "AMA-Vogastir 40",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Deployable GMG.
 ]],
@@ -358,6 +380,7 @@ it's all set up and loaded.
 	-------  VOSSBERG  -------
 CEDMasterList.Technology.Vossberg.VoHammerhead = {["DisplayName"] = "Hammerhead",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Handcannon.
 ]],
@@ -375,6 +398,7 @@ Blank
 
 CEDMasterList.Technology.Vossberg.VoAtlastar = {["DisplayName"] = "Atlastar",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Double-barreled hyperburst SMG.
 ]],
@@ -392,6 +416,7 @@ Blank
 
 CEDMasterList.Technology.Vossberg.VoTrigoliath = {["DisplayName"] = "Trigoliath",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Triple-barrel shotgun.
 ]],
@@ -409,6 +434,7 @@ Blank
 
 CEDMasterList.Technology.Vossberg.VoGrandarme = {["DisplayName"] = "Grandarme",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 High-caliber assault rifle.
 ]],
@@ -426,6 +452,7 @@ Blank
 
 CEDMasterList.Technology.Vossberg.VoTitanAMI = {["DisplayName"] = "Titan AMI",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Anti-materiel rifle.
 ]],
@@ -443,6 +470,7 @@ Blank
 
 CEDMasterList.Technology.Vossberg.EXPTurbolance = {["DisplayName"] = "Turbolance",
 								  ["RequiredTech"] = "None",
+								  ["Type"] = "Device",
 								  ["Description"] = [[
 Minigun.
 ]],

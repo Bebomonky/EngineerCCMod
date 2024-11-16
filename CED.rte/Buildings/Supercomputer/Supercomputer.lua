@@ -358,7 +358,11 @@ function ResearchMenu(self)
 	queueBox:OutlineThickness(2);
 
 	local bitmapList = {
-		InfoBox = "CED.rte/Buildings/Supercomputer/infoBox.png",
+		Info = {
+			Actor = "CED.rte/Buildings/Supercomputer/infoBoxActor.png",
+			Building = "CED.rte/Buildings/Supercomputer/infoBoxBuilding.png",
+			Device = "CED.rte/Buildings/Supercomputer/infoBoxDevice.png"
+		},
 		ArrowDown = "CED.rte/Effects/Menus/ArrowDown.png",
 		ArrowUp = "CED.rte/Effects/Menus/ArrowUp.png",
 		researchFrame = "CED.rte/Buildings/Supercomputer/research00"
@@ -434,6 +438,7 @@ function ResearchMenu(self)
 	self.infoBox.Popup = false;
 	self.infoBox.Data = {
 		ItemID = "",
+		Type = "",
 		DisplayName = "",
 		QueueIcon = "",
 		QueueIconWidth = 0,
@@ -448,15 +453,27 @@ function ResearchMenu(self)
 		local world_pos = self.infoBox:GetAbsolutePos();
 		if self.infoBox.Popup == true then
 			local hasFund = self.Activity:GetTeamFunds(self.Team) >= self.infoBox.Data.Cost;
+			local infoBoxSprite = bitmapList.Info[self.infoBox.Data.Type];
+			if infoBoxSprite then
+				PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + self.infoBox:GetSize() * 0.5, infoBoxSprite, 0);
+			end
 
-			PrimitiveMan:DrawBitmapPrimitive(screen, world_pos + self.infoBox:GetSize() * 0.5, bitmapList.InfoBox, 0);
+			if self.infoBox.Data.Type == "Actor" then
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(5, 70), "SOMETHING", false, 0);
+			elseif self.infoBox.Data.Type == "Building" then
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(50, 80), "SOMETHING", false, 0);
+			elseif self.infoBox.Data.Type == "Device" then
 
-			-- Action
-			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(5, 100), self.infoBox.Data.Action, true, 0);
-			-- RPM
-			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(51, 100), self.infoBox.Data.RPM, false, 0);
-			-- MAG
-			PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(100, 100), self.infoBox.Data.MAG, false, 0);
+				-- Action
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(5, 100), self.infoBox.Data.Action, true, 0);
+				-- RPM
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(51, 100), self.infoBox.Data.RPM, false, 0);
+				-- MAG
+				PrimitiveMan:DrawTextPrimitive(screen, world_pos + Vector(100, 100), self.infoBox.Data.MAG, false, 0);
+			end
+
+			local time = self.infoBox.Data.ResearchTime / 1000;
+
 			-- Description
 			local scroll = 0;
 			if self.Menu.Controller then
@@ -792,20 +809,27 @@ function ResearchMenu(self)
 							end
 							button[techID].Selected = true;
 							self.infoBox.Popup = true;
-
+							self.infoBox.Data.Type = item.Type;
 							self.infoBox.Data.ItemID = itemID;
 							self.infoBox.Data.TechID = techID;
-							self.infoBox.Data.Type = item.Type;
 							self.infoBox.Data.RequiredTech = item.RequiredTech;
 							self.infoBox.Data.DisplayName = item.DisplayName;
 							self.infoBox.Data.Description = MultiLineStringToTable(description);
-							self.infoBox.Data.Action = action;
-							self.infoBox.Data.RPM = rpm;
-							self.infoBox.Data.MAG = mag;
 							self.infoBox.Data.QueueIcon = item.IconPath;
 							self.infoBox.Data.QueueIconWidth = item.IconSize.X / 2;
 							self.infoBox.Data.ResearchTime = item.ResearchTime;
 							self.infoBox.Data.Cost = item.Cost;
+
+							if self.infoBox.Data.Type == "Actor" then
+								
+							elseif self.infoBox.Data.Type == "Building" then
+
+							elseif self.infoBox.Data.Type == "Device" then
+
+								self.infoBox.Data.Action = action;
+								self.infoBox.Data.RPM = rpm;
+								self.infoBox.Data.MAG = mag;
+							end
 
 							researchButton:SetClickable(true);
 							self.infoBox.ArrowAnimation:Reset();
