@@ -696,7 +696,7 @@ function ResearchMenu(self)
 
 		tab.OnPress = function(key)
 			if key == Controller.PRIMARY_ACTION then
-				if self.MenuCurrent ~= self.menuData[catID] then
+				if self.MenuCurrent ~= self.menuData[techID] then
 					for _, btn in ipairs(tabs) do
 						btn.Selected = false;
 					end
