@@ -68,10 +68,10 @@ function Create(self)
 	self.HEATParticleUtilityFiringSmokeDataTable = {};
 	self.HEATParticleUtilityFiringSmokeDataTable.Power = 80;
 	self.HEATParticleUtilityFiringSmokeDataTable.Spread = 5;
-	self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.3;
+	self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
 	self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.5;
 	self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
-	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.4;
+	self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.2;
 	self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
 	self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.8;
 	self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
@@ -231,7 +231,7 @@ function Create(self)
 	reloadPhase.afterDelay = 100;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 7);
 	reloadPhase.reloadSupportOffsetSpeed = 10;
-	reloadPhase.reloadSupportOffsetTarget = Vector(-15, -4)
+	reloadPhase.reloadSupportOffsetTarget = Vector(-10, 0)
 	reloadPhase.rotationTarget = 50;
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;

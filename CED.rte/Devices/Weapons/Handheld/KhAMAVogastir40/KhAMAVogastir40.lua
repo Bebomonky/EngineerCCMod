@@ -31,8 +31,6 @@ function Create(self)
 	self.KhAMAVogastir40AIFairnessTime = 2500;
 	self.KhAMAVogastir40AIFairnessEnabled = false;
 	
-	self.KhAMAVogastir40OriginalStanceOffset = Vector(math.abs(self.StanceOffset.X), self.StanceOffset.Y);
-	
 	self.CompliSoundGroundSmokeStr = 15;
 end
 
@@ -99,16 +97,16 @@ function ThreadedUpdate(self)
 		local standingDeploy = not isCrouching;
 		if isCrouching and not isMoving then
 			canDeploy = true;
-			self.KhC8ChimeraAIFairnessEnabled = false;
+			self.KhAMAVogastir40AIFairnessEnabled = false;
 		elseif heavyEnoughForWalkingFire and not isMovingFast then
 			canDeploy = true;
-			self.KhC8ChimeraAIFairnessEnabled = false;
+			self.KhAMAVogastir40AIFairnessEnabled = false;
 		elseif heavyEnoughForRunningFire then
 			canDeploy = true;
-			self.KhC8ChimeraAIFairnessEnabled = false;
+			self.KhAMAVogastir40AIFairnessEnabled = false;
 		elseif not isPlayerControlled then
 			canDeploy = true;
-			self.KhC8ChimeraAIFairnessEnabled = true;
+			self.KhAMAVogastir40AIFairnessEnabled = true;
 		end
 		
 		local timeToUse = standingDeploy and self.KhAMAVogastir40StandingDeployTime or self.KhAMAVogastir40DeployTime;

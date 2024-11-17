@@ -3,7 +3,13 @@ weap_kgolf_fire_plr_01
 weap_kgolf_fire_plr_mech_01
 weap_kgolf_fire_plr_atmo_01
 weap_shotgun_fire_plr_atmo_int1_03
+rocket_expl_trans_01
 
 BF2042: BF02_Weapons_Handheld_SMAW_HiFi-Backward_Markers_01 1
 BF02_Weapons_Handheld_RPG7_Add_Markers_01 1
 BF01_Projectiles_Flybys_Shared_GenericMissile_Markers_01 4
+BF02_Projectiles_Flybys_Rocket_Close_Loop_01 0
+
+Planetside 2: WPN_ROCKETLAUNCHER_TR_2D_SHOOT_01
+
+Insurgency: Sandstorm: exp_rpg_core_close_01
