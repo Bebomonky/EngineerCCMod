@@ -1,4 +1,5 @@
 function Create(self)
+	self.distantLoopSound = CreateSoundContainer("Rocket Distant Loop CED CED-BAS ADRS", "CED.rte");
 	self.lingeringBurstSound = CreateSoundContainer("Rocket Ignite Lingering CED CED-BAS ADRS", "CED.rte");
 
 	self.lifeTimer = Timer();
@@ -11,8 +12,10 @@ end
 
 function Update(self)
 	if self.lifeTimer:IsPastSimMS(self.activationDelay) then
+		self.distantLoopSound.Pos = self.Pos;
 		if self:IsEmitting() == false then
 			self:EnableEmission(true);
+			self.distantLoopSound:Play(self.Pos);
 			self.Vel = self.Vel + Vector(50*self.FlipFactor, 0):RadRotate(self.RotAngle);
 			self.lingeringBurstSound:Play(self.Pos);
 		end
@@ -22,5 +25,6 @@ end
 
 function Destroy(self)
 	self.BurstSound:Stop(-1);
+	self.distantLoopSound:Stop(-1);
 	self.lingeringBurstSound:FadeOut(1000);
 end

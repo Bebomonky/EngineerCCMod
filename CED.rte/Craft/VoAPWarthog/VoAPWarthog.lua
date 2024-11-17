@@ -24,7 +24,7 @@ function Update(self)
 		self.GetsHitByMOs = false;
 		self.Health = 0;
 	end
-	self.RotAngle = 0;
+	self.AngularVel = self.AngularVel * 0.2;
 end
 
 function OnCollideWithTerrain(self)
@@ -41,8 +41,7 @@ function OnCollideWithTerrain(self)
 		MovableMan:AddParticle(landingFX);
 		landingFX:GibThis();
 		
-		self.PinStrength = 5000;
-		self.Vel = self.Vel / 3;
+		self.Vel = self.Vel / 2;
 	end
 end
 

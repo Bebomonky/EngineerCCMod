@@ -37,6 +37,8 @@ function Create(self)
 	
 	self.timeUntilPodDrop = 5000;
 	
+	local sceneWraps = SceneMan.SceneWrapsX;
+	
 	local middleRayPos = self.startingPosition;
 	local middleRayVec = Vector(0, 99999);
 	self.middleRayHitPos = Vector();
@@ -44,11 +46,17 @@ function Create(self)
 	self.middleRay = SceneMan:CastNotMaterialRay(middleRayPos, middleRayVec, 0, self.middleRayHitPos, 30, true);
 	
 	local leftRayPos = self.startingPosition + Vector(-150, 0);
+	if leftRayPos.X < 0 and not sceneWraps then
+		leftRayPos.X = 1;
+	end
 	local leftRayVec = Vector(0, 99999);
 	self.leftRayHitPos = Vector();
 	self.leftRay = SceneMan:CastNotMaterialRay(leftRayPos, leftRayVec, 0, self.leftRayHitPos, 30, true);
 	
 	local rightRayPos = self.startingPosition + Vector(150, 0);
+	if rightRayPos.X > SceneMan.SceneWidth and not sceneWraps then
+		rightRayPos.X = SceneMan.SceneWidth - 1;
+	end
 	local rightRayVec = Vector(0, 99999);
 	self.rightRayHitPos = Vector();
 	self.rightRay = SceneMan:CastNotMaterialRay(rightRayPos, rightRayVec, 0, self.rightRayHitPos, 30, true);
@@ -80,14 +88,14 @@ function Update(self)
 					self.barrageImpactSound:Play(self.averageHitPos);
 				end
 				
-					CameraMan:AddScreenShake(5, self.averageHitPos);
+				CameraMan:AddScreenShake(5, self.averageHitPos);
 			
 				if self.barrageTimer:IsPastSimMS(self.timeBetweenShots) then
 					self.barrageTimer:Reset();
 					
 					local shot = CreateMOSRotating("Explosive Barrage Shot CED Vossberg AP-Warthog", "CED.rte");
-					shot.Pos = self.startingPosition + Vector(math.random(-150, 150), 50);
-					shot.Vel = self.Vel + Vector(math.random(-5, 5), 400);
+					shot.Pos = self.startingPosition + Vector(math.random(-60, 60), 50);
+					shot.Vel = self.Vel + Vector(math.random(-20, 20), 400);
 					shot.Team = self.Team;
 					MovableMan:AddParticle(shot);
 				end
