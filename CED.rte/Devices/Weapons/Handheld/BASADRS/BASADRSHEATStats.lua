@@ -177,13 +177,13 @@ function Create(self)
 	-- Strength of the vertical "kick" animation to do when this phase is finished.
 	reloadPhase.verticalAnim = 0;
 	-- Whether to animate between the frames specified below, between this phase finishing and exiting.
-	reloadPhase.autoAnimateFrames = false;
+	reloadPhase.autoAnimateFrames = true;
 	-- Start frame of the auto animation.
-	reloadPhase.startFrame = 0;
+	reloadPhase.startFrame = 1;
 	-- End frame of the auto animation.
-	reloadPhase.endFrame = 0;
+	reloadPhase.endFrame = 5;
 	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
-	reloadPhase.setEndFrameAsPersistent = false;
+	reloadPhase.setEndFrameAsPersistent = true;
 	-- Easing function to use. You could define your own here if you really wanted.
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
@@ -201,7 +201,7 @@ function Create(self)
 	end
 	-- Callback done every frame of the reload, after value setting but before finish-specific behavior.
 	reloadPhase.constantCallback = function (self)
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
+		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay + self.HEATCurrentReloadPhaseData.afterDelay / 3) then
 			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(14, -4);
 		end		
 	end
@@ -236,9 +236,9 @@ function Create(self)
 	reloadPhase.angVel = 0;
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
-	reloadPhase.autoAnimateFrames = false;
-	reloadPhase.startFrame = 0;
-	reloadPhase.endFrame = 0;
+	reloadPhase.autoAnimateFrames = true;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 5;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -283,8 +283,8 @@ function Create(self)
 	reloadPhase.horizontalAnim = -1;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 1;
-	reloadPhase.endFrame = 6;
+	reloadPhase.startFrame = 5;
+	reloadPhase.endFrame = 9;
 	reloadPhase.setEndFrameAsPersistent = false;
 	reloadPhase.easingFunction = self.HEATEaseLinear;
 	reloadPhase.phaseOnInterrupt = 2;
@@ -331,8 +331,8 @@ function Create(self)
 	reloadPhase.horizontalAnim = -1;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 6;
-	reloadPhase.endFrame = 6;
+	reloadPhase.startFrame = 9;
+	reloadPhase.endFrame = 13;
 	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;
@@ -375,8 +375,8 @@ function Create(self)
 	reloadPhase.horizontalAnim = 0;
 	reloadPhase.verticalAnim = 0;
 	reloadPhase.autoAnimateFrames = true;
-	reloadPhase.startFrame = 6;
-	reloadPhase.endFrame = 6;
+	reloadPhase.startFrame = 13;
+	reloadPhase.endFrame = 13;
 	reloadPhase.setEndFrameAsPersistent = true;
 	reloadPhase.easingFunction = self.HEATEaseOutCubic;
 	reloadPhase.phaseOnInterrupt = nil;

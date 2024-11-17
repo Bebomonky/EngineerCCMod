@@ -1,5 +1,19 @@
-original :)
+ImpactGlass:
 
-DOOM: Eternal: player_rocket_explosion_1_id#778847870
+	original :)
 
-COD:MW: rocket_expl_crack_01
+ExploSmall:
+
+	DOOM: Eternal: player_rocket_explosion_1_id#778847870
+
+	COD:MW: rocket_expl_crack_01
+
+ExploMedium:
+
+	BF1: Explosions_Shared_Ambience_Cinematic_Medium_Close_Wave 0 0 0
+	Explosions_Shared_Reflections_Explosion_Indoor_Small_Close_Wave 0 0 0
+
+	SW: SW01_Destruction_Explosions_Modular_Medium_Corebass_Close_Tear_VAR_03 0 0 0
+	SW01_Destruction_Explosions_Modular_Medium_Corebass_Distant_BigImpact_VAR_01 0 0 0
+
+	BF2042: BF01_Explosions_Shared_Reflections_All_Parametric_02_46
