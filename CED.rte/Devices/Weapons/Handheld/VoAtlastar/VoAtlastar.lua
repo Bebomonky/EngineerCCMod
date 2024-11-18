@@ -132,4 +132,11 @@ function ThreadedUpdate(self)
 			end
 		end
 	end
+	
+	if self:DoneReloading() then
+		if self.Magazine and self.Magazine.RoundCount == 21 then
+			-- HEATSystem will set this wrong for our 2-chambered intent
+			self.Magazine.RoundCount = 20;
+		end
+	end
 end

@@ -192,7 +192,7 @@ function Create(self)
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
 	reloadPhase.endIfNotEmptyReload = false;
 	-- Whether this phase is a shotgun-style, looping, one-round-at-a-time reload.
-	-- This will also trigger shotgun ammo counting and setting behavior and makes PlusOneChamberedRound irrelevant.
+	-- This will also trigger shotgun ammo counting and setting behavior. Note that PlusOneChamberedRound is still respected - clear HEATEmptyReload yourself if you want to avoid it.
 	reloadPhase.shotgunReloadLoop = false;
 	-- Whether this phase spawns a casing when finished.
 	reloadPhase.spawnCasing = false;

@@ -97,9 +97,9 @@ function Create(self)
 	self.useHEATReload = true;
 	
 	-- Whether to take away one round from the final reload when reloading from empty.
-	self.HEATPlusOneChamberedRound = false;
+	self.HEATPlusOneChamberedRound = true;
 	-- Your full magazine size, including the one in the chamber. This should be equal to the Magazine's RoundCount.
-	self.HEATFullMagazineRoundCount = 20;
+	self.HEATFullMagazineRoundCount = 22;
 	
 	-- Whether this becomes dual-reloadable when not emptied. Won't have an effect if you don't expect this to ever be dual-wielded.
 	-- If you don't want the HEATSystem to meddle with this at all, leave it false.
@@ -191,7 +191,7 @@ function Create(self)
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
 	reloadPhase.endIfNotEmptyReload = false;
 	-- Whether this phase is a shotgun-style, looping, one-round-at-a-time reload.
-	-- This will also trigger shotgun ammo counting and setting behavior and makes PlusOneChamberedRound irrelevant.
+	-- This will also trigger shotgun ammo counting and setting behavior. Note that PlusOneChamberedRound is still respected - clear HEATEmptyReload yourself if you want to avoid it.
 	reloadPhase.shotgunReloadLoop = false;
 	-- Whether this phase spawns a casing when finished.
 	reloadPhase.spawnCasing = false;

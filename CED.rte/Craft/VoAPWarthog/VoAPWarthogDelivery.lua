@@ -61,7 +61,11 @@ function Create(self)
 	self.rightRayHitPos = Vector();
 	self.rightRay = SceneMan:CastNotMaterialRay(rightRayPos, rightRayVec, 0, self.rightRayHitPos, 30, true);
 	
-	self.averageHitPos = (self.middleRayHitPos + self.leftRayHitPos + self.rightRayHitPos) * (1/3);
+	self.averageHitPos = self.middleRayHitPos;
+	local distToLeft = SceneMan:ShortestDistance(self.middleRayHitPos, self.leftRayHitPos, sceneWraps);
+	self.averageHitPos = self.averageHitPos + (distToLeft / 2);
+	local distToRight = SceneMan:ShortestDistance(self.middleRayHitPos, self.rightRayHitPos, sceneWraps);
+	self.averageHitPos = self.averageHitPos + (distToRight / 2);
 end
 
 function Update(self)
@@ -82,27 +86,32 @@ function Update(self)
 			self.ToDelete = true;
 			
 		elseif self.Timer:IsPastSimMS(self.timeUntilBarrage) then
-			if not self.Timer:IsPastSimMS(self.timeUntilBarrage + self.barrageDuration) then
-				if not self.barrageImpactSoundPlayed then
-					self.barrageImpactSoundPlayed = true;
-					self.barrageImpactSound:Play(self.averageHitPos);
+			if not self.Timer:IsPastSimMS(self.timeUntilBarrage + self.barrageDuration) then	
+				-- Delay the barrage sound and FX by how far above the terrain we are
+				-- Sort of arbitrary
+				local altitude = SceneMan:FindAltitude(self.startingPosition, 0, 50);
+				local delay = 50 / (200 / altitude);				
+				if self.Timer:IsPastSimMS(self.timeUntilBarrage + delay) then
+					CameraMan:AddScreenShake(5, self.averageHitPos);
+					if not self.barrageImpactSoundPlayed then		
+						self.barrageImpactSoundPlayed = true;
+						self.barrageImpactSound:Play(self.averageHitPos);
+					end
 				end
-				
-				CameraMan:AddScreenShake(5, self.averageHitPos);
 			
 				if self.barrageTimer:IsPastSimMS(self.timeBetweenShots) then
 					self.barrageTimer:Reset();
 					
 					local shot = CreateMOSRotating("Explosive Barrage Shot CED Vossberg AP-Warthog", "CED.rte");
 					shot.Pos = self.startingPosition + Vector(math.random(-60, 60), 50);
-					shot.Vel = self.Vel + Vector(math.random(-20, 20), 400);
+					shot.Vel = self.Vel + Vector(math.random(-20, 20), 200);
 					shot.Team = self.Team;
 					MovableMan:AddParticle(shot);
 				end
 			else
 				if not self.breathOfGodPlayed then
 					self.breathOfGodPlayed = true;
-					self.breathOfGod:Play(self.averageHitPos);
+					self.breathOfGod:Play(self.startingPosition);
 				end
 			end
 		end

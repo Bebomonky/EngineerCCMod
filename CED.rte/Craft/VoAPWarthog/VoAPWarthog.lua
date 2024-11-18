@@ -2,19 +2,32 @@ function Create(self)
 	self.enterSound = CreateSoundContainer("Enter CED Vossberg AP-Warthog", "CED.rte");
 	self.enterSound:Play(self.Pos);
 	self.incomingSound = CreateSoundContainer("Incoming CED Vossberg AP-Warthog", "CED.rte");
-	self.incomingSound:Play(self.Pos);
 	self.impactSound = CreateSoundContainer("Impact CED Vossberg AP-Warthog", "CED.rte");
+	
+	self.incomingTimer = Timer();
+	local altitude = SceneMan:FindAltitude(self.Pos, 0, 50);
+	-- Arbitrary
+	self.incomingTime = 20 / (120 / altitude);
 	
 	self.openTimer = Timer();
 	self.openTime = 1000;
+	
+	self.MissionCritical = true;
 end
 
 function Update(self)
-	if self.Pos.Y < 0 then
-		self.ToDelete = false;
-	end
-	
 	self.incomingSound.Pos = self.Pos;
+
+	if self.incomingTimer:IsPastSimMS(self.incomingTime) and not self.Incoming then
+		self.Incoming = true;
+		self.incomingSound:Play(self.Pos);
+	end
+
+	if self.Pos.Y > 0 then
+		self.HitsMOs = true;
+		self.GetsHitByMOs = true;
+	end
+
 	if self.HatchState == 2 then
 		self.HatchOpenSound = nil;
 	end
