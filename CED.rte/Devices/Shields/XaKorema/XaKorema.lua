@@ -80,21 +80,22 @@ function ThreadedUpdate(self)
 		end
 	end
 	
-	if self.XaKoremaEffectiveWoundCount >= 12 then
-		self.Frame = 4;
-		if not self.XaKoremaCriticalImpactSoundPlayed then
-			self.XaKoremaCriticalImpactSound:Play(self.Pos);
-			self.XaKoremaCriticalImpactSoundPlayed = true;
-		end
-	else
-		self.Frame = 0 + math.floor(self.XaKoremaEffectiveWoundCount / 3);
-		self.XaKoremaCriticalImpactSoundPlayed = false;
-	end
-	
 	if self.XaKoremaEffectiveWoundCount > self.XaKoremaActualGibWoundLimit then
 		self:GibThis();
+		self.XaKoremaCriticalImpactSound:Stop-(-1);
+	else
+		if self.XaKoremaEffectiveWoundCount >= 12 then
+			self.Frame = 4;
+			if not self.XaKoremaCriticalImpactSoundPlayed then
+				self.XaKoremaCriticalImpactSound:Play(self.Pos);
+				self.XaKoremaCriticalImpactSoundPlayed = true;
+			end
+		else
+			self.Frame = 0 + math.floor(self.XaKoremaEffectiveWoundCount / 3);
+			self.XaKoremaCriticalImpactSoundPlayed = false;
+		end
 	end
-	
+
 	self.XaKoremaPreviousWoundCounter = totalWoundCount;	
 end
 
