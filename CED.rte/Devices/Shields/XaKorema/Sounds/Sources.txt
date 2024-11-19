@@ -1,13 +1,5 @@
-Warframe: CrpBlastorPistolMechA
-CrpBlastorPistolCharge
+Warframe:CrpBlastorPistolCharge
 CrpBlastorPistolChargeFinished
-CrpRubanRifleProjectilePreExplosion
-SapientPrimaryExplosiveImpactB
-GrnOceanElectricSurgeSmallD
-CrpGasRobotRepairSparkA
 
-SW: SW01_Gadgets_BurstShield_Impacts_Metal_VAR_04 0 0 0
 
-Titanfall 2: imp_bullet_energy_titan_atk_1p_vs_3p_2ch_v1_01
-
-partially original
+original
