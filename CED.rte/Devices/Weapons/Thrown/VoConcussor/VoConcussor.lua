@@ -16,6 +16,18 @@ function Create(self)
 	self.pullTime = 300;
 end
 
+function OnAttach(self, newParent)
+	if IsAHuman(newParent:GetRootParent()) then
+		self.parent = ToAHuman(newParent:GetRootParent());
+		self.parentController = self.parent:GetController();
+	end
+end
+
+function OnDetach(self)
+	self.parent = nil;
+	self.parentController = nil;
+end
+
 function Update(self)
 	self.implodeSound.Pos = self.Pos;
 	
@@ -206,7 +218,7 @@ function Update(self)
 			self.Active = true;
 			self.Timer:Reset();
 		end
-	elseif self:IsActivated() then
+	elseif self.parent and self.parentController:IsState(Controller.WEAPON_FIRE) then
 		self.Frame = 1;
 		self.pinPullSound:Play(self.Pos);
 		local pin = CreateMOSRotating("Pin CED Vossberg Concussor", "CED.rte");

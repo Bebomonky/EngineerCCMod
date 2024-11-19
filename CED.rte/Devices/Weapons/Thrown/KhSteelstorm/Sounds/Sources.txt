@@ -1,0 +1,7 @@
+Battlefield 1: Explosions_Shared_Debris_Ricochet_Close_Wave 0 0 0
+
+Insurgency: Sandstorm: shrapnel_debris_01
+
+COD:MW: frag_expl_swt_mtl_01
+
+Post Scriptum: Stelhandgranate_foley_pin_pull_01

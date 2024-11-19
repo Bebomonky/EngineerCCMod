@@ -82,7 +82,7 @@ function ThreadedUpdate(self)
 	
 	if self.XaKoremaEffectiveWoundCount > self.XaKoremaActualGibWoundLimit then
 		self:GibThis();
-		self.XaKoremaCriticalImpactSound:Stop-(-1);
+		self.XaKoremaCriticalImpactSound:Stop(-1);
 	else
 		if self.XaKoremaEffectiveWoundCount >= 12 then
 			self.Frame = 4;
