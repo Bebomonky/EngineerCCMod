@@ -1,5 +1,7 @@
 function Create(self)
 
+	-- for actor in MovableMan.Actors do actor.HUDVisible = false end
+
 	-----------------
 	----------------- Mordhau system stats file
 	-----------------
@@ -179,11 +181,12 @@ function Create(self)
 	-- PhaseSet to trigger when primary hotkey is inputted
 	self.PrimaryHotkeyInputPhaseSetName = "Overhead Stab PhaseSet";
 	-- PhaseSet to trigger when auxiliary hotkey is inputted
-	self.AuxiliaryHotkeyInputPhaseSetName = "Overhead PhaseSet";
+	self.AuxiliaryHotkeyInputPhaseSetName = "Stab PhaseSet";
 	
 	-- A table of PhaseSet names that the AI can randomly choose to attack with.
 	self.ValidAIAttackPhaseSets = {"Slash PhaseSet",
-								   "Overhead Stab PhaseSet",
+								   "Stab PhaseSet",
+								   "Overhead Stab PhaseSet"
 	};
 	
 	-- PhaseSet that triggers when parried - should look like being deflected.
@@ -1048,6 +1051,354 @@ function Create(self)
 	local phaseSetIndex = phaseSetIndex + 1;
 	local phaseSet = {};
 	
+	phaseSet.Name = "Stab PhaseSet";
+	phaseSet.canBeCombodInto = true;
+	phaseSet.sameInputComboPhaseSet = nil;
+	phaseSet.isBlockingPhaseSet = false;
+	phaseSet.isAttackingPhaseSet = true;
+	phaseSet.HFlipSwitchLimit = 3;
+	phaseSet.AIRange = 45;
+	phaseSet.Phases = {};
+	
+	self.PhaseSets[phaseSetIndex] = phaseSet;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	local phaseIndex = 1;
+	local Phase = {};
+	
+	Phase.Name = "Stab Prepare";
+	Phase.Duration = 250;
+	
+	Phase.parriesAttacks = false;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = true;
+	Phase.canBeBlockCancelled = true;
+	Phase.allowsPhaseSetBuffering = false;
+	Phase.canComboOut = false;
+	Phase.isAfterFinalAttackPhase = false;
+
+	Phase.canBeBlocked = false;
+	Phase.doesDamage = false;
+	Phase.attackType = "None";
+	Phase.Cleaves = false;
+	Phase.isInterruptableByTerrain = false;
+	Phase.Damage = 0.0;
+	Phase.woundDamageMultiplier = 0.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(0, 0);
+	Phase.rayVecSecondPos = Vector(0, 0);
+	Phase.rayDensity = 0;
+	Phase.rayRange = 0;
+	Phase.rayTerrainRangeMultiplier = 0;
+	Phase.rayAngle = 0;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 1;
+	Phase.frameEasingFunc = self.EaseInOutCubic;
+	
+	Phase.rotationSpeed = 0.8;
+	Phase.angleStart = -40;
+	Phase.angleEnd = -110;
+	Phase.angleEasingFunc = self.EaseInOutCubic;
+	
+	Phase.stanceOffsetSpeed = 1;	
+	Phase.stanceOffsetStart = Vector(0, 0);
+	Phase.stanceOffsetEnd = Vector(-15, 6);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(0, -20);
+	
+	Phase.soundStart = nil;
+	Phase.soundStartStopsOnHit = false;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	local phaseIndex = phaseIndex + 1;
+	local Phase = {};
+	
+	Phase.Name = "Stab Late Prepare";
+	Phase.Duration = 50;
+	
+	Phase.parriesAttacks = false;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = false;
+	Phase.canBeBlockCancelled = true;
+	Phase.allowsPhaseSetBuffering = false;
+	Phase.canComboOut = false;
+	Phase.isAfterFinalAttackPhase = false;
+
+	Phase.canBeBlocked = true;
+	Phase.doesDamage = false;
+	Phase.attackType = "Stab";
+	Phase.Cleaves = false;
+	Phase.isInterruptableByTerrain = false;
+	Phase.Damage = 0.0;
+	Phase.woundDamageMultiplier = 0.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(-1, 8);
+	Phase.rayVecSecondPos = Vector(1, 8);
+	Phase.rayDensity = 3;
+	Phase.rayRange = 26;
+	Phase.rayTerrainRangeMultiplier = 1.0
+	Phase.rayAngle = 130;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 0;
+	Phase.frameEasingFunc = self.EaseInOutCubic;
+	
+	Phase.rotationSpeed = 0.8;
+	Phase.angleStart = -110;
+	Phase.angleEnd = -100;
+	Phase.angleEasingFunc = self.EaseInOutCubic;
+	
+	Phase.stanceOffsetSpeed = 1;	
+	Phase.stanceOffsetStart = Vector(-15, 6);
+	Phase.stanceOffsetEnd = Vector(-5, 6);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(-10, -15);
+	
+	Phase.soundStart = CreateSoundContainer("Stab Whoosh CED Combat Knife", "CED.rte");
+	Phase.soundStartStopsOnHit = true;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	local phaseIndex = phaseIndex + 1;
+	local Phase = {};
+	
+	Phase.Name = "Stab Attack";
+	Phase.Duration = 100;
+	
+	Phase.parriesAttacks = false;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = false;
+	Phase.canBeBlockCancelled = false;
+	Phase.allowsPhaseSetBuffering = true;
+	Phase.canComboOut = false;
+	Phase.isAfterFinalAttackPhase = false;
+
+	Phase.canBeBlocked = true;
+	Phase.doesDamage = true;
+	Phase.attackType = "Stab";
+	Phase.Cleaves = true;
+	Phase.isInterruptableByTerrain = true;
+	Phase.Damage = 1.5;
+	Phase.woundDamageMultiplier = 2.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(-1, 8);
+	Phase.rayVecSecondPos = Vector(1, 8);
+	Phase.rayDensity = 3;
+	Phase.rayRange = 23;
+	Phase.rayTerrainRangeMultiplier = 1.0
+	Phase.rayAngle = 100;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 0;
+	Phase.frameEasingFunc = self.EaseInOutCubic;
+	
+	Phase.rotationSpeed = 0.8;
+	Phase.angleStart = -100;
+	Phase.angleEnd = -75;
+	Phase.angleEasingFunc = self.EaseLinear;
+	
+	Phase.stanceOffsetSpeed = 1;	
+	Phase.stanceOffsetStart = Vector(-5, 6);
+	Phase.stanceOffsetEnd = Vector(40, 0);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(-5, -5);
+	
+	Phase.soundStart = nil;
+	Phase.soundStartStopsOnHit = false;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	phaseIndex = phaseIndex + 1;
+	Phase = {};
+	
+	Phase.Name = "Stab Rebound";
+	Phase.Duration = 200;
+	
+	Phase.parriesAttacks = false;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = false;
+	Phase.canBeBlockCancelled = true;
+	Phase.allowsPhaseSetBuffering = true;
+	Phase.canComboOut = true;
+	Phase.isAfterFinalAttackPhase = true;
+	
+	Phase.canBeBlocked = false;
+	Phase.doesDamage = false;
+	Phase.attackType = "None";
+	Phase.Cleaves = false;
+	Phase.isInterruptableByTerrain = false;
+	Phase.Damage = 0.0;
+	Phase.woundDamageMultiplier = 0.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(0, 0);
+	Phase.rayVecSecondPos = Vector(0, 0);
+	Phase.rayDensity = 0;
+	Phase.rayRange = 0;
+	Phase.rayTerrainRangeMultiplier = 0;
+	Phase.rayAngle = 0;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 0;
+	Phase.frameEasingFunc = self.EaseLinear;
+	
+	Phase.rotationSpeed = 0.6;	
+	Phase.angleStart = -75;
+	Phase.angleEnd = -65;
+	Phase.angleEasingFunc = self.EaseInOutCubic;
+	
+	Phase.stanceOffsetSpeed = 1;	
+	Phase.stanceOffsetStart = Vector(25, 0);
+	Phase.stanceOffsetEnd = Vector(-5, 6);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(999, 999);
+	
+	Phase.soundStart = nil;
+	Phase.soundStartStopsOnHit = false;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	phaseIndex = phaseIndex + 1;
+	Phase = {};
+	
+	Phase.Name = "Stab Recover";
+	Phase.Duration = 200;
+	
+	Phase.parriesAttacks = false;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = false;
+	Phase.canBeBlockCancelled = true;
+	Phase.allowsPhaseSetBuffering = true;
+	Phase.canComboOut = true;
+	Phase.isAfterFinalAttackPhase = true;
+	
+	Phase.canBeBlocked = false;
+	Phase.doesDamage = false;
+	Phase.attackType = "None";
+	Phase.Cleaves = false;
+	Phase.isInterruptableByTerrain = false;
+	Phase.Damage = 0.0;
+	Phase.woundDamageMultiplier = 0.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(-5, 6);
+	Phase.rayVecSecondPos = Vector(0, 0);
+	Phase.rayDensity = 4;
+	Phase.rayRange = 0;
+	Phase.rayTerrainRangeMultiplier = 0;
+	Phase.rayAngle = 0;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 0;
+	Phase.frameEasingFunc = self.EaseLinear;
+	
+	Phase.rotationSpeed = 0.6;	
+	Phase.angleStart = -65;
+	Phase.angleEnd = -45;
+	Phase.angleEasingFunc = self.EaseInOutCubic;
+	
+	Phase.stanceOffsetSpeed = 0.1;	
+	Phase.stanceOffsetStart = Vector(10, 2);
+	Phase.stanceOffsetEnd = Vector(0, 0);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(999, 999);
+	
+	Phase.soundStart = nil;
+	Phase.soundStartStopsOnHit = false;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	------------------------------------------------------------------------------
+	---------------------------------PHASESET-------------------------------------
+	------------------------------------------------------------------------------
+	
+	local phaseSetIndex = phaseSetIndex + 1;
+	local phaseSet = {};
+	
 	phaseSet.Name = "Overhead Stab PhaseSet";
 	phaseSet.canBeCombodInto = true;
 	phaseSet.sameInputComboPhaseSet = nil;
@@ -1156,7 +1507,7 @@ function Create(self)
 	Phase.rayTerrainRangeMultiplier = 1.0
 	Phase.rayAngle = 90;
 	
-	Phase.frameStart = 0;
+	Phase.frameStart = 1;
 	Phase.frameEnd = 1;
 	Phase.frameEasingFunc = self.EaseInOutCubic;
 	
@@ -1396,223 +1747,6 @@ function Create(self)
 	local phaseSetIndex = phaseSetIndex + 1;
 	local phaseSet = {};
 	
-	phaseSet.Name = "Overhead PhaseSet";
-	phaseSet.canBeCombodInto = true;
-	phaseSet.sameInputComboPhaseSet = nil;
-	phaseSet.isBlockingPhaseSet = false;
-	phaseSet.isAttackingPhaseSet = true;
-	phaseSet.HFlipSwitchLimit = 3;
-	phaseSet.AIRange = 45;
-	phaseSet.Phases = {};
-	
-	self.PhaseSets[phaseSetIndex] = phaseSet;
-	
-	----------------------------------PHASE---------------------------------------
-	
-	local phaseIndex = 1;
-	local Phase = {};
-	
-	Phase.Name = "Overhead Prepare";
-	Phase.Duration = 300;
-	
-	Phase.parriesAttacks = false;
-	Phase.blocksAttacks = false;
-	Phase.canBeHeld = true;
-	Phase.canBeBlockCancelled = true;
-	Phase.allowsPhaseSetBuffering = false;
-	Phase.canComboOut = false;
-	Phase.isAfterFinalAttackPhase = false;
-	
-	Phase.canBeBlocked = false;
-	Phase.doesDamage = false;
-	Phase.attackType = "None";
-	Phase.Cleaves = false;
-	Phase.isInterruptableByTerrain = false;
-	Phase.Damage = 0.0;
-	Phase.woundDamageMultiplier = 0.0;
-	Phase.dismemberInsteadOfGibbing = false;
-	Phase.rayVecFirstPos = Vector(0, 0);
-	Phase.rayVecSecondPos = Vector(0, 0);
-	Phase.rayDensity = 0;
-	Phase.rayRange = 0;
-	Phase.rayTerrainRangeMultiplier = 0;
-	Phase.rayAngle = 0;
-	
-	Phase.frameStart = 0;
-	Phase.frameEnd = 2;
-	Phase.frameEasingFunc = self.EaseLinear;
-	
-	Phase.rotationSpeed = 0.4;
-	Phase.angleStart = -25;
-	Phase.angleEnd = 100;
-	Phase.angleEasingFunc = self.EaseInOutCubic;
-	
-	Phase.stanceOffsetSpeed = 1;	
-	Phase.stanceOffsetStart = Vector(0, 0);
-	Phase.stanceOffsetEnd = Vector(-6, -25);
-	Phase.stanceEasingFunc = self.EaseLinear;
-	
-	Phase.jointOffsetSpeed = 1;
-	Phase.jointOffset = Vector(0, 10);
-	Phase.supportOffsetSpeed = 1;
-	Phase.supportOffset = Vector(-1, 14);
-	
-	Phase.soundStart = nil;
-	Phase.soundStartStopsOnHit = false;
-	Phase.soundEnd = nil;
-	
-	Phase.enterPhaseCallback = function (self)
-		
-	end
-	Phase.constantCallback = function (self)
-		
-	end
-	Phase.exitPhaseCallback = function (self)
-		
-	end
-	
-	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
-	
-	----------------------------------PHASE---------------------------------------
-	
-	phaseIndex = phaseIndex + 1;
-	Phase = {};
-	
-	Phase.Name = "Overhead Attack";
-	Phase.Duration = 300;
-	
-	Phase.parriesAttacks = false;
-	Phase.blocksAttacks = false;
-	Phase.canBeHeld = false;
-	Phase.canBeBlockCancelled = false;
-	Phase.allowsPhaseSetBuffering = true;
-	Phase.canComboOut = false;
-	Phase.isAfterFinalAttackPhase = false;
-	
-	Phase.canBeBlocked = true;
-	Phase.doesDamage = true;
-	Phase.attackType = "Heavy Slash";
-	Phase.isInterruptableByTerrain = true;
-	Phase.Cleaves = false;
-	Phase.Damage = 1.0;
-	Phase.woundDamageMultiplier = 2.0;
-	Phase.dismemberInsteadOfGibbing = true;
-	Phase.rayVecFirstPos = Vector(0, 7);
-	Phase.rayVecSecondPos = Vector(0, -20);
-	Phase.rayDensity = 14;
-	Phase.rayRange = 7;
-	Phase.rayTerrainRangeMultiplier = 0.5;
-	Phase.rayAngle = 0;
-	
-	Phase.frameStart = 2;
-	Phase.frameEnd = 0;
-	Phase.frameEasingFunc = self.EaseOutCubic;
-	
-	Phase.rotationSpeed = 0.8;	
-	Phase.angleStart = 100;
-	Phase.angleEnd = -110;
-	Phase.angleEasingFunc = self.EaseInOutCubic;
-	
-	Phase.stanceOffsetSpeed = 1;	
-	Phase.stanceOffsetStart = Vector(-6, -25);
-	Phase.stanceOffsetEnd = Vector(6, 20);
-	Phase.stanceEasingFunc = self.EaseLinear;
-	
-	Phase.jointOffsetSpeed = 1;
-	Phase.jointOffset = Vector(0, 10);
-	Phase.supportOffsetSpeed = 1;
-	Phase.supportOffset = Vector(-1, 14);
-	
-	Phase.soundStart = CreateSoundContainer("Slash Whoosh CED Combat Knife", "CED.rte");
-	Phase.soundStartStopsOnHit = true;
-	Phase.soundEnd = nil;
-	
-	Phase.enterPhaseCallback = function (self)
-		
-	end
-	Phase.constantCallback = function (self)
-		
-	end
-	Phase.exitPhaseCallback = function (self)
-		
-	end
-	
-	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
-	
-	----------------------------------PHASE---------------------------------------
-	
-	phaseIndex = phaseIndex + 1;
-	Phase = {};
-	
-	Phase.Name = "Overhead Recover";
-	Phase.Duration = 450;
-	
-	Phase.parriesAttacks = false;
-	Phase.blocksAttacks = false;
-	Phase.canBeHeld = false;
-	Phase.canBeBlockCancelled = true;
-	Phase.allowsPhaseSetBuffering = false;
-	Phase.canComboOut = true;
-	Phase.isAfterFinalAttackPhase = true;
-	
-	Phase.canBeBlocked = false;
-	Phase.doesDamage = false;
-	Phase.attackType = "None";
-	Phase.Cleaves = false;
-	Phase.isInterruptableByTerrain = false;
-	Phase.Damage = 0.0;
-	Phase.woundDamageMultiplier = 0.0;
-	Phase.dismemberInsteadOfGibbing = false;
-	Phase.rayVecFirstPos = Vector(0, 0);
-	Phase.rayVecSecondPos = Vector(0, 0);
-	Phase.rayDensity = 0;
-	Phase.rayRange = 0;
-	Phase.rayTerrainRangeMultiplier = 0;
-	Phase.rayAngle = 0;
-	
-	Phase.frameStart = 0;
-	Phase.frameEnd = 0;
-	Phase.frameEasingFunc = self.EaseLinear;
-	
-	Phase.rotationSpeed = 0.3;	
-	Phase.angleStart = -110;
-	Phase.angleEnd = -40;
-	Phase.angleEasingFunc = self.EaseLinear;
-	
-	Phase.stanceOffsetSpeed = 1;	
-	Phase.stanceOffsetStart = Vector(-6, 20);
-	Phase.stanceOffsetEnd = Vector(0, 0);
-	Phase.stanceEasingFunc = self.EaseLinear;
-	
-	Phase.jointOffsetSpeed = 1;
-	Phase.jointOffset = Vector(0, 10);
-	Phase.supportOffsetSpeed = 1;
-	Phase.supportOffset = Vector(-1, 14);
-	
-	Phase.soundStart = nil;
-	Phase.soundStartStopsOnHit = false;
-	Phase.soundEnd = nil;
-	
-	Phase.enterPhaseCallback = function (self)
-		
-	end
-	Phase.constantCallback = function (self)
-		
-	end
-	Phase.exitPhaseCallback = function (self)
-		
-	end
-	
-	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
-	
-	
-	------------------------------------------------------------------------------
-	---------------------------------PHASESET-------------------------------------
-	------------------------------------------------------------------------------
-	
-	local phaseSetIndex = phaseSetIndex + 1;
-	local phaseSet = {};
-	
 	phaseSet.Name = "Block PhaseSet";
 	phaseSet.canBeCombodInto = true;
 	phaseSet.sameInputComboPhaseSet = nil;
@@ -1674,7 +1808,7 @@ function Create(self)
 	Phase.supportOffsetSpeed = 1;
 	Phase.supportOffset = Vector(999, 999);
 	
-	Phase.soundStart = CreateSoundContainer("Stab Whoosh CED Combat Knife", "CED.rte");
+	Phase.soundStart = CreateSoundContainer("Slash Whoosh CED Combat Knife", "CED.rte");
 	Phase.soundStartStopsOnHit = false;
 	Phase.soundEnd = nil;
 	
