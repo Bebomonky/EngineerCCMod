@@ -1,7 +1,5 @@
 function Create(self)
 
-	-- for actor in MovableMan.Actors do actor.HUDVisible = false end
-
 	-----------------
 	----------------- Mordhau system stats file
 	-----------------
@@ -284,6 +282,7 @@ function Create(self)
 	-- Whether this phase can be stopped from damaging further after hitting terrain. Cleaves == true resets this interruption after at least a phase,
 	-- but if it's false then one interruption will nullify the entire PhaseSet.
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	-- Wounds to cause when hitting an MO. Decimals will result in randomly doing one more wound sometimes, depending on how much extra there is.
 	Phase.Damage = 0.0;
 	-- Acts as expected, per-wound.
@@ -386,6 +385,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -451,6 +451,7 @@ function Create(self)
 	Phase.doesDamage = true;
 	Phase.attackType = "Slash";
 	Phase.isInterruptableByTerrain = true;
+	Phase.kineticEnergy = 30;
 	Phase.Cleaves = false;
 	Phase.Damage = 1.0;
 	Phase.woundDamageMultiplier = 2.0;
@@ -518,6 +519,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -584,6 +586,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -668,6 +671,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -734,6 +738,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -799,6 +804,7 @@ function Create(self)
 	Phase.doesDamage = true;
 	Phase.attackType = "Slash";
 	Phase.isInterruptableByTerrain = true;
+	Phase.kineticEnergy = 30;
 	Phase.Cleaves = false;
 	Phase.Damage = 1.0;
 	Phase.woundDamageMultiplier = 2.0;
@@ -867,6 +873,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -933,6 +940,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -999,6 +1007,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1083,6 +1092,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1149,6 +1159,7 @@ function Create(self)
 	Phase.attackType = "Stab";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1215,6 +1226,7 @@ function Create(self)
 	Phase.attackType = "Stab";
 	Phase.Cleaves = true;
 	Phase.isInterruptableByTerrain = true;
+	Phase.kineticEnergy = 50;
 	Phase.Damage = 1.5;
 	Phase.woundDamageMultiplier = 2.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1281,6 +1293,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1347,6 +1360,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1431,6 +1445,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1497,6 +1512,7 @@ function Create(self)
 	Phase.attackType = "Heavy Stab";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1563,6 +1579,7 @@ function Create(self)
 	Phase.attackType = "Heavy Stab";
 	Phase.Cleaves = true;
 	Phase.isInterruptableByTerrain = true;
+	Phase.kineticEnergy = 100;
 	Phase.Damage = 2.0;
 	Phase.woundDamageMultiplier = 2.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1629,6 +1646,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1695,6 +1713,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1764,7 +1783,7 @@ function Create(self)
 	local Phase = {};
 	
 	Phase.Name = "Block Parry";
-	Phase.Duration = 325;
+	Phase.Duration = 150;
 	
 	Phase.parriesAttacks = true;
 	Phase.blocksAttacks = false;
@@ -1779,6 +1798,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1795,6 +1815,73 @@ function Create(self)
 	
 	Phase.rotationSpeed = 1.0;
 	Phase.angleStart = -40;
+	Phase.angleEnd = -75;
+	Phase.angleEasingFunc = self.EaseInOutCubic;
+	
+	Phase.stanceOffsetSpeed = 1;	
+	Phase.stanceOffsetStart = Vector(0, -10);
+	Phase.stanceOffsetEnd = Vector(-1, -15);
+	Phase.stanceEasingFunc = self.EaseLinear;
+	
+	Phase.jointOffsetSpeed = 1;
+	Phase.jointOffset = Vector(0, 5);
+	Phase.supportOffsetSpeed = 1;
+	Phase.supportOffset = Vector(999, 999);
+	
+	Phase.soundStart = CreateSoundContainer("Slash Whoosh CED Combat Knife", "CED.rte");
+	Phase.soundStartStopsOnHit = false;
+	Phase.soundEnd = nil;
+	
+	Phase.enterPhaseCallback = function (self)
+		
+	end
+	Phase.constantCallback = function (self)
+		
+	end
+	Phase.exitPhaseCallback = function (self)
+		
+	end
+	
+	self.PhaseSets[phaseSetIndex].Phases[phaseIndex] = Phase;
+	
+	----------------------------------PHASE---------------------------------------
+	
+	local phaseIndex = 1;
+	local Phase = {};
+	
+	Phase.Name = "Block Late Parry";
+	Phase.Duration = 175;
+	
+	Phase.parriesAttacks = true;
+	Phase.blocksAttacks = false;
+	Phase.canBeHeld = false;
+	Phase.canBeBlockCancelled = false;
+	Phase.allowsPhaseSetBuffering = true;
+	Phase.canComboOut = true;
+	Phase.isAfterFinalAttackPhase = false;
+
+	Phase.canBeBlocked = false;
+	Phase.doesDamage = false;
+	Phase.attackType = "None";
+	Phase.Cleaves = false;
+	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
+	Phase.Damage = 0.0;
+	Phase.woundDamageMultiplier = 0.0;
+	Phase.dismemberInsteadOfGibbing = false;
+	Phase.rayVecFirstPos = Vector(0, 0);
+	Phase.rayVecSecondPos = Vector(0, 0);
+	Phase.rayDensity = 0;
+	Phase.rayRange = 0;
+	Phase.rayTerrainRangeMultiplier = 0;
+	Phase.rayAngle = 0;
+	
+	Phase.frameStart = 0;
+	Phase.frameEnd = 0;
+	Phase.frameEasingFunc = self.EaseInOutCubic;
+	
+	Phase.rotationSpeed = 1.0;
+	Phase.angleStart = -75;
 	Phase.angleEnd = -130;
 	Phase.angleEasingFunc = self.EaseInOutCubic;
 	
@@ -1845,6 +1932,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1911,6 +1999,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -1977,6 +2066,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -2061,6 +2151,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -2127,6 +2218,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -2211,6 +2303,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
@@ -2276,6 +2369,7 @@ function Create(self)
 	Phase.attackType = "None";
 	Phase.Cleaves = false;
 	Phase.isInterruptableByTerrain = false;
+	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
