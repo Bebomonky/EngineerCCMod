@@ -291,6 +291,10 @@ function Create(self)
 	Phase.Damage = 0.0;
 	-- Acts as expected, per-wound.
 	Phase.woundDamageMultiplier = 0.0;
+	-- Multiplier to the caused wounds' bleeding values.
+	Phase.woundBleedMultiplier = 0.0;
+	-- Multiplier to stamina damage caused.
+	Phase.staminaDamageMultiplier = 0.0;
 	-- Whether to dismember parts of Actors instead of gibbing them, if dealing enough damage to gib.
 	Phase.dismemberInsteadOfGibbing = false;
 	-- The first position in a line of rays to cast, relative to SpriteOffset. Does nothing without canBeBlocked or doesDamage.
@@ -392,6 +396,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 4);
 	Phase.rayVecSecondPos = Vector(1, 4);
@@ -459,6 +465,8 @@ function Create(self)
 	Phase.Cleaves = false;
 	Phase.Damage = 1.0;
 	Phase.woundDamageMultiplier = 2.0;
+	Phase.woundBleedMultiplier = 1.0;
+	Phase.staminaDamageMultiplier = 1.0;
 	Phase.dismemberInsteadOfGibbing = true;
 	Phase.rayVecFirstPos = Vector(-1, 4);
 	Phase.rayVecSecondPos = Vector(1, 4);
@@ -526,6 +534,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -593,6 +603,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -678,6 +690,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -745,6 +759,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 4);
 	Phase.rayVecSecondPos = Vector(1, 4);
@@ -812,6 +828,8 @@ function Create(self)
 	Phase.Cleaves = false;
 	Phase.Damage = 1.0;
 	Phase.woundDamageMultiplier = 2.0;
+	Phase.woundBleedMultiplier = 1.0;
+	Phase.staminaDamageMultiplier = 1.0;
 	Phase.dismemberInsteadOfGibbing = true;
 	Phase.rayVecFirstPos = Vector(-1, 4);
 	Phase.rayVecSecondPos = Vector(1, 4);
@@ -880,6 +898,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -947,6 +967,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1014,6 +1036,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1099,6 +1123,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1166,6 +1192,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 8);
 	Phase.rayVecSecondPos = Vector(1, 8);
@@ -1233,6 +1261,8 @@ function Create(self)
 	Phase.kineticEnergy = 50;
 	Phase.Damage = 1.5;
 	Phase.woundDamageMultiplier = 2.0;
+	Phase.woundBleedMultiplier = 1.0;
+	Phase.staminaDamageMultiplier = 1.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 8);
 	Phase.rayVecSecondPos = Vector(1, 8);
@@ -1300,6 +1330,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1367,6 +1399,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-5, 6);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1452,6 +1486,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1519,6 +1555,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 8);
 	Phase.rayVecSecondPos = Vector(1, 8);
@@ -1586,6 +1624,8 @@ function Create(self)
 	Phase.kineticEnergy = 100;
 	Phase.Damage = 2.0;
 	Phase.woundDamageMultiplier = 2.0;
+	Phase.woundBleedMultiplier = 1.0;
+	Phase.staminaDamageMultiplier = 1.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-1, 8);
 	Phase.rayVecSecondPos = Vector(1, 8);
@@ -1653,6 +1693,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1720,6 +1762,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(-5, 2);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1805,6 +1849,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1872,6 +1918,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -1939,6 +1987,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2006,6 +2056,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2073,6 +2125,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2158,6 +2212,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2225,6 +2281,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2310,6 +2368,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
@@ -2376,6 +2436,8 @@ function Create(self)
 	Phase.kineticEnergy = 0;
 	Phase.Damage = 0.0;
 	Phase.woundDamageMultiplier = 0.0;
+	Phase.woundBleedMultiplier = 0.0;
+	Phase.staminaDamageMultiplier = 0.0;
 	Phase.dismemberInsteadOfGibbing = false;
 	Phase.rayVecFirstPos = Vector(0, 0);
 	Phase.rayVecSecondPos = Vector(0, 0);
