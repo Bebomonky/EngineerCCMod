@@ -59,6 +59,10 @@ function Create(self)
 	-- Maximum blocking stamina. Set to less than 0 to disable the system.
 	-- How much stamina an attack takes to block is 5 * Damage * woundDamageMultiplier.
 	self.BlockStaminaMaximum = 50;
+	-- Whether GripStrength on the holder's arm changes max stamina or not.
+	self.BlockStaminaRespectGripStrength = true;
+	-- The GripStrength required for 100% BlockStaminaMaximum, if RespectGripStrength is on. Note this isn't capped, so you can go above 100%.
+	self.BlockStaminaExpectedGripStrength = 125;
 	-- Multiplier for how much stamina damage is taken from any particular attack.
 	self.BlockStaminaTakenDamageMultiplier = 1.0;	
 	-- At this multiplier times BlockStaminaMaximum, blocking will cease to function or you will be disarmed, depending on the below setting.
