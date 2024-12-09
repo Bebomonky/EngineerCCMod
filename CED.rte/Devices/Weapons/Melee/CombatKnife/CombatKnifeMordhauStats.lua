@@ -290,6 +290,7 @@ function Create(self)
 	-- Whether this phase can be stopped from damaging further after hitting terrain. Cleaves == true resets this interruption after at least a phase,
 	-- but if it's false then one interruption will nullify the entire PhaseSet.
 	Phase.isInterruptableByTerrain = false;
+	-- Impulse applied to any hit MO in kg * m/s. This happens in the direction of your rays. Note that gibbing-power impulse applied is this divided by 10.
 	Phase.kineticEnergy = 0;
 	-- Wounds to cause when hitting an MO. Decimals will result in randomly doing one more wound sometimes, depending on how much extra there is.
 	Phase.Damage = 0.0;
