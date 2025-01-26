@@ -2,17 +2,31 @@ require("/CEDSettings");
 
 function OnMessage(self, message, object)
 	if message == "TriumvirateAtt_Update" then
+	
+		local sightAttachable;
+		for att in self.Attachables do
+			if att.PresetName == "Sights Attachment CED Khrabarovsk 11p35-rifle" then
+				sightAttachable = att;
+			end
+		end
+	
 		if self:GetNumberValue("TriumvirateAtt_GLAmmo_Equipped") then
 			self.Kh11p35GLAmmoPurchased = true;
 		end
 		
 		if self:GetNumberValue("TriumvirateAtt_IronSights_Equipped") then
+			if sightAttachable then
+				sightAttachable.Frame = 0;
+			end
 			self.HEATRecoilDamping = 0.8;
 			self.Kh11p35AttSightingRange = 175;
 			if not self.Kh11p35GLMode then
 				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
 			end
 		elseif self:GetNumberValue("TriumvirateAtt_ReflexSight_Equipped") then
+			if sightAttachable then
+				sightAttachable.Frame = 1;
+			end
 			self.HEATRecoilDamping = 0.9;
 			self.Kh11p35AttSightingRange = 210;
 			if not self.Kh11p35GLMode then
