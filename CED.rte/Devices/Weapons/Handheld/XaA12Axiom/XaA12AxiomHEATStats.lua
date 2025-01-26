@@ -187,7 +187,7 @@ function Create(self)
 	-- Whether to set the PersistentFrame to the endFrame above, which will persist even outside reloads until cleared by a finished reload.
 	reloadPhase.setEndFrameAsPersistent = true;
 	-- Easing function to use. You could define your own here if you really wanted.
-	reloadPhase.easingFunction = self.HEATEaseLinear;
+	reloadPhase.easingFunction = self.HEATEaseInCirc;
 	-- Phase to restart the reload from if this phase is interrupted at any point.
 	reloadPhase.phaseOnInterrupt = nil;
 	-- Whether the reload ends at this phase, instead of progressing, if there were still rounds left in the magazine before a reload.
@@ -351,20 +351,7 @@ function Create(self)
 
 	end
 	reloadPhase.constantCallback = function (self)
-		self.Frame = 3;
-		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			local progressFactor = (self.HEATReloadTimer.ElapsedSimTimeMS - self.HEATCurrentReloadPhaseData.prepareDelay) / self.HEATCurrentReloadPhaseData.afterDelay
-			progressFactor = self.HEATCurrentReloadPhaseData.easingFunction(progressFactor);
-			if progressFactor > 1 then
-				progressFactor = 1;
-			end			
-		
-			local frameChange = -3;
-			self.Frame = math.floor(3 + math.floor(frameChange * progressFactor + 0.55))
-			if self.Frame == 1 then
-				self.Frame = 0;
-			end
-		end
+
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 0);

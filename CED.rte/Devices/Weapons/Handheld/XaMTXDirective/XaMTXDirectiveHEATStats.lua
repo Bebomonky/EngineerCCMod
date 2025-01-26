@@ -235,7 +235,7 @@ function Create(self)
 	reloadPhase.afterDelay = 300;
 	reloadPhase.reloadStanceOffsetTarget = Vector(0, 0);
 	reloadPhase.reloadSupportOffsetSpeed = 16;
-	reloadPhase.reloadSupportOffsetTarget = Vector(0, 5)
+	reloadPhase.reloadSupportOffsetTarget = Vector(1, 5)
 	reloadPhase.rotationTarget = -5;
 	reloadPhase.angVel = 3;
 	reloadPhase.horizontalAnim = 0;
@@ -254,9 +254,9 @@ function Create(self)
 	end
 	reloadPhase.constantCallback = function (self)
 		if self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, 4);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
-			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, 4);
+			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, 4);
 		end		
 	end
 	reloadPhase.finishCallback = function (self)
