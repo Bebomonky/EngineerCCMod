@@ -7,7 +7,7 @@ function Create(self)
 	self.AttachmentPositions[i] = {};
 	self.AttachmentPositions[i].Name = "UGL";
 	self.AttachmentPositions[i].PositionOnGun = Vector(5, 2);
-	self.AttachmentPositions[i].MenuPosition = Vector(50, -20);
+	self.AttachmentPositions[i].MenuPosition = Vector(50, 30);
 	self.AttachmentPositions[i].Attachments = {};
 	
 	local iAtt = 1;
