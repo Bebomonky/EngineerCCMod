@@ -129,9 +129,10 @@ function ThreadedUpdate(self)
 	end
 	
 	if self.FiredFrame then
-		self.Frame = 3;
-	else -- If we are reloading or have a persistent frame in the HEATSystem, this script comes before it, so the below 0 will be overwritten correctly.
-		self.Frame = 0;
+		-- have to set this so HEATSystem actually respects it.
+		self.HEATPersistentFrame = 3;
+	else
+		self.HEATPersistentFrame = nil;
 	end
 
 	if self.parent and IsActor(self.parent) then

@@ -1,5 +1,41 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+	if message == "TriumvirateAtt_Update" then
+	
+		local sightAttachable;
+		for att in self.Attachables do
+			if att.PresetName == "Sights Attachment CED Khrabarovsk 11p35-rifle" then
+				sightAttachable = att;
+			end
+		end
+	
+		if self:GetNumberValue("TriumvirateAtt_GLAmmo_Equipped") then
+			self.Kh11p35GLAmmoPurchased = true;
+		end
+		
+		if self:GetNumberValue("TriumvirateAtt_IronSights_Equipped") then
+			if sightAttachable then
+				sightAttachable.Frame = 0;
+			end
+			self.HEATRecoilDamping = 0.8;
+			self.Kh11p35AttSightingRange = 175;
+			if not self.Kh11p35GLMode then
+				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
+			end
+		elseif self:GetNumberValue("TriumvirateAtt_ReflexSight_Equipped") then
+			if sightAttachable then
+				sightAttachable.Frame = 1;
+			end
+			self.HEATRecoilDamping = 0.9;
+			self.Kh11p35AttSightingRange = 210;
+			if not self.Kh11p35GLMode then
+				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
+			end
+		end
+	end
+end
+
 function Create(self)
 	self.Activity = ActivityMan:GetActivity();
 	
@@ -16,6 +52,9 @@ function Create(self)
 	self.Kh11p35SelectSingleSound = CreateSoundContainer("Select Single CED Khrabarovsk 11p35-rifle", "CED.rte");
 	self.Kh11p35SelectFullSound = CreateSoundContainer("Select Full CED Khrabarovsk 11p35-rifle", "CED.rte");
 	
+	self.Kh11p35AttSightingRange = 175;
+	
+	self.Kh11p35GLAmmoPurchased = self.Kh11p35GLAmmoPurchased and self.Kh11p35GLAmmoPurchased or false;
 	self.Kh11p35GLMode = false;
 	self.Kh11p35GLLoaded = true;
 	self.Kh11p35GLCost = 5;
@@ -128,7 +167,7 @@ function ThreadedUpdate(self)
 			if self.Kh11p35GLMode then
 				self.Kh11p35FromGLSound:Play(self.Pos);
 				self.Kh11p35GLMode = false;
-				self.HEATOriginalSharpLength = 175;
+				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
 				self.Reloadable = true;
 				
 				self.Magazine.RoundCount = self.Kh11p35SavedAmmo;
@@ -167,17 +206,17 @@ function ThreadedUpdate(self)
 	end
 
 	if self.Kh11p35GLMode then
+		self.useHEATFiringAnimation = false;
 		if self.Reloadable and self.Magazine then
 			self.Reloadable = false;
-		elseif beingReloaded and self.RoundInMagCount == 0 and self.Activity:GetTeamFunds(self.parent.Team) > self.Kh11p35GLCost then
+		elseif beingReloaded and self.RoundInMagCount == 0 and self.Kh11p35GLAmmoPurchased then
 			self.Reloadable = true;
 			self:Reload();
-			if self.parent then
-				self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(self.parent.Team) - self.Kh11p35GLCost, self.parent.Team)
-			end
 		end
 		if self:DoneReloading() then
 			self.Magazine.RoundCount = 1;
 		end
+	else
+		self.useHEATFiringAnimation = true;
 	end
 end

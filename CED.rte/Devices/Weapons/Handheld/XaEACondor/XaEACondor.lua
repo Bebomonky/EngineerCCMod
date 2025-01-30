@@ -87,9 +87,17 @@ function ThreadedUpdate(self)
 		self.XaEACondorChargeUpSound:Play(self.Pos);
 	end
 	
+	if self.RoundInMagCount == 0 and not self:IsReloading() then
+		self.HEATPersistentFrame = 8;
+	end	
+	
 	if self.XaEACondorCharging then
-		self.HEATAngVelManualAddition = math.random(-3, 3) * (1 - self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime);
-		CameraMan:AddScreenShake(1.05 * (self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime), self.Pos);
+		local progress = self.XaEACondorChargeTimer.ElapsedSimTimeMS / self.XaEACondorChargeTime;
+		
+		self.HEATPersistentFrame = math.floor(5 * progress);
+	
+		self.HEATAngVelManualAddition = math.random(-3, 3) * (1 - progress);
+		CameraMan:AddScreenShake(1.05 * (progress), self.Pos);
 		if self.XaEACondorChargeTimer:IsPastSimMS(self.XaEACondorChargeTime) then
 			self:Activate();
 			self.XaEACondorCharging = false;
