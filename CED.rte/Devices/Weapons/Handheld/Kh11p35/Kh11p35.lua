@@ -1,6 +1,9 @@
 require("/CEDSettings");
 
 function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
 	if message == "TriumvirateAtt_Update" then
 	
 		local sightAttachable;
@@ -33,6 +36,17 @@ function OnMessage(self, message, object)
 				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
 			end
 		end
+		
+		if self:GetNumberValue("TriumvirateAtt_FullAuto_Equipped") then
+			self.Kh11p35SelectFullSound:Play(self.Pos);
+			self.Kh11p35SingleMode = false;
+			self.FullAuto = true;
+		elseif self:GetNumberValue("TriumvirateAtt_SingleAuto_Equipped") then
+			self.Kh11p35SelectSingleSound:Play(self.Pos);
+			self.Kh11p35SingleMode = true;
+			self.FullAuto = false;
+		end		
+		
 	end
 end
 
@@ -152,17 +166,6 @@ function ThreadedUpdate(self)
 			self.MuzzleOffset = Vector(15, 0);
 		end
 		
-		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
-			if self.Kh11p35SingleMode then
-				self.Kh11p35SelectFullSound:Play(self.Pos);
-				self.Kh11p35SingleMode = false;
-				self.FullAuto = true;
-			else
-				self.Kh11p35SelectSingleSound:Play(self.Pos);
-				self.Kh11p35SingleMode = true;
-				self.FullAuto = false;
-			end
-		end
 		if self.Magazine and self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 			if self.Kh11p35GLMode then
 				self.Kh11p35FromGLSound:Play(self.Pos);
