@@ -79,6 +79,7 @@ function Create(self)
 	self.AttachmentPositions[i].Attachments[iAtt].Owned = true;
 	self.AttachmentPositions[i].Attachments[iAtt].Equipped = true;	
 	self.AttachmentPositions[i].Attachments[iAtt].Cost = 0;
+	self.AttachmentPositions[i].Attachments[iAtt].CustomEquipSound = self.Kh11p35SelectFullSound; -- Yeah, some people hate this leaking self variable stuff, I don't
 	
 	iAtt = iAtt + 1;
 	self.AttachmentPositions[i].Attachments[iAtt] = {};
@@ -92,6 +93,7 @@ function Create(self)
 	self.AttachmentPositions[i].Attachments[iAtt].Owned = true;
 	self.AttachmentPositions[i].Attachments[iAtt].Equipped = false;	
 	self.AttachmentPositions[i].Attachments[iAtt].Cost = 0;
+	self.AttachmentPositions[i].Attachments[iAtt].CustomEquipSound = self.Kh11p35SelectSingleSound; -- Yeah, some people hate this leaking self variable stuff, I don't
 	
 	--------------------------------------------------	
 	

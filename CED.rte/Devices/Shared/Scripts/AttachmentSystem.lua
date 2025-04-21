@@ -355,6 +355,9 @@ function AttMenu(self)
 						button.Selected = not button.Selected;
 						if button.Selected then
 							self.sounds.Confirm:Play(-1);
+							if button.Item.CustomEquipSound then
+								button.Item.CustomEquipSound:Play(self.Pos);
+							end
 							unequipOtherItem();
 						else
 							self:SetNumberValue(triumvirateAttEquipped, 0);
@@ -366,7 +369,10 @@ function AttMenu(self)
 							self:SetNumberValue(triumvirateAttOwned, 1);
 							button.Item.Equipped = true;
 							button.Selected = true;
-							self.Activity:GetTeamFunds(self.parent.Team - button.Item.Cost, self.parent.Team);
+							if button.Item.CustomEquipSound then
+								button.Item.CustomEquipSound:Play(self.Pos);
+							end
+							self.Activity:ChangeTeamFunds(self.parent.Team - button.Item.Cost, self.parent.Team);
 							unequipOtherItem();
 						else
 							self.sounds.Error:Play(-1);

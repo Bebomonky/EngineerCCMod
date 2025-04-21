@@ -13,11 +13,11 @@ function OnMessage(self, message, object)
 			end
 		end
 	
-		if self:GetNumberValue("TriumvirateAtt_GLAmmo_Equipped") then
+		if self:GetNumberValue("TriumvirateAtt_GLAmmo_Equipped") == 1 then
 			self.Kh11p35GLAmmoPurchased = true;
 		end
 		
-		if self:GetNumberValue("TriumvirateAtt_IronSights_Equipped") then
+		if self:GetNumberValue("TriumvirateAtt_IronSights_Equipped") == 1 then
 			if sightAttachable then
 				sightAttachable.Frame = 0;
 			end
@@ -26,7 +26,7 @@ function OnMessage(self, message, object)
 			if not self.Kh11p35GLMode then
 				self.HEATOriginalSharpLength = self.Kh11p35AttSightingRange;
 			end
-		elseif self:GetNumberValue("TriumvirateAtt_ReflexSight_Equipped") then
+		elseif self:GetNumberValue("TriumvirateAtt_ReflexSight_Equipped") == 1 then
 			if sightAttachable then
 				sightAttachable.Frame = 1;
 			end
@@ -37,12 +37,10 @@ function OnMessage(self, message, object)
 			end
 		end
 		
-		if self:GetNumberValue("TriumvirateAtt_FullAuto_Equipped") then
-			self.Kh11p35SelectFullSound:Play(self.Pos);
+		if self:GetNumberValue("TriumvirateAtt_FullAuto_Equipped") == 1 then
 			self.Kh11p35SingleMode = false;
 			self.FullAuto = true;
-		elseif self:GetNumberValue("TriumvirateAtt_SingleAuto_Equipped") then
-			self.Kh11p35SelectSingleSound:Play(self.Pos);
+		elseif self:GetNumberValue("TriumvirateAtt_SemiAuto_Equipped") == 1 then
 			self.Kh11p35SingleMode = true;
 			self.FullAuto = false;
 		end		
