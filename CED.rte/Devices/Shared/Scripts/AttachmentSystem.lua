@@ -6,7 +6,7 @@ function Create(self)
 	self.Menu:Initialize();
 
 	self.sounds = {
-		Confirm = CreateSoundContainer("Confirm", "Base.rte"),
+		GenericEquip = CreateSoundContainer("CED Generic Attachment Equip", "CED.rte"),
 		Deselect = CreateSoundContainer("Confirm", "Base.rte"),
 		Error = CreateSoundContainer("Error", "Base.rte"),
 	};
@@ -354,28 +354,30 @@ function AttMenu(self)
 						button.Item.Equipped = not button.Item.Equipped;
 						button.Selected = not button.Selected;
 						if button.Selected then
-							self.sounds.Confirm:Play(-1);
 							if button.Item.CustomEquipSound then
 								button.Item.CustomEquipSound:Play(self.Pos);
+							else
+								self.sounds.GenericEquip:Play(self.Pos);
 							end
 							unequipOtherItem();
 						else
 							self:SetNumberValue(triumvirateAttEquipped, 0);
-							self.sounds.Deselect:Play(-1);
+							self.sounds.Deselect:Play(self.Pos);
 						end
 					else
 						if hasFund == true then
-							self.sounds.Confirm:Play(-1);
 							self:SetNumberValue(triumvirateAttOwned, 1);
 							button.Item.Equipped = true;
 							button.Selected = true;
 							if button.Item.CustomEquipSound then
 								button.Item.CustomEquipSound:Play(self.Pos);
+							else
+								self.sounds.GenericEquip:Play(self.Pos);
 							end
 							self.Activity:ChangeTeamFunds(self.parent.Team - button.Item.Cost, self.parent.Team);
 							unequipOtherItem();
 						else
-							self.sounds.Error:Play(-1);
+							self.sounds.Error:Play(self.Pos);
 						end
 					end
 				end

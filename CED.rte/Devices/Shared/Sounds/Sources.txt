@@ -1,1 +1,3 @@
 Plasma casing drop: CP2077: w_casings_tech_shell_hit_floor
+energy impact: Warframe: LaserImpactGeneric
+Attach: BF2042: BF01_UI_AttachmentCustomization_All_Parametric_01 1
