@@ -6,7 +6,7 @@ function OnGlobalMessage(self, message, object)
 	end
 end
 
-function OnMessage(self, message, research)
+function OnMessage(self, message, object)
 	if message == "CED_UnlockResearch" then
 		self.UnlockedResearches[object] = true;
 	end
@@ -204,7 +204,7 @@ function BuilderMenu(self)
 		self.cancelButton:OutlineColor(self.cancelButton:IsHovered() and 117 or 144);
 
 		if self.cancelButton.IsRemoving == true then
-			local MOs = MovableMan:GetMOsInRadius(self.Menu.Cursor, 15, -1, false);
+			local MOs = MovableMan:GetMOsInRadius(self.cancelButton:GetCursor(), 15, -1, false);
 			for mo in MOs do
 				if mo then
 					if mo:IsInGroup("CED - Buildables") then
@@ -221,7 +221,7 @@ function BuilderMenu(self)
 						if buildable then
 							-- Temp cursor snap
 							--? Broken, imenu stuff
-							--self.Menu.Cursor = mo.Pos;
+							--self.cancelButton:GetCursor() = mo.Pos;
 
 							--I think it's a good idea to set it once instead of constantly
 							if renderBox.X == 0 then
@@ -235,7 +235,7 @@ function BuilderMenu(self)
 
 							if self.Menu.Controller and self.Menu.Controller:IsState(Controller.PRIMARY_ACTION) then
 								self.sounds.Error:Play(-1);
-								self.Menu.Cursor_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png";
+								self.cancelButton:GetCursor()_Bitmap = "Data/Base.rte/GUIs/Skins/Cursor.png";
 								self.cancelButton.IsRemoving = false;
 								mo:SendMessage("CED_CancelBuildable");
 							end
@@ -474,7 +474,7 @@ function BuilderMenu(self)
 
 				if not self.builderBox:IsHovered() and button.Selected then
 					local size = (Vector(renderBox.Width, renderBox.Height) / 2);
-					renderPos = self.Menu.Cursor;
+					renderPos = self.builderBox:GetCursor();
 
 					if item.SnapToGround then
 						renderPos = SceneMan:MovePointToGround(renderPos, 1, 1);
