@@ -1,5 +1,22 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_PropOn_Equipped") == 1 then
+			self.NoPropMode = false;
+			self.BASADRSSwitchPropOffSound:FadeOut(50);
+		elseif self:GetNumberValue("TriumvirateAtt_PropOff_Equipped") == 1 then
+			self.NoPropMode = true;
+			self.BASADRSSwitchPropOnSound:FadeOut(50);
+		end		
+		
+	end
+end
+
 function Create(self)
 	self.BASADRSFireVelocity = 25;
 	self.BASADRSFireNoPropVelocity = 45;
@@ -109,22 +126,10 @@ function ThreadedUpdate(self)
 
 	if self.parent then
 		-- AI does better with the propellant mode
-		if self.NoPropMode and not self.parent:IsPlayerControlled() then
+		if self.NoPropMode and not self.parent:IsPlayerControlled() and not self.Menu:IsOpen() then
 			self.NoPropMode = false;
 			self.BASADRSSwitchPropOnSound:Play(self.Pos);
 			self.BASADRSSwitchPropOffSound:FadeOut(50);
-		end
-
-		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
-			if self.NoPropMode then
-				self.NoPropMode = false;
-				self.BASADRSSwitchPropOnSound:Play(self.Pos);
-				self.BASADRSSwitchPropOffSound:FadeOut(50);
-			else
-				self.NoPropMode = true;
-				self.BASADRSSwitchPropOffSound:Play(self.Pos);
-				self.BASADRSSwitchPropOnSound:FadeOut(50);
-			end
 		end
 		
 		self.HEATRotationTargetOverride = nil; -- Just reset these every frame to make sure

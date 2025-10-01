@@ -1,5 +1,50 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_FocusedMode_Equipped") == 1 then
+			self.XaVidaraSpreadshotMode = false;
+			self.XaVidaraSpread = 0;
+			self.XaVidaraShotsToFire = 1;
+			self.XaVidaraWoundDamageMultiplier = 1;
+			self.RateOfFire = 400;
+			self.HEATRecoilStrength = 5;
+			self.HEATParticleUtilityFiringSmokeDataTable = {};
+			self.HEATParticleUtilityFiringSmokeDataTable.Power = 10;
+			self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
+			self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
+			self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
+			
+		elseif self:GetNumberValue("TriumvirateAtt_ScatterMode_Equipped") == 1 then
+			self.XaVidaraSpreadshotMode = true;
+			self.XaVidaraSpread = 5;
+			self.XaVidaraShotsToFire = 4;
+			self.XaVidaraWoundDamageMultiplier = 0.7; -- hey, the description is accurate!
+			self.RateOfFire = 150;
+			self.HEATRecoilStrength = 10;
+			self.HEATParticleUtilityFiringSmokeDataTable = {};
+			self.HEATParticleUtilityFiringSmokeDataTable.Power = 30;
+			self.HEATParticleUtilityFiringSmokeDataTable.Spread = 30;
+			self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
+			self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 0.7;
+			self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
+			self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;
+		end		
+	end
+end
+
 function Create(self)
 	self.XaVidaraFireVelocity = 10; -- Doesn't really matter
 	self.XaVidaraFireSpread = 0 / 2; -- It's a laser
@@ -69,48 +114,4 @@ end
 function OnDetach(self)
 	self.parent = nil;
 	self.parentController = nil;
-end
-
-function ThreadedUpdate(self)
-	if self.parent then
-		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
-			if self.XaVidaraSpreadshotMode then
-				self.XaVidaraSwitchRifleSound:Play(self.Pos);
-				self.XaVidaraSpreadshotMode = false;
-				self.XaVidaraSpread = 0;
-				self.XaVidaraShotsToFire = 1;
-				self.XaVidaraWoundDamageMultiplier = 1;
-				self.RateOfFire = 400;
-				self.HEATRecoilStrength = 5;
-				self.HEATParticleUtilityFiringSmokeDataTable = {};
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 10;
-				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
-				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
-				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;									
-			else
-				self.XaVidaraSwitchShotgunSound:Play(self.Pos);
-				self.XaVidaraSpreadshotMode = true;
-				self.XaVidaraSpread = 5;
-				self.XaVidaraShotsToFire = 4;
-				self.XaVidaraWoundDamageMultiplier = 0.7; -- hey, the description is accurate!
-				self.RateOfFire = 150;
-				self.HEATRecoilStrength = 10;
-				self.HEATParticleUtilityFiringSmokeDataTable = {};
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 30;
-				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 30;
-				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 0.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 1;
-				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 0.7;
-				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;		
-			end
-		end
-	end
 end

@@ -64,7 +64,7 @@ end
 
 function ThreadedUpdate(self)
 	if self.parent then
-		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
+		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
 			self.KhJS50ScopeClickSound:Play(self.Pos);
 			self.KhJS50CurrentSharpLengthSetting = (self.KhJS50CurrentSharpLengthSetting + 1) % #self.KhJS50SharpLengthSettings + 1;
 			self.SharpLength = self.KhJS50SharpLengthSettings[self.KhJS50CurrentSharpLengthSetting];

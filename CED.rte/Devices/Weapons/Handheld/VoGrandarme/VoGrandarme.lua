@@ -1,5 +1,36 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_HighROF_Equipped") == 1 then
+			self.VoGrandarmeSlowROFMode = false;
+			self.RateOfFire = self.VoGrandarmeFastROF;
+			self.ShakeRange = 5;
+			self.SharpShakeRange = 4;
+			self.HEATRecoilStrength = 8
+			self.HEATRecoilPowStrength = 0.2;
+			self.HEATRecoilRandomUpper = 2
+			self.HEATRecoilDamping = 0.55
+			self.HEATRecoilMax = 12;
+			
+		elseif self:GetNumberValue("TriumvirateAtt_SlowROF_Equipped") == 1 then
+			self.VoGrandarmeSlowROFMode = true;
+			self.RateOfFire = self.VoGrandarmeSlowROF;
+			self.ShakeRange = 4;
+			self.SharpShakeRange = 2;
+			self.HEATRecoilStrength = 10
+			self.HEATRecoilPowStrength = 0.2;
+			self.HEATRecoilRandomUpper = 2
+			self.HEATRecoilDamping = 0.8
+			self.HEATRecoilMax = 3;
+		end		
+	end
+end
+
 function Create(self)
 	self.VoGrandarmeFireVelocity = 160;
 	self.VoGrandarmeFireSpread = 3.5 / 2;
@@ -83,33 +114,5 @@ function ThreadedUpdate(self)
 
 	if not self:IsActivated() then
 		self.VoGrandarmeFirstShot = true;
-	end
-
-	if self.parent then
-		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
-			if self.VoGrandarmeSlowROFMode then
-				self.VoGrandarmeSlowROFOffSound:Play(self.Pos);
-				self.VoGrandarmeSlowROFMode = false;
-				self.RateOfFire = self.VoGrandarmeFastROF;
-				self.ShakeRange = 5;
-				self.SharpShakeRange = 4;
-				self.HEATRecoilStrength = 8
-				self.HEATRecoilPowStrength = 0.2;
-				self.HEATRecoilRandomUpper = 2
-				self.HEATRecoilDamping = 0.55
-				self.HEATRecoilMax = 12;
-			else
-				self.VoGrandarmeSlowROFOnSound:Play(self.Pos);
-				self.VoGrandarmeSlowROFMode = true;
-				self.RateOfFire = self.VoGrandarmeSlowROF;
-				self.ShakeRange = 4;
-				self.SharpShakeRange = 2;
-				self.HEATRecoilStrength = 10
-				self.HEATRecoilPowStrength = 0.2;
-				self.HEATRecoilRandomUpper = 2
-				self.HEATRecoilDamping = 0.8
-				self.HEATRecoilMax = 3;
-			end
-		end
 	end
 end

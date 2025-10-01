@@ -1,5 +1,42 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_Buckshot_Equipped") == 1 then
+			-- Prevent loading on spawn
+			if not (self.VoTrigoliathSlugsLoaded == false and self.HEATAmmoCounter == 3) then
+				self.VoTrigoliathMessageShownForOneReload = false;
+				
+				self.BaseReloadTime = 9999999;
+				self.VoTrigoliathSwitchedAmmo = true;
+
+				self.VoTrigoliathSlugsLoaded = false;
+
+				self:Reload();
+				self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
+				self.HEATAmmoCounter = 0;		
+			end
+			
+		elseif self:GetNumberValue("TriumvirateAtt_Slugs_Equipped") == 1 then
+			self.VoTrigoliathMessageShownForOneReload = false;
+			
+			self.BaseReloadTime = 9999999;
+			self.VoTrigoliathSwitchedAmmo = true;
+
+			self.VoTrigoliathSlugsLoaded = true;
+			
+			self:Reload();
+			self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
+			self.HEATAmmoCounter = 0;
+		end		
+		
+	end
+end
+
 function Create(self)
 	self.VoTrigoliathFireVelocity = 130;
 	self.VoTrigoliathFireSlugVelocity = 150;
@@ -135,22 +172,6 @@ end
 
 function ThreadedUpdate(self)
 	if self.parent then
-		if not self.HEATDelayedFire then
-			if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
-				self.VoTrigoliathMessageShownForOneReload = false;
-				
-				self.BaseReloadTime = 9999999;
-				self.VoTrigoliathSwitchedAmmo = true;
-				if self.VoTrigoliathSlugsLoaded then
-					self.VoTrigoliathSlugsLoaded = false;
-				else
-					self.VoTrigoliathSlugsLoaded = true;
-				end
-				self:Reload();
-				self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
-				self.HEATAmmoCounter = 0;
-			end
-		end	
 	
 		if (self.parent.EquippedItem and self.parent.EquippedItem.UniqueID == self.UniqueID and not self.parent.EquippedBGItem) or (self.parent.EquippedBGItem and self.parent.EquippedBGItem.UniqueID == self.UniqueID and not self.parent.EquippedItem) then
 			local fire = self.RoundInMagCount > 0 and self:IsActivated();

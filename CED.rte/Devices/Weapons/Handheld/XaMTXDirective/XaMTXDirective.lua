@@ -1,5 +1,22 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_QuietLockon_Equipped") == 1 then
+			self.smartGunLockSound = self.XaMTXDirectiveQuietLockSound;
+			self.XaMTXDirectiveLoudLockOn = false;
+			
+		elseif self:GetNumberValue("TriumvirateAtt_LoudLockon_Equipped") == 1 then
+			self.smartGunLockSound = self.XaMTXDirectiveLoudLockSound;
+			self.XaMTXDirectiveLoudLockOn = true;
+		end		
+	end
+end
+
 function Create(self)	
 	self.Activity = ActivityMan:GetActivity();
 	
@@ -106,18 +123,6 @@ function ThreadedUpdate(self)
 				self.XaMTXDirectiveUnlockSound:Play(self.Pos);
 			end
 		end	
-	
-		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
-			if self.XaMTXDirectiveLoudLockOn then
-				self.smartGunLockSound = self.XaMTXDirectiveQuietLockSound;
-				self.XaMTXDirectiveLoudLockOffSound:Play(self.Pos);
-				self.XaMTXDirectiveLoudLockOn = false;
-			else
-				self.smartGunLockSound = self.XaMTXDirectiveLoudLockSound;
-				self.XaMTXDirectiveLoudLockOnSound:Play(self.Pos);
-				self.XaMTXDirectiveLoudLockOn = true;
-			end
-		end
 
 		-- FROSTBITE SMARTGUN SYSTEM --
 		

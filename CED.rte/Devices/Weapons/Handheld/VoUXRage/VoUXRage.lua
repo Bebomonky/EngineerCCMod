@@ -1,5 +1,41 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		if self:GetNumberValue("TriumvirateAtt_FullAuto_Equipped") == 1 then	
+			self.VoUXRageAutoMode = true;
+			self.VoUXRageSwitchSingleSound:FadeOut(200);
+			
+			self.HEATReflectionOutdoorsSound.Volume = 0.2;
+			self.HEATReflectionIndoorsSound.Volume = 0.2;
+			
+			self.FullAuto = true;
+			self.RateOfFire = 430;
+			self.HEATRecoilStrength = 40;
+			
+			self.HEATParticleUtilityFiringSmokeDataTable.Power = 45;			
+			
+		elseif self:GetNumberValue("TriumvirateAtt_SemiAuto_Equipped") == 1 then
+			self.VoUXRageAutoMode = false;
+			self.VoUXRageSwitchAutoSound:FadeOut(200);
+			
+			self.HEATReflectionOutdoorsSound.Volume = 0.3;
+			self.HEATReflectionIndoorsSound.Volume = 0.3;
+			
+			self.FullAuto = false;
+			self.RateOfFire = 100;
+			self.HEATRecoilStrength = 32;
+			
+			self.HEATParticleUtilityFiringSmokeDataTable.Power = 80;
+		end		
+		
+	end
+end
+
 function Create(self)
 	self.VoUXRageFireVelocity = 100;
 	self.VoUXRageFireAutoVelocity = 45;
@@ -86,7 +122,7 @@ function ThreadedUpdate(self)
 
 	if self.parent then
 		-- AI does better with the single mode
-		if self.VoUXRageAutoMode and not self.parent:IsPlayerControlled() then
+		if self.VoUXRageAutoMode and not self.parent:IsPlayerControlled() and not self.Menu:IsOpen() then
 			self.VoUXRageAutoMode = false;
 			self.VoUXRageSwitchSingleSound:Play(self.Pos);
 			self.VoUXRageSwitchAutoSound:FadeOut(200);
@@ -99,36 +135,6 @@ function ThreadedUpdate(self)
 			self.HEATRecoilStrength = 32;
 			
 			self.HEATParticleUtilityFiringSmokeDataTable.Power = 80;
-		end
-
-		if self.parentController:IsState(Controller.WEAPON_PRIMARY_HOTKEYSTART) then
-			if self.VoUXRageAutoMode then
-				self.VoUXRageAutoMode = false;
-				self.VoUXRageSwitchSingleSound:Play(self.Pos);
-				self.VoUXRageSwitchAutoSound:FadeOut(200);
-				
-				self.HEATReflectionOutdoorsSound.Volume = 0.3;
-				self.HEATReflectionIndoorsSound.Volume = 0.3;
-				
-				self.FullAuto = false;
-				self.RateOfFire = 100;
-				self.HEATRecoilStrength = 32;
-				
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 80;
-			else
-				self.VoUXRageAutoMode = true;
-				self.VoUXRageSwitchAutoSound:Play(self.Pos);
-				self.VoUXRageSwitchSingleSound:FadeOut(200);
-				
-				self.HEATReflectionOutdoorsSound.Volume = 0.2;
-				self.HEATReflectionIndoorsSound.Volume = 0.2;
-				
-				self.FullAuto = true;
-				self.RateOfFire = 430;
-				self.HEATRecoilStrength = 40;
-				
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 45;
-			end
 		end
 	end
 	
