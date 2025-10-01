@@ -78,7 +78,7 @@ function ThreadedUpdate(self)
 		glow.Pos = point;
 		MovableMan:AddParticle(glow);
 		
-		local rayVec = Vector(700 * self.FlipFactor, 0):RadRotate(self.RotAngle)
+		local rayVec = Vector(700 * self.FlipFactor, 15):RadRotate(self.RotAngle) -- Zeroed in, just a tad
 		
 		local endPos = point + rayVec; -- This value is going to be overriden by function below, this is the end of the ray
 		self.ray = SceneMan:CastObstacleRay(point, rayVec, Vector(0, 0), endPos, self.parent and self.parent.ID or self.ID, self.Team, 0, 2) -- Do the hitscan stuff, raycast
