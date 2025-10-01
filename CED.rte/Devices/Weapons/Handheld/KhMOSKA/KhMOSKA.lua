@@ -3,6 +3,82 @@
 
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+	
+		-- Ammo
+		if self:GetNumberValue("TriumvirateAtt_NormalRounds_Equipped") == 1 then
+			if self.KhMOSKAToLoadRBullet then
+				self.KhMOSKAToLoadRBullet = false;
+				self.HEATDelayedFireTimeMS = 50;
+				
+				self.HEATRecoilStrength = 39
+				self.HEATRecoilPowStrength = 0.2
+				self.HEATRecoilRandomUpper = 1.1
+				self.HEATRecoilDamping = 0.7
+				self.HEATRecoilMax = 4
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 35;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.6;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.35;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 2.4;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.8;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
+				-- Note that AmmoCounter 1 and an unfired R Bullet means we're about to eject the one round and get to 0
+				if not self:IsReloading() and self.HEATAmmoCounter == 0 or (self.HEATAmmoCounter == 1 and not self.KhMOSKARBulletFired) then
+					self:Reload();
+				else
+					self.HEATNonReloadStaging = true;
+					if self.Magazine then
+						if self.KhMOSKARBulletFired then
+							-- The HEATSystem has already decremented one
+							self.Magazine.RoundCount = self.HEATAmmoCounter;
+						else
+							self.Magazine.RoundCount = math.max(1, self.HEATAmmoCounter - 1);
+						end
+					end
+				end
+			end
+			
+		elseif self:GetNumberValue("TriumvirateAtt_RBullet_Equipped") == 1 then
+			if not self.KhMOSKAToLoadRBullet then
+				self.KhMOSKAToLoadRBullet = true;
+				self.HEATDelayedFireTimeMS = 100;
+				
+				self.HEATRecoilStrength = 50
+				self.HEATRecoilPowStrength = 0.2
+				self.HEATRecoilRandomUpper = 1.1
+				self.HEATRecoilDamping = 0.35
+				self.HEATRecoilMax = 12
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 45;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 20;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.7;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.4;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
+				if not self:IsReloading() then
+					self:Reload();
+				end
+			end
+		end
+		
+		-- Action
+		if self:GetNumberValue("TriumvirateAtt_MachinedBolt_Equipped") == 1 then
+			self.KhMOSKAHasMachinedBolt = true
+		end
+	end
+end
+
 function Create(self)
 	-- Activity.
 	self.Activity = ActivityMan:GetActivity();
@@ -25,8 +101,8 @@ function Create(self)
 	self.KhMOSKAReloadDelayTimer = Timer();
 	-- Delay for above timer.
 	self.KhMOSKAReloadDelay = 400;
-	-- Cost to fire an R Bullet.
-	self.KhMOSKARBulletCost = 5;
+	
+	self.KhMOSKAHasMachinedBolt = false
 end
 
 function OnFire(self)
@@ -68,9 +144,6 @@ function OnFire(self)
 		self.Reloadable = false;
 		self.KhMOSKAReloadDelayTimer:Reset();
 		
-		if self.HEATParent then
-			self.Activity:SetTeamFunds(self.Activity:GetTeamFunds(self.HEATParent.Team) - self.KhMOSKARBulletCost, self.HEATParent.Team)
-		end
 	end
 	self.KhMOSKARBulletFired = true;
 end
@@ -89,76 +162,12 @@ end
 
 function ThreadedUpdate(self)
 	if self.parent then
-		if self.parentController:IsState(Controller.WEAPON_AUXILIARY_HOTKEYSTART) then
-			if self.KhMOSKAToLoadRBullet then
-				self.KhMOSKAToLoadRBullet = false;
-				self.HEATDelayedFireTimeMS = 50;
-				
-				self.HEATRecoilStrength = 39
-				self.HEATRecoilPowStrength = 0.2
-				self.HEATRecoilRandomUpper = 1.1
-				self.HEATRecoilDamping = 0.7
-				self.HEATRecoilMax = 4
-				self.HEATParticleUtilityFiringSmokeDataTable = {};
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 35;
-				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 35;
-				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.6;
-				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
-				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
-				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.35;
-				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 2.4;
-				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.8;
-				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
-				-- Note that AmmoCounter 1 and an unfired R Bullet means we're about to eject the one round and get to 0
-				if not self:IsReloading() and self.HEATAmmoCounter == 0 or (self.HEATAmmoCounter == 1 and not self.KhMOSKARBulletFired) then
-					self:Reload();
-				else
-					self.HEATNonReloadStaging = true;
-					if self.Magazine then
-						if self.KhMOSKARBulletFired then
-							-- The HEATSystem has already decremented one
-							self.Magazine.RoundCount = self.HEATAmmoCounter;
-						else
-							self.Magazine.RoundCount = math.max(1, self.HEATAmmoCounter - 1);
-						end
-					end
-				end
-			else
-				self.KhMOSKAToLoadRBullet = true;
-				self.HEATDelayedFireTimeMS = 100;
-				
-				self.HEATRecoilStrength = 50
-				self.HEATRecoilPowStrength = 0.2
-				self.HEATRecoilRandomUpper = 1.1
-				self.HEATRecoilDamping = 0.35
-				self.HEATRecoilMax = 12
-				self.HEATParticleUtilityFiringSmokeDataTable = {};
-				self.HEATParticleUtilityFiringSmokeDataTable.Power = 45;
-				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 20;
-				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 0.7;
-				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.3;
-				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
-				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
-				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.4;
-				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;	
-				if not self:IsReloading() then
-					self:Reload();
-				end
-			end
-		end
-		
 		if self.parent:IsPlayerControlled() then
 			local screen = ActivityMan:GetActivity():ScreenOfPlayer(self.parentController.Player);
 			if self.KhMOSKAToLoadRBullet then
 				if self.KhMOSKARBulletLoaded then
 					if not self:IsReloading() then
 						local stringToDraw = "R"
-					
-						if self.Activity:GetTeamFunds(self.HEATParent.Team) < self.KhMOSKARBulletCost then
-							self:Deactivate();
-							stringToDraw = "noOz!"
-						end
 					
 						if not (self.HEATParent.Jetpack and self.HEATParent.Jetpack:IsEmitting()) then
 							-- Thanks JustAlex for this snippet

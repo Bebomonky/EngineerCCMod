@@ -257,6 +257,11 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = true;
 	reloadPhase.enterPhaseCallback = function (self)
+		if self.KhMOSKAHasMachinedBolt then
+			self.HEATCurrentReloadPhaseData.afterDelay = 100
+			self.HEATCurrentReloadPhaseData.rotationTarget = 0
+		end
+	
 		if self.KhMOSKARBulletLoaded and self.KhMOSKAToLoadRBullet then
 			self.HEATToSpawnCasing = false;
 		elseif self.HEATAmmoCounter >= self.HEATFullMagazineRoundCount then
@@ -371,7 +376,11 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		if self.KhMOSKAHasMachinedBolt then
+			self.HEATCurrentReloadPhaseData.prepareDelay = 35
+			self.HEATCurrentReloadPhaseData.afterDelay = 120
+			self.HEATCurrentReloadPhaseData.rotationTarget = 0
+		end
 	end
 	reloadPhase.constantCallback = function (self)
 		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
@@ -419,7 +428,9 @@ function Create(self)
 	reloadPhase.shotgunReloadLoop = false;
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
-	
+		if self.KhMOSKAHasMachinedBolt then
+			self.HEATCurrentReloadPhaseData.afterDelay = 60
+		end
 	end
 	reloadPhase.constantCallback = function (self)
 		if (self:IsReloading() and self.HEATAmmoCounter < self.HEATFullMagazineRoundCount and not self.HEATManualInterruptionAttempted and not self.KhMOSKAToLoadRBullet)
