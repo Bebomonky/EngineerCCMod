@@ -1,10 +1,91 @@
 require("/CEDSettings");
 
+function OnMessage(self, message, object)
+
+	-- This is a full update, even if it's redundant. It only runs whenever any attachment is changed, so it should be fine.
+
+	if message == "TriumvirateAtt_Update" then
+		
+		-- Ammo
+		if self:GetNumberValue("TriumvirateAtt_HEAmmo_Equipped") == 1 then
+			if self.KhAMAVogastir40ShotgunAmmo then
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 50;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 10;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 2;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.5;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.2;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;
+
+				self.KhAMAVogastir40ShotgunAmmo = false;
+
+				if self:IsReloading() and not self:NumberValueExists("HEAT_FakeMagRemoved") then
+					self.HEATUseReloadTimeAnimation = true;
+					self.BaseReloadTime = 9999999
+					self.KhAMAVogastir40InvalidateCurrentLoadedMag = true
+				else
+					self.HEATUseReloadTimeAnimation = false;
+				end
+
+				self:Reload();
+			end
+			
+		elseif self:GetNumberValue("TriumvirateAtt_ShotAmmo_Equipped") == 1 then
+			if not self.KhAMAVogastir40ShotgunAmmo then
+				self.HEATParticleUtilityFiringSmokeDataTable = {};
+				self.HEATParticleUtilityFiringSmokeDataTable.Power = 50;
+				self.HEATParticleUtilityFiringSmokeDataTable.Spread = 15;
+				self.HEATParticleUtilityFiringSmokeDataTable.SmokeMult = 1.3;
+				self.HEATParticleUtilityFiringSmokeDataTable.ExploMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.WidthSpread = 4;
+				self.HEATParticleUtilityFiringSmokeDataTable.VelocityMult = 0.5;
+				self.HEATParticleUtilityFiringSmokeDataTable.LingerMult = 1.0;
+				self.HEATParticleUtilityFiringSmokeDataTable.AirResistanceMult = 1.2;
+				self.HEATParticleUtilityFiringSmokeDataTable.GravMult = 1;
+
+				self.KhAMAVogastir40ShotgunAmmo = true;
+		
+				if self:IsReloading() and not self:NumberValueExists("HEAT_FakeMagRemoved") then
+					self.HEATUseReloadTimeAnimation = true;
+					self.BaseReloadTime = 9999999
+					self.KhAMAVogastir40InvalidateCurrentLoadedMag = true
+				else
+					self.HEATUseReloadTimeAnimation = false;
+				end
+		
+				self:Reload();		
+			end
+		end
+		
+		-- Rate limiter
+		
+		if self:GetNumberValue("TriumvirateAtt_RateLimiter_Equipped") == 1 then
+			self.RateOfFire = 220;
+			self.HEATRecoilStrength = 25;
+			self.HEATRecoilDamping = 0.55;
+			self.HEATRecoilMax = 4;
+			self.KhAMAVogastir40RemovedRateLimiter = false
+		elseif self:GetNumberValue("TriumvirateAtt_RemovedRateLimiter_Equipped") == 1 then
+			self.RateOfFire = 275;
+			self.HEATRecoilStrength = 25;
+			self.HEATRecoilDamping = 0.35;
+			self.HEATRecoilMax = 10;
+			self.KhAMAVogastir40RemovedRateLimiter = true
+		end
+	end
+end
+
 function Create(self)
 	self.KhAMAVogastir40FireVelocity = 110;
+	self.KhAMAVogastir40FireShotgunVelocity = 110;
 	self.KhAMAVogastir40FireSpread = 5 / 2;
+	self.KhAMAVogastir40FireShotgunSpread = 15 / 2;
 
 	self.KhAMAVogastir40ShotSound = CreateSoundContainer("Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
+	self.KhAMAVogastir40ShotgunShotSound = CreateSoundContainer("Shotgun Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	self.KhAMAVogastir40MechRingSound = CreateSoundContainer("Mech Ring CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	self.KhAMAVogastir40MechEndSound = CreateSoundContainer("Mech End CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
 	
@@ -31,25 +112,69 @@ function Create(self)
 	self.KhAMAVogastir40AIFairnessTime = 2500;
 	self.KhAMAVogastir40AIFairnessEnabled = false;
 	
+	self.KhAMAVogastir40ShotgunAmmo = false
+	self.KhAMAVogastir40RemovedRateLimiter = false
+	
 	self.CompliSoundGroundSmokeStr = 15;
+	
 end
 
 function OnFire(self)
-	CameraMan:AddScreenShake(7, self.Pos);
+	if self.KhAMAVogastir40RemovedRateLimiter then
+		self.RateOfFire = math.random(250, 300)
+	end
 
-	self.KhAMAVogastir40ShotSound:Play(self.Pos);
 	self.KhAMAVogastir40MechRingSound:Play(self.Pos);
 	self.KhAMAVogastir40MechEndSound:Play(self.Pos);
 	
-	local spread = math.random(-self.KhAMAVogastir40FireSpread, self.KhAMAVogastir40FireSpread);
+	local spread
+	local velocity
 	
-	local shot = CreateMOSRotating("Explosive Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
-	shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
-	shot.Vel = self.Vel + Vector(self.KhAMAVogastir40FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
-	shot.Team = self.Team;
-	shot.IgnoresTeamHits = true;
-	shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
-	MovableMan:AddParticle(shot);
+	if self.KhAMAVogastir40ShotgunAmmo then
+		spread = math.random(-self.KhAMAVogastir40FireShotgunSpread, self.KhAMAVogastir40FireShotgunSpread);
+		velocity = self.KhAMAVogastir40FireShotgunVelocity
+		
+		self.KhAMAVogastir40ShotgunShotSound:Play(self.Pos);
+		CameraMan:AddScreenShake(8, self.Pos);
+		
+		for i = 1, 12 do
+			spread = math.random(-self.KhAMAVogastir40FireShotgunSpread, self.KhAMAVogastir40FireShotgunSpread);
+			
+			local shot = CreateMOPixel("Pellet CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
+			shot.Pos = self.MuzzlePos
+			shot.Vel = self.Vel + Vector((velocity * self.FlipFactor) * RangeRand(0.8, 1.2), spread):RadRotate(self.RotAngle);
+			shot.Team = self.Team;
+			shot.IgnoresTeamHits = true;
+			shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+			MovableMan:AddParticle(shot);
+		end
+		
+		-- Lower spread for the central scripted pellet
+		spread = math.random(-1, 1);
+		
+		local shot = CreateMOPixel("Pellet CED Khrabarovsk AMA-Vogastir 40 Scripted", "CED.rte");
+		shot.Pos = self.MuzzlePos
+		shot.Vel = self.Vel + Vector(velocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+		shot.Team = self.Team;
+		shot.IgnoresTeamHits = true;
+		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+		MovableMan:AddParticle(shot);		
+		
+	else
+		spread = math.random(-self.KhAMAVogastir40FireSpread, self.KhAMAVogastir40FireSpread);
+		velocity = self.KhAMAVogastir40FireVelocity
+	
+		self.KhAMAVogastir40ShotSound:Play(self.Pos);
+		CameraMan:AddScreenShake(5, self.Pos);
+	
+		local shot = CreateMOSRotating("Explosive Shot CED Khrabarovsk AMA-Vogastir 40", "CED.rte");
+		shot.Pos = self.MuzzlePos + Vector(0.1*self.FlipFactor, 0):RadRotate(self.RotAngle);
+		shot.Vel = self.Vel + Vector(self.KhAMAVogastir40FireVelocity * self.FlipFactor, spread):RadRotate(self.RotAngle);
+		shot.Team = self.Team;
+		shot.IgnoresTeamHits = true;
+		shot:SetWhichMOToNotHit(ToMovableObject(self), 150);
+		MovableMan:AddParticle(shot);
+	end
 
 	-- Use our HEATStats to spawn a casing every time we fire.
 	local casing

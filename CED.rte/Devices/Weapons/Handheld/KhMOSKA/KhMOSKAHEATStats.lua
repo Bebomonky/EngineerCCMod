@@ -200,6 +200,10 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	-- Callback after this phase is entered and all default values are set.
 	reloadPhase.enterPhaseCallback = function (self)
+		if self.KhMOSKAHasMachinedBolt then
+			self.HEATCurrentReloadPhaseData.prepareDelay = 250
+		end
+	
 		-- I would have liked this at OnReload but the execution order was wonky, so it goes here.
 		-- This switches away from an R Bullet upon a manual reload before firing the bullet.
 		if not self.KhMOSKARBulletFired then
@@ -377,7 +381,7 @@ function Create(self)
 	reloadPhase.spawnCasing = false;
 	reloadPhase.enterPhaseCallback = function (self)
 		if self.KhMOSKAHasMachinedBolt then
-			self.HEATCurrentReloadPhaseData.prepareDelay = 35
+			self.HEATCurrentReloadPhaseData.prepareDelay = 50
 			self.HEATCurrentReloadPhaseData.afterDelay = 120
 			self.HEATCurrentReloadPhaseData.rotationTarget = 0
 		end

@@ -22,17 +22,20 @@ function OnMessage(self, message, object)
 			end
 			
 		elseif self:GetNumberValue("TriumvirateAtt_Slugs_Equipped") == 1 then
-			self.VoTrigoliathMessageShownForOneReload = false;
-			
-			self.BaseReloadTime = 9999999;
-			self.VoTrigoliathSwitchedAmmo = true;
+			-- Prevent loading on spawn
+			if not self.VoTrigoliathSlugsLoaded then
+				self.VoTrigoliathMessageShownForOneReload = false;
+				
+				self.BaseReloadTime = 9999999;
+				self.VoTrigoliathSwitchedAmmo = true;
 
-			self.VoTrigoliathSlugsLoaded = true;
-			
-			self:Reload();
-			self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
-			self.HEATAmmoCounter = 0;
-		end		
+				self.VoTrigoliathSlugsLoaded = true;
+				
+				self:Reload();
+				self.VoTrigoliathCasingsToRemove = self.VoTrigoliathCasingsToRemove + self.HEATAmmoCounter;
+				self.HEATAmmoCounter = 0;
+			end
+		end
 		
 	end
 end

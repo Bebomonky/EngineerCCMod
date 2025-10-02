@@ -257,6 +257,8 @@ function Create(self)
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
 			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, 4);
 		end
+		
+		self.KhAMAVogastir40InvalidateCurrentLoadedMag = false
 	end
 	reloadPhase.finishCallback = function (self)
 		
@@ -344,13 +346,16 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-
+		if self.KhAMAVogastir40InvalidateCurrentLoadedMag then
+			self.KhAMAVogastir40InvalidateCurrentLoadedMag = false
+			self.HEATReloadPhaseOverride = 2;
+		end
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadStanceOffsetTarget = Vector(0, 2);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -392,13 +397,19 @@ function Create(self)
 			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(1, -4);
 		elseif self.HEATReloadTimer:IsPastSimMS(self.HEATCurrentReloadPhaseData.prepareDelay / 1.5) then
 			self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-1, -7);
-		end	
+		end
+		
+		if self.KhAMAVogastir40InvalidateCurrentLoadedMag then
+			self.KhAMAVogastir40InvalidateCurrentLoadedMag = false
+			self.HEATReloadPhaseOverride = 2;
+		end
+		
 	end
 	reloadPhase.finishCallback = function (self)
 
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -436,13 +447,17 @@ function Create(self)
 		
 	end
 	reloadPhase.constantCallback = function (self)
-	
+		if self.KhAMAVogastir40InvalidateCurrentLoadedMag then
+			self.KhAMAVogastir40InvalidateCurrentLoadedMag = false
+			self.HEATReloadPhaseOverride = 1;
+		end
+		
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(0, -3);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
@@ -538,12 +553,18 @@ function Create(self)
 				self.Frame = 0;
 			end
 		end
+	
+		if self.KhAMAVogastir40InvalidateCurrentLoadedMag then
+			self.KhAMAVogastir40InvalidateCurrentLoadedMag = false
+			self.HEATReloadPhaseOverride = 1;
+		end
+		
 	end
 	reloadPhase.finishCallback = function (self)
 		self.HEATCurrentReloadPhaseData.reloadSupportOffsetTarget = Vector(-3, 1);
 	end
 	reloadPhase.exitPhaseCallback = function (self)
-		
+
 	end
 	
 	self.HEATReloadPhases[i] = reloadPhase;
