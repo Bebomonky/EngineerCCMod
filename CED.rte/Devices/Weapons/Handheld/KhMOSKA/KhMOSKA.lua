@@ -9,6 +9,27 @@ function OnMessage(self, message, object)
 
 	if message == "TriumvirateAtt_Update" then
 	
+		-- Sights
+		
+		local sightAttachable;
+		for att in self.Attachables do
+			if att.PresetName == "Sights Attachment CED Khrabarovsk MOSKA" then
+				sightAttachable = att;
+			end
+		end
+		
+		if self:GetNumberValue("TriumvirateAtt_IronSights_Equipped") == 1 then
+			if sightAttachable then
+				sightAttachable.Frame = 0;
+			end
+			self.HEATOriginalSharpLength = 180;
+		elseif self:GetNumberValue("TriumvirateAtt_Scope_Equipped") == 1 then
+			if sightAttachable then
+				sightAttachable.Frame = 1;
+			end
+			self.HEATOriginalSharpLength = 320;
+		end
+	
 		-- Ammo
 		if self:GetNumberValue("TriumvirateAtt_NormalRounds_Equipped") == 1 then
 			if self.KhMOSKAToLoadRBullet then

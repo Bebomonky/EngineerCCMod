@@ -7,7 +7,7 @@ function Create(self)
 	self.AttachmentPositions[i] = {};
 	self.AttachmentPositions[i].Name = "Ammo";
 	self.AttachmentPositions[i].PositionOnGun = Vector(-2, 0);
-	self.AttachmentPositions[i].MenuPosition = Vector(-50, -100);
+	self.AttachmentPositions[i].MenuPosition = Vector(-150, -100);
 	self.AttachmentPositions[i].Attachments = {};
 	
 	local iAtt = 1;
@@ -42,9 +42,44 @@ function Create(self)
 	
 	i = i + 1;
 	self.AttachmentPositions[i] = {};
+	self.AttachmentPositions[i].Name = "Sights";
+	self.AttachmentPositions[i].PositionOnGun = Vector(0, -2);
+	self.AttachmentPositions[i].MenuPosition = Vector(0, -100);
+	self.AttachmentPositions[i].Attachments = {};
+	
+	iAtt = 1;
+	self.AttachmentPositions[i].Attachments[iAtt] = {};
+	self.AttachmentPositions[i].Attachments[iAtt].Name = "Iron Sights";
+	self.AttachmentPositions[i].Attachments[iAtt].InternalName = "IronSights";
+	self.AttachmentPositions[i].Attachments[iAtt].Description = "Basic iron sights.";
+	self.AttachmentPositions[i].Attachments[iAtt].IconPath = "CED.rte/Devices/Weapons/Handheld/Kh11p35/IronSightsIcon.png";
+	self.AttachmentPositions[i].Attachments[iAtt].IconSize = Vector(26, 26);
+	self.AttachmentPositions[i].Attachments[iAtt].DefaultOwned = true;
+	self.AttachmentPositions[i].Attachments[iAtt].DefaultEquipped = true;
+	self.AttachmentPositions[i].Attachments[iAtt].Owned = true;
+	self.AttachmentPositions[i].Attachments[iAtt].Equipped = true;	
+	self.AttachmentPositions[i].Attachments[iAtt].Cost = 0;
+	
+	iAtt = iAtt + 1;
+	self.AttachmentPositions[i].Attachments[iAtt] = {};
+	self.AttachmentPositions[i].Attachments[iAtt].Name = "Scope";
+	self.AttachmentPositions[i].Attachments[iAtt].InternalName = "Scope";
+	self.AttachmentPositions[i].Attachments[iAtt].Description = "A medium-range scope. Improves sighting range.";
+	self.AttachmentPositions[i].Attachments[iAtt].IconPath = "CED.rte/Devices/Weapons/Handheld/Kh11p35/ReflexSightIcon.png";
+	self.AttachmentPositions[i].Attachments[iAtt].IconSize = Vector(26, 26);
+	self.AttachmentPositions[i].Attachments[iAtt].DefaultOwned = false;
+	self.AttachmentPositions[i].Attachments[iAtt].DefaultEquipped = false;
+	self.AttachmentPositions[i].Attachments[iAtt].Owned = false;
+	self.AttachmentPositions[i].Attachments[iAtt].Equipped = false;	
+	self.AttachmentPositions[i].Attachments[iAtt].Cost = 10;
+	
+	--------------------------------------------------
+	
+	i = i + 1;
+	self.AttachmentPositions[i] = {};
 	self.AttachmentPositions[i].Name = "Action";
 	self.AttachmentPositions[i].PositionOnGun = Vector(5, 2);
-	self.AttachmentPositions[i].MenuPosition = Vector(50, -100);
+	self.AttachmentPositions[i].MenuPosition = Vector(-50, -100);
 	self.AttachmentPositions[i].Attachments = {};
 	
 	iAtt = 1;
