@@ -49,6 +49,8 @@ function Create(self)
 	self.KhSferaDeflectedMOs = {}; -- So we can re-enable their collision later. Maps UniqueID to elapsed sim time at the time of deflection
 	self.KhSferaFailedDeflections = {}; -- So we don't accidentally retry.
 	self.KhSferaReenableProjectileTime = 300; --ms
+	
+	self.KhKhuliganInheritedRotAngleTarget = 0;
 end
 					
 function OnAttach(self, newParent)
@@ -61,6 +63,9 @@ function OnAttach(self, newParent)
 		self.parent = ToAHuman(newParent:GetRootParent());
 		self.parentController = self.parent:GetController();
 	end
+	
+	self.KhKhuliganInheritedRotAngleTarget = 0;
+	self.InheritedRotAngleOffset = 0;
 end
 
 function OnDetach(self)
@@ -133,6 +138,7 @@ function ThreadedUpdate(self)
 						local segmentBpointB = mo.Pos + mo.Vel;
 						if segmentsIntersect(segmentApointA, segmentApointB, segmentBpointA, segmentBpointB) then
 							self.KhSferaProjToDeflect = mo.UniqueID;
+							self.KhKhuliganInheritedRotAngleTarget = RangeRand(-0.7, 0.7);
 							self:RequestSyncedUpdate();
 							break;
 						end
@@ -141,6 +147,17 @@ function ThreadedUpdate(self)
 			end
 			
 		end
+		
+		if self.InheritedRotAngleOffset ~= self.InheritedRotAngleTarget then
+			self.InheritedRotAngleOffset = self.InheritedRotAngleOffset - (0.35 * (self.InheritedRotAngleOffset - self.KhKhuliganInheritedRotAngleTarget))
+		end
+		
+		if math.abs(self.KhKhuliganInheritedRotAngleTarget) > 0 then
+			self.KhKhuliganInheritedRotAngleTarget = self.KhKhuliganInheritedRotAngleTarget - (self.KhKhuliganInheritedRotAngleTarget * (TimerMan.DeltaTimeSecs * 30));
+			if math.abs(self.KhKhuliganInheritedRotAngleTarget) < 0.02 then
+				self.KhKhuliganInheritedRotAngleTarget = 0;
+			end
+		end		
 	end
 end
 
