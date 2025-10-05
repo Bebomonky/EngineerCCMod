@@ -37,13 +37,18 @@ function Create(self)
 	self.KhSferaEquipSound = CreateSoundContainer("Equip CED Khrabarovsk Sfera", "CED.rte");
 	self.KhSferaDropSound = CreateSoundContainer("Drop CED Khrabarovsk Sfera", "CED.rte");
 	
+	-- Particle utility.
+	self.KhSferaParticleUtility = require("Scripts/Utility/ParticleUtility");	
+	
 	self.KhSferaAlternateStrideNum = 0;
 	
-	self.KhSferaDeflectingMinVel = 1.5; -- Min vel to be able to deflect incoming projectiles.
+	self.KhSferaDeflectingMinVel = 1.5; -- Min vel to be able to deflect incoming projectiles. This represents 40% chance.
+	self.KhSferaDeflectingMaxVel = 6; -- Max vel to be able to deflect incoming projectiles. This represents 95% chance.
 	
-	-- Particle utility.
-	self.KhSferaParticleUtility = require("Scripts/Utility/ParticleUtility");
-	
+	self.KhSferaTimer = Timer(); -- Used as a timekeeper, really, will run forever
+	self.KhSferaDeflectedMOs = {}; -- So we can re-enable their collision later. Maps UniqueID to elapsed sim time at the time of deflection
+	self.KhSferaFailedDeflections = {}; -- So we don't accidentally retry.
+	self.KhSferaReenableProjectileTime = 300; --ms
 end
 					
 function OnAttach(self, newParent)
@@ -81,6 +86,16 @@ function ThreadedUpdate(self)
 	self.KhSferaSprintSound.Pos = self.Pos;
 	self.KhSferaEquipSound.Pos = self.Pos;
 	self.KhSferaDropSound.Pos = self.Pos;
+	
+	for uniqueID, timeAtDeflection in pairs(self.KhSferaDeflectedMOs) do
+		local mo = MovableMan:FindObjectByUniqueID(uniqueID)
+		if mo then
+			if self.KhSferaTimer.ElapsedSimTimeMS - timeAtDeflection > self.KhSferaReenableProjectileTime then
+				mo.HitsMOs = true;
+				self.KhSferaDeflectedMOs[uniqueID] = nil;
+			end
+		end
+	end
 
 	if self.parent then
 		local isMovingFast = self.parent.Vel.Magnitude > self.KhSferaDeflectingMinVel;
@@ -101,14 +116,14 @@ function ThreadedUpdate(self)
 			-- Create a segment that roughly approximates our front surface, segment A made out of points A and B.
 			local segmentApointA = self.Pos + Vector(4 * self.FlipFactor, 12):RadRotate(self.RotAngle);
 			local segmentApointB = self.Pos + Vector(4 * self.FlipFactor, -12):RadRotate(self.RotAngle);
+			-- Flip so cross product makes sense later, we want positive to be valid always
 			if self.HFlipped then
 				segmentApointA, segmentApointB = segmentApointB, segmentApointA;
 			end
 			
 			--PrimitiveMan:DrawLinePrimitive(segmentApointA, segmentApointB, 120);
-
 			for mo in MovableMan:GetMOsInRadius(self.Pos, 300) do
-				if mo.Vel.Magnitude > 20 then
+				if (mo.Team ~= self.parent.Team or mo.IgnoresTeamHits) and mo.Vel.Magnitude > 20 then
 					local point = mo.Pos;
 					local crossProduct = (segmentApointB.X - segmentApointA.X) * (point.Y - segmentApointA.Y) - (segmentApointB.Y - segmentApointA.Y) * (point.X - segmentApointA.X);
 					if crossProduct > 0 then -- It's in front of us!
@@ -134,13 +149,22 @@ function SyncedUpdate(self)
 		return
 	end
 	
-	local smokeDataTable = {};
-	smokeDataTable.Position = self.MuzzlePos;
-	smokeDataTable.Source = self;
-	smokeDataTable.RadAngle = self.HFlipped and (self.RotAngle + math.pi) or self.RotAngle;
-	
 	local mo = MovableMan:FindObjectByUniqueID(self.KhSferaProjToDeflect);
+
 	if mo then
+		if self.KhSferaFailedDeflections[mo.UniqueID] then
+			return
+		end	
+		
+		-- We are definitely past minimum vel if we got here, so start there
+		local chance = 0.4 + (math.min(1, self.Vel.Magnitude / 6) * 0.55);
+		if math.random() > chance then
+			self.KhSferaFailedDeflections[mo.UniqueID] = true;
+			return
+		end
+	
+		self.KhSferaDeflectedMOs[mo.UniqueID] = self.KhSferaTimer.ElapsedSimTimeMS;
+	
 		local heavyDeflection = IsMOSRotating(mo) and mo.Mass > 2;
 		local dist = (self.Pos - mo.Pos).Magnitude
 		mo.Pos = mo.Pos + Vector(mo.Vel.X, mo.Vel.Y):SetMagnitude(dist)
