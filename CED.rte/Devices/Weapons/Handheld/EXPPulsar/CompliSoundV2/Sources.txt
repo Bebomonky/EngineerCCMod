@@ -1,0 +1,5 @@
+Warframe: ArchwingMachGunB2DShotA, ThanotechRifleMechB, EnergyRifleShotA, SapientPrimaryMechD
+
+COD:MW: weap_sniper_fire_plr_atmo_int2_ speed +25, weap_sniper2_fire_plr_atmo_ext1_01
+
+BF2042: BF01_Weapons_Handheld_Shared_Reflections_All_Parametric_01 90

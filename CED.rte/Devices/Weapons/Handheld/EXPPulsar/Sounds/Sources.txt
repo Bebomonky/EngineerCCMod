@@ -1,0 +1,4 @@
+COD:MW: mkilo3
+
+CP2077: w_gun_rifle_tech_achilles_cover_open_2, w_gun_shotgun_tech_satara_open_single, w_gun_shotgun_tech_satara_close_single_1
+w_gun_shotgun_tech_satara_armed_1
