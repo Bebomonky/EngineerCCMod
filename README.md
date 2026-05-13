@@ -1,8 +1,15 @@
 # EngineerCCMod
  Combat Engineering Division, better name pending. Mod started by thepawn and Bebomonky to make a faction with research + building mechanics, much of which is implemented, alongside a super wide and interesting arsenal utilizing all the latest technologies.
 
+Works on latest nightly at the time of writing
 Uses Bebomonky's CCExtensions (partially broken at the time of writing, the menus have some bugs that prevent them from working)
+
+https://github.com/Bebomonky/CCExtensions
+
 Uses CCompliSoundEmporium
+
+https://github.com/pawnishoovy/CCCompliSoundEmporium
+
 
 What's implemented:
 
