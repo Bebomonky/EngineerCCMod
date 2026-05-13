@@ -6,7 +6,7 @@ Uses Bebomonky's CCExtensions (partially broken at the time of writing, the menu
 
 https://github.com/Bebomonky/CCExtensions
 
-Uses CCompliSoundEmporium
+Uses CompliSoundEmporium
 
 https://github.com/pawnishoovy/CCCompliSoundEmporium
 
