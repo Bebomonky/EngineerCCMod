@@ -28,6 +28,8 @@ Gun attachment system with a few mods for a few guns
 
 2 actors
 
+1 drop pod craft
+
 Building system and menus
 
 Research system and menus
